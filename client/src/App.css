@@ -1,0 +1,71 @@
+@import url("https://fonts.googleapis.com/css?family=Orbitron&display=swap");
+.app {
+  background-color: black;
+  z-index: 100;
+}
+
+.orbitronFont {
+  font-family: "Orbitron", sans-serif;
+}
+
+.navBar {
+  margin-bottom: 0;
+  margin: 0 auto;
+  -webkit-box-shadow: 0 8px 6px -6px rgb(73, 69, 69);
+  -moz-box-shadow: 0 8px 6px -6px rgb(73, 69, 69);
+  box-shadow: 0 8px 6px -6px rgb(73, 69, 69);
+}
+
+.navBtn {
+  color: white;
+  padding-left: 1.2em;
+  padding-right: 1.2em;
+  font-size: 14pt;
+}
+
+.navBtn:hover {
+  text-decoration: none;
+  color: lightslategray;
+  padding-left: 1.2em;
+  padding-right: 1.2em;
+  font-size: 14pt;
+  cursor: pointer;
+}
+
+.navBtn:active {
+  text-decoration: none;
+  color: darkblue;
+  padding-left: 1.2em;
+  padding-right: 1.2em;
+  font-size: 14pt;
+  cursor: pointer;
+}
+
+.footer {
+  background-color: white;
+  color: black;
+  padding-top: 2.5%;
+  padding-bottom: 2.5%;
+  text-align: center;
+  z-index: -100;
+}
+
+.footerHeader {
+  font-size: 2rem;
+}
+
+.ftrBtn {
+  color: black;
+  padding-left: 1em;
+  padding-right: 1em;
+  font-size: 14pt;
+}
+
+.ftrBtn:hover {
+  text-decoration: none;
+  color: lightslategray;
+  padding-left: 1em;
+  padding-right: 1em;
+  font-size: 14pt;
+  cursor: pointer;
+}

@@ -16,7 +16,7 @@
     "reactstrap": "^8.0.1",
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",
-    "uuid": "^3.3.3"
+    "web3-js": "^1.0.5-beta.26"
   },
   "scripts": {
     "start": "react-scripts start",

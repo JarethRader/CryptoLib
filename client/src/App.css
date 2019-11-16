@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Orbitron&display=swap");
 .app {
-  background-color: black;
+  background-color: white;
   z-index: 100;
 }
 
@@ -9,8 +9,7 @@
 }
 
 .navBar {
-  margin-bottom: 0;
-  margin: 0 auto;
+  background-color: #0a960c;
   -webkit-box-shadow: 0 8px 6px -6px rgb(73, 69, 69);
   -moz-box-shadow: 0 8px 6px -6px rgb(73, 69, 69);
   box-shadow: 0 8px 6px -6px rgb(73, 69, 69);
@@ -42,8 +41,10 @@
 }
 
 .footer {
-  background-color: white;
-  color: black;
+  margin: 0;
+  max-width: 100%;
+  background-color: black;
+  color: white;
   padding-top: 2.5%;
   padding-bottom: 2.5%;
   text-align: center;
@@ -55,7 +56,7 @@
 }
 
 .ftrBtn {
-  color: black;
+  color: white;
   padding-left: 1em;
   padding-right: 1em;
   font-size: 14pt;

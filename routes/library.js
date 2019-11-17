@@ -88,25 +88,69 @@ router.post("/mint", async (req, res) => {
 // @desc Get book by ID
 // @access public
 router.get("/", async (req, res) => {
-  console.log("Getting Book");
   const { id } = req.query;
-  console.log(id);
   try {
-    let { title, author, hash } = await web3.eth.call({
-      to: libraryContract.address,
-      data: await library.methods.getBook(id).encodeABI()
-    });
-
-    // book = web3.utils.toAscii(book[0]);
-    // book = book.replace(/\0/g, "");
-    // console.log(book);
-    // title = book.substring(0, 31);
-    // title = title.replace(/\0/g, "");
-    // author = book.substring(32, 63);
-    // author = author.replace(/\0/g, "");
-
-    console.log(title + " " + author);
-    res.status(200).json({ book });
+    await web3.eth
+      .call({
+        to: libraryContract.address,
+        data: await library.methods.getBook(id).encodeABI()
+      })
+      .then(async book => {
+        book = web3.utils.toAscii(book);
+        book = book.replace(/\0[^0-9a-zA-Z]+/g, "");
+        hash = book.substring(book.indexOf("Qm"), book.length);
+        title = book.substring(0, book.match(/([a-z][A-Z][a-z])/).index + 1);
+        author = book.substring(
+          book.match(/([a-z][A-Z][a-z])/).index + 1,
+          book.indexOf("Qm")
+        );
+        console.log("Getting Coo address");
+        await web3.eth
+          .call({
+            to: libraryContract.address,
+            data: await library.methods.cooAddress().encodeABI()
+          })
+          .then(async coo => {
+            console.log("Getting owner");
+            await web3.eth
+              .call({
+                to: libraryContract.address,
+                data: await library.methods.ownerOf(id).encodeABI()
+              })
+              .then(owner => {
+                console.log("Comparing");
+                if (coo === owner) {
+                  console.log("Returning book");
+                  res.status(200).json({
+                    title,
+                    author,
+                    hash,
+                    available: true,
+                    found: true
+                  });
+                } else {
+                  console.log("Returning book");
+                  res.status(200).json({
+                    title,
+                    author,
+                    hash,
+                    available: false,
+                    found: true
+                  });
+                }
+              })
+              .catch(err => {
+                res.status(400).json({ err });
+              });
+          })
+          .catch(err => {
+            res.status(400).json({ err });
+          });
+      })
+      .catch(err => {
+        console.log("Book not found");
+        res.status(204).json({ found: false });
+      });
   } catch (err) {
     res.status(400).json({ error: err.data });
   }

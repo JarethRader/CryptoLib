@@ -1,7 +1,7 @@
 .pageBody {
-  margin-left: 10%;
-  margin-right: 10%;
-  background-color: white;
+  margin-left: 0;
+  margin-right: 0;
+  background-color: #0a960c;
   color: black;
   text-align: center;
 }
@@ -12,8 +12,8 @@
   text-align: center;
 }
 
-.guide {
-  padding-top: 0;
+.catalog {
+  padding-top: 10%;
   padding-bottom: 10%;
 }
 
@@ -38,4 +38,19 @@
   color: white;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.catalogRow {
+  padding-top: 0.25%;
+  padding-bottom: 0.25%;
+  margin-bottom: 0.5%;
+  margin-left: 10%;
+  margin-right: 10%;
+  border-radius: 10px;
+  border: 1px solid black;
+  background-color: white;
+}
+
+.catalogCol {
+  text-align: center;
 }

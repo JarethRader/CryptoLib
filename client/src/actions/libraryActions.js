@@ -1,4 +1,10 @@
-import { LIBRARY_LOADING, MINT_NEW_FAIL, MINT_NEW_SUCCESS } from "./types";
+import {
+  LIBRARY_LOADING,
+  MINT_NEW_FAIL,
+  MINT_NEW_SUCCESS,
+  SHELVE_BOOK_SUCCESS,
+  SHELVE_BOOK_FAIL
+} from "./types";
 import axios from "axios";
 
 export const mintNewBook = (userAddress, title, author, hash) => dispatch => {
@@ -31,6 +37,18 @@ export const mintNewBook = (userAddress, title, author, hash) => dispatch => {
         type: MINT_NEW_FAIL
       });
     });
+};
+
+export const shelveBook = book => dispatch => {
+  dispatch(setLibraryLoading());
+  if (book) {
+    dispatch({
+      type: SHELVE_BOOK_SUCCESS,
+      payload: book
+    });
+  } else {
+    dispatch({ type: SHELVE_BOOK_FAIL });
+  }
 };
 
 export const setLibraryLoading = () => {

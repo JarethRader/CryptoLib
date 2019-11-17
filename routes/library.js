@@ -84,4 +84,32 @@ router.post("/mint", async (req, res) => {
     });
 });
 
+// @route GET /library
+// @desc Get book by ID
+// @access public
+router.get("/", async (req, res) => {
+  console.log("Getting Book");
+  const { id } = req.query;
+  console.log(id);
+  try {
+    let { title, author, hash } = await web3.eth.call({
+      to: libraryContract.address,
+      data: await library.methods.getBook(id).encodeABI()
+    });
+
+    // book = web3.utils.toAscii(book[0]);
+    // book = book.replace(/\0/g, "");
+    // console.log(book);
+    // title = book.substring(0, 31);
+    // title = title.replace(/\0/g, "");
+    // author = book.substring(32, 63);
+    // author = author.replace(/\0/g, "");
+
+    console.log(title + " " + author);
+    res.status(200).json({ book });
+  } catch (err) {
+    res.status(400).json({ error: err.data });
+  }
+});
+
 module.exports = router;

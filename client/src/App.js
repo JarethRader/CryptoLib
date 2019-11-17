@@ -5,6 +5,7 @@ import "./App.css";
 import { Provider } from "react-redux";
 import store from "./store";
 import { getAccountAddress } from "./actions/userAction";
+import loadUserAddress from "./features/utils/loadUserAddress.js";
 
 //Page Routes and components/modals
 import NavBar from "./components/navbar";
@@ -16,12 +17,10 @@ import Catalog from "./routes/catalog";
 import User from "./routes/user";
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      userAddress: null
-    };
-    store.dispatch(getAccountAddress());
+  componentDidMount() {
+    loadUserAddress().then(account => {
+      store.dispatch(getAccountAddress(account));
+    });
   }
 
   render() {
@@ -35,7 +34,7 @@ class App extends Component {
                 <User />
               </Route>
               <Route path="/catalog">
-                <Catalog userAddress={this.state.userAddress} />
+                <Catalog />
               </Route>
               <Route path="/about">
                 <About />

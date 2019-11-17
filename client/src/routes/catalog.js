@@ -1,8 +1,18 @@
 import React, { Component } from "react";
 import { Container, Button } from "reactstrap";
+import { connect } from "react-redux";
+import { mintNewBook } from "../actions/libraryActions";
 
 export class Catalog extends Component {
-  handleClick = e => {};
+  handleClick = e => {
+    // e.preventDefault();
+    // this.props.mintNewBook(
+    //   this.props.userAccount,
+    //   "The Adventures of Tom Sawyer",
+    //   "Mark Twain",
+    //   "Qmf6h71A5ddDx6PjLj1vQjDxjhWp1GetpAE3KGALxeQVmh"
+    // );
+  };
 
   render() {
     return (
@@ -14,4 +24,8 @@ export class Catalog extends Component {
   }
 }
 
-export default Catalog;
+const mapStateToProps = state => ({
+  userAccount: state.user.userAccount
+});
+
+export default connect(mapStateToProps, { mintNewBook })(Catalog);

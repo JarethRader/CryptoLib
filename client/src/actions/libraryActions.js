@@ -17,7 +17,8 @@ export const mintNewBook = (userAddress, title, author, hash) => dispatch => {
   };
   dispatch(setLibraryLoading());
 
-  axios("/library/mint", body, config)
+  axios
+    .post("/library/mint", body, config)
     .then(res => {
       dispatch({
         type: MINT_NEW_SUCCESS,

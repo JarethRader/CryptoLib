@@ -27,17 +27,17 @@ const library = new web3.eth.Contract(
 // @desc adds new book to smart contract
 // @access public - change to private later
 router.post("/mint", async (req, res) => {
-  console.log("Minting new book");
+  // console.log("Minting new book");
   const { userAddress, title, author, hash } = req.body;
   let bytesTitle = web3.utils.hexToBytes(web3.utils.utf8ToHex(title));
   let bytesAuthor = web3.utils.hexToBytes(web3.utils.utf8ToHex(author));
   let bytesHash = web3.utils.hexToBytes(web3.utils.utf8ToHex(hash));
 
-  const key = new Buffer(process.env.PRIVATE_KEY, "hex");
+  const key = new Buffer(process.env.PRIVATE_INFURA_KEY, "hex");
   const data = await library.methods
     .mint(bytesTitle, bytesAuthor, bytesHash)
     .encodeABI();
-  console.log(data);
+  // console.log(data);
 
   library.methods
     .mint(bytesTitle, bytesAuthor, bytesHash)
@@ -50,12 +50,12 @@ router.post("/mint", async (req, res) => {
         from: userAddress,
         data: data
       };
-      console.log(txData);
-      console.log("Getting transaction count");
+      // console.log(txData);
+      // console.log("Getting transaction count");
       web3.eth
         .getTransactionCount(userAddress, "latest")
         .then(async txCount => {
-          console.log(txCount);
+          // console.log(txCount);
           const newNonce = web3.utils.toHex(txCount);
           let transaction = new Tx(
             { ...txData, nonce: newNonce },
@@ -63,24 +63,26 @@ router.post("/mint", async (req, res) => {
           );
           transaction.sign(key);
           const serializedTx = "0x" + transaction.serialize().toString("hex");
-          console.log(serializedTx);
+          // console.log(serializedTx);
           await web3.eth
             .sendSignedTransaction(serializedTx)
             .then(hash => {
-              console.log("New book minted" + hash);
+              // console.log("New book minted" + hash);
               res.status(200).json({ transactionHash: hash });
             })
             .catch(err => {
-              console.log("Error: " + err);
+              // console.log("Error: " + err);
               res.status(400).json({ error: err });
             });
         })
         .catch(err => {
-          console.log(err);
+          // console.log(err);
+          res.status(400).json({ error: err });
         });
     })
     .catch(err => {
-      console.log(err);
+      // console.log(err);
+      res.status(400).json({ error: err });
     });
 });
 
@@ -104,23 +106,23 @@ router.get("/", async (req, res) => {
           book.match(/([a-z][A-Z][a-z])/).index + 1,
           book.indexOf("Qm")
         );
-        console.log("Getting Coo address");
+        // console.log("Getting Coo address");
         await web3.eth
           .call({
             to: libraryContract.address,
             data: await library.methods.cooAddress().encodeABI()
           })
           .then(async coo => {
-            console.log("Getting owner");
+            // console.log("Getting owner");
             await web3.eth
               .call({
                 to: libraryContract.address,
                 data: await library.methods.ownerOf(id).encodeABI()
               })
               .then(owner => {
-                console.log("Comparing");
+                // console.log("Comparing");
                 if (coo === owner) {
-                  console.log("Returning book");
+                  // console.log("Returning book");
                   res.status(200).json({
                     title,
                     author,
@@ -129,7 +131,7 @@ router.get("/", async (req, res) => {
                     found: true
                   });
                 } else {
-                  console.log("Returning book");
+                  // console.log("Returning book");
                   res.status(200).json({
                     title,
                     author,
@@ -148,8 +150,8 @@ router.get("/", async (req, res) => {
           });
       })
       .catch(err => {
-        console.log("Book not found");
-        res.status(204).json({ found: false });
+        // console.log("Book not found");
+        res.status(204).json({ err: err, found: false });
       });
   } catch (err) {
     res.status(400).json({ error: err.data });

@@ -1,4 +1,4 @@
-import loadWeb3 from "../loadWeb3.js";
+import loadWeb3 from "./loadWeb3";
 
 const loadUserAddress = async () => {
   try {

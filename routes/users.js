@@ -13,15 +13,19 @@ const User = require("../models/User");
 // 1. update/reset password
 // 2. change username
 // 3. change email
+// 4. delete user
 
 //@route POST /user/signup
 //@desc register new user
 //@access public
 router.post("/signup", (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, address } = req.body;
 
   if (!username || !email || !password) {
     return res.status(400).json({ msg: "Please enter all fields" });
+  }
+  if (!address) {
+    return res.status(400).json({ msg: "No web3 provider detected" });
   }
 
   User.findOne({ email }).then(user => {
@@ -29,6 +33,7 @@ router.post("/signup", (req, res) => {
 
     const newUser = new User({
       username,
+      address,
       email,
       password
     });
@@ -49,8 +54,7 @@ router.post("/signup", (req, res) => {
                 token,
                 user: {
                   id: user.id,
-                  first_name: newUser.first_name,
-                  last_name: newUser.last_name,
+                  address: newUser.address,
                   username: newUser.username,
                   email: newUser.email
                 }
@@ -67,12 +71,14 @@ router.post("/signup", (req, res) => {
 //@desc authenticates a user when they login again
 //@access public
 router.post("/auth", (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, address } = req.body;
   if (!username || !password) {
     return res.status(400).json({ msg: "Please enter all fields" });
   }
-
-  User.findOne({ username }).then(user => {
+  if (!address) {
+    return res.status(400).json({ msg: "Web3 provider not detected" });
+  }
+  User.findOne({ address }).then(user => {
     if (!user) res.status(400).json({ msg: "User does not exists" });
     //Compare hash with
     bcrypt.compare(password, user.password).then(isMatch => {
@@ -87,6 +93,7 @@ router.post("/auth", (req, res) => {
             token,
             user: {
               id: user.id,
+              address: user.address,
               username: user.username,
               email: user.email
             }
@@ -101,10 +108,8 @@ router.post("/auth", (req, res) => {
 //@desc get user data
 //@access private
 router.get("/", auth, (req, res) => {
-  console.log(req.user.id);
   User.findById(req.user.id)
     .then(user => {
-      console.log(user);
       res.status(200).json({ user });
     })
     .catch(err => {

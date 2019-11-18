@@ -4,8 +4,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import { Provider } from "react-redux";
 import store from "./store";
-import { getAccountAddress } from "./actions/userAction";
-import loadUserAddress from "./features/utils/loadUserAddress.js";
+// import { getMetamaskAddress, loadUser } from "./actions/userAction";
+// import loadUserAddress from "./features/utils/loadUserAddress.js";
 
 //Page Routes and components/modals
 import NavBar from "./components/navbar";
@@ -17,11 +17,16 @@ import Catalog from "./routes/catalog";
 import User from "./routes/user";
 
 class App extends Component {
-  componentDidMount() {
-    loadUserAddress().then(account => {
-      store.dispatch(getAccountAddress(account));
-    });
-  }
+  // async componentDidMount() {
+  //   try {
+  //     await loadUserAddress().then(async account => {
+  //       await store.dispatch(getMetamaskAddress(account));
+  //       await store.dispatch(loadUser());
+  //     });
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
 
   render() {
     return (

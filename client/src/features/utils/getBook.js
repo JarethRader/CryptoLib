@@ -1,4 +1,4 @@
-import loadWeb3 from "../loadWeb3";
+import loadWeb3 from "./loadWeb3";
 import axios from "axios";
 
 const getBook = async id => {

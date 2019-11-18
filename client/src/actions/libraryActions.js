@@ -1,5 +1,7 @@
 import {
   LIBRARY_LOADING,
+  LIBRARY_LOADED,
+  UPDATE_LIBRARY,
   MINT_NEW_FAIL,
   MINT_NEW_SUCCESS,
   SHELVE_BOOK_SUCCESS,
@@ -49,6 +51,12 @@ export const shelveBook = book => dispatch => {
   } else {
     dispatch({ type: SHELVE_BOOK_FAIL });
   }
+};
+
+export const libraryLoaded = () => {
+  return {
+    type: LIBRARY_LOADED
+  };
 };
 
 export const setLibraryLoading = () => {

@@ -1,23 +1,61 @@
 import {
   USER_LOADING,
-  GET_ACCOUNT_SUCCESS,
-  GET_ACCOUNT_FAIL
+  USER_LOADED,
+  GET_ADDRESS_SUCCESS,
+  GET_ADDRESS_FAIL,
+  LOGIN_SUCCESS,
+  LOGIN_FAIL,
+  REGISTER_SUCCESS,
+  REGISTER_FAIL,
+  AUTH_ERROR,
+  LOGOUT_SUCCESS
 } from "../actions/types";
 
 const initialState = {
   userAccount: null,
+  user: {},
+  token: localStorage.getItem("token"),
+  isAuthenticated: false,
   isLoading: false
 };
 
 export default function(state = initialState, action) {
   switch (action.type) {
-    case GET_ACCOUNT_SUCCESS:
+    case USER_LOADED:
+      return {
+        ...state,
+        user: action.payload,
+        isAuthenticated: true,
+        isLoading: false
+      };
+    case REGISTER_SUCCESS:
+    case LOGIN_SUCCESS:
+      localStorage.setItem("token", action.payload.token);
+      return {
+        ...state,
+        token: action.payload.token,
+        user: action.payload.user,
+        isAuthenticated: true,
+        isLoading: false
+      };
+    case LOGOUT_SUCCESS:
+    case AUTH_ERROR:
+    case LOGIN_FAIL:
+    case REGISTER_FAIL:
+      localStorage.removeItem("token");
+      return {
+        ...state,
+        token: null,
+        isAuthenticated: false,
+        isLoading: false
+      };
+    case GET_ADDRESS_SUCCESS:
       return {
         ...state,
         userAccount: action.payload,
         isLoading: false
       };
-    case GET_ACCOUNT_FAIL:
+    case GET_ADDRESS_FAIL:
       return {
         ...state,
         userAccount: null,

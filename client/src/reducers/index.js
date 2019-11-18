@@ -2,8 +2,10 @@
 import { combineReducers } from "redux";
 import userReducer from "./userReducer";
 import libraryReducer from "./libraryReducer";
+import errorReducer from "./errorReducer";
 
 export default combineReducers({
   user: userReducer,
-  library: libraryReducer
+  library: libraryReducer,
+  error: errorReducer
 });

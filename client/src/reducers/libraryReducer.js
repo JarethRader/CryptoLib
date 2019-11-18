@@ -1,5 +1,7 @@
 import {
   LIBRARY_LOADING,
+  LIBRARY_LOADED,
+  UPDATE_LIBRARY,
   MINT_NEW_FAIL,
   MINT_NEW_SUCCESS,
   SHELVE_BOOK_FAIL,
@@ -8,6 +10,7 @@ import {
 
 const initialState = {
   libraryLoading: false,
+  loadingDone: false,
   library: [],
   transactionHash: null,
   book: {}
@@ -15,6 +18,16 @@ const initialState = {
 
 export default function(state = initialState, action) {
   switch (action.type) {
+    case LIBRARY_LOADED:
+      return {
+        ...state,
+        loadingDone: true
+      };
+    case UPDATE_LIBRARY:
+      return {
+        ...state,
+        libraryLoaded: false
+      };
     case SHELVE_BOOK_SUCCESS:
       return {
         ...state,

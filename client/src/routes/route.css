@@ -1,9 +1,10 @@
 .pageBody {
   margin-left: 0;
   margin-right: 0;
-  background-color: #0a960c;
+  background-color: white;
   color: black;
   text-align: center;
+  min-height: 43.75rem;
 }
 
 .landing {
@@ -13,14 +14,13 @@
 }
 
 .catalog {
-  height: 700px;
   padding-top: 10%;
   padding-bottom: 10%;
 }
 
-.about {
-  padding-top: 0;
-  padding-bottom: 10%;
+.user {
+  padding-top: 7.5rem;
+  padding-bottom: 5%;
 }
 
 .toPage {

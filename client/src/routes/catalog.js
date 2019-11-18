@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import "./route.css";
-import { Container, Button, Row, Col } from "reactstrap";
+import { Button, Row, Col } from "reactstrap";
 import { connect } from "react-redux";
-import { shelveBook } from "../actions/libraryActions";
+import { shelveBook, libraryLoaded } from "../actions/libraryActions";
 import getBook from "../features/utils/getBook";
 
 export class Catalog extends Component {
@@ -17,7 +17,11 @@ export class Catalog extends Component {
   }
 
   async componentDidMount() {
-    await this.loadCatalog();
+    if (!this.props.loaded) {
+      await this.loadCatalog();
+    } else {
+      this.setState({ catalogData: this.props.library });
+    }
   }
 
   loadCatalog = async () => {
@@ -43,6 +47,11 @@ export class Catalog extends Component {
       }
     });
     this.setState({ catalogData: this.props.library });
+    try {
+      this.props.libraryLoaded();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   render() {
@@ -57,12 +66,7 @@ export class Catalog extends Component {
         />
       );
     });
-    return (
-
-        <div className="pageBody catalog">
-          {rows} 
-        </div>
-    );
+    return <div className="pageBody catalog">{rows}</div>;
   }
 }
 
@@ -102,7 +106,8 @@ class CatalogRow extends Catalog {
 const mapStateToProps = state => ({
   userAccount: state.user.userAccount,
   book: state.library.book,
-  library: state.library.library
+  library: state.library.library,
+  loaded: state.library.loadingDone
 });
 
-export default connect(mapStateToProps, { shelveBook })(Catalog);
+export default connect(mapStateToProps, { shelveBook, libraryLoaded })(Catalog);

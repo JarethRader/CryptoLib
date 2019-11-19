@@ -14,7 +14,7 @@ export class User extends Component {
     };
   }
   async componentDidMount() {
-    if (window.web3) {
+    if (window.web3 || !this.props.userAccount) {
       await loadUserAddress().then(async account => {
         await this.props.getMetamaskAddress(account);
         await this.props.loadUser();

@@ -5,7 +5,8 @@ import {
   MINT_NEW_FAIL,
   MINT_NEW_SUCCESS,
   SHELVE_BOOK_SUCCESS,
-  SHELVE_BOOK_FAIL
+  SHELVE_BOOK_FAIL,
+  CLEAR_SHELF
 } from "./types";
 import axios from "axios";
 
@@ -56,6 +57,12 @@ export const shelveBook = book => dispatch => {
 export const libraryLoaded = () => {
   return {
     type: LIBRARY_LOADED
+  };
+};
+
+export const clearShelf = () => {
+  return {
+    type: CLEAR_SHELF
   };
 };
 

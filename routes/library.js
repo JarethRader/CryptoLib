@@ -4,12 +4,10 @@ const router = express.Router();
 const dotenv = require("dotenv");
 
 //authorization dependencies
-// const bcrypt = require("bcryptjs");
-// const jwt = require("jsonwebtoken");
-//const auth = require("../middleware/auth");
+const auth = require("../middleware/auth");
+const sendTransaction = require("../components/sendTransaction");
 
 //Web3 and smart contract dependencies
-const Tx = require("ethereumjs-tx").Transaction;
 const Web3 = require("web3");
 const web3 = new Web3(
   new Web3.providers.HttpProvider(
@@ -33,51 +31,25 @@ router.post("/mint", async (req, res) => {
   let bytesAuthor = web3.utils.hexToBytes(web3.utils.utf8ToHex(author));
   let bytesHash = web3.utils.hexToBytes(web3.utils.utf8ToHex(hash));
 
-  const key = new Buffer(process.env.PRIVATE_INFURA_KEY, "hex");
   const data = await library.methods
     .mint(bytesTitle, bytesAuthor, bytesHash)
     .encodeABI();
-  // console.log(data);
+  console.log(data);
 
-  library.methods
+  await library.methods
     .mint(bytesTitle, bytesAuthor, bytesHash)
     .estimateGas({ from: userAddress, gas: 5000000 })
-    .then(gasAmount => {
-      const txData = {
-        gasLimit: web3.utils.toHex(gasAmount),
-        gasPrice: web3.utils.toHex(10e9), // 10 Gwei
-        to: libraryContract.address,
-        from: userAddress,
-        data: data
-      };
-      // console.log(txData);
-      // console.log("Getting transaction count");
-      web3.eth
-        .getTransactionCount(userAddress, "latest")
-        .then(async txCount => {
-          // console.log(txCount);
-          const newNonce = web3.utils.toHex(txCount);
-          let transaction = new Tx(
-            { ...txData, nonce: newNonce },
-            { chain: "rinkeby" }
-          );
-          transaction.sign(key);
-          const serializedTx = "0x" + transaction.serialize().toString("hex");
-          // console.log(serializedTx);
-          await web3.eth
-            .sendSignedTransaction(serializedTx)
-            .then(hash => {
-              // console.log("New book minted" + hash);
-              res.status(200).json({ transactionHash: hash });
-            })
-            .catch(err => {
-              // console.log("Error: " + err);
-              res.status(400).json({ error: err });
-            });
+    .then(async gasAmount => {
+      // console.log("Sending transaction");
+
+      await sendTransaction(gasAmount, data)
+        .then(receipt => {
+          // console.log("Got transaction");
+          res.status(200).json({ transactionReceipt: receipt });
         })
         .catch(err => {
           // console.log(err);
-          res.status(400).json({ error: err });
+          res.status(400).json({ err: err });
         });
     })
     .catch(err => {
@@ -155,6 +127,70 @@ router.get("/", async (req, res) => {
       });
   } catch (err) {
     res.status(400).json({ error: err.data });
+  }
+});
+
+//@route POST /library/checkout
+//@desc checkout a book
+//@access private
+router.post("/checkout", async (req, res) => {
+  const { bookID, userAddress } = req.body;
+
+  if (!bookID || !userAddress) {
+    return res.status(400).json({ msg: "Invalid Input" });
+  }
+  try {
+    console.log("Getting balance of");
+    await web3.eth
+      .call({
+        to: libraryContract.address,
+        data: await library.methods.balanceOf(userAddress).encodeABI()
+      })
+      .then(async balance => {
+        console.log(web3.utils.hexToNumber(balance));
+        if (web3.utils.hexToNumber(balance) === 2) {
+          return res
+            .status(400)
+            .json({ msg: "Too many books checked out already" });
+        } else {
+          //Transfer book: bookID to: userAddress
+          console.log("Getting Coo Address");
+          console.log("Transfering book");
+          console.log(userAddress);
+
+          const data = await library.methods
+            .transfer(userAddress, bookID)
+            .encodeABI();
+          console.log(data);
+
+          await library.methods
+            .transfer(userAddress, bookID)
+            .estimateGas({ from: process.env.CEO_ADDRESS, gas: 5000000 })
+            .then(async gasAmount => {
+              console.log("Sending transaction");
+              await sendTransaction(gasAmount, data)
+                .then(receipt => {
+                  console.log("Transacton successful");
+                  res.status(200).json({ transactionReceipt: receipt });
+                })
+                .catch(err => {
+                  console.log(err);
+                  res.status(400).json({ err: err });
+                });
+            })
+            .catch(err => {
+              console.log(err);
+              res.status(400).json({ error: err });
+            });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(400).json({ err: err });
+      });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ err: err });
   }
 });
 

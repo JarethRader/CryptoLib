@@ -18,6 +18,7 @@ export const MINT_NEW_SUCCESS = "MINT_NEW_SUCCUESS";
 export const MINT_NEW_FAIL = "MINT_NEW_FAIL";
 export const SHELVE_BOOK_SUCCESS = "SHELVE_BOOK_SUCCESS";
 export const SHELVE_BOOK_FAIL = "SHELVE_BOOK_FAIL";
+export const CLEAR_SHELF = "CLEAR_SHELF";
 
 //error types
 export const GET_ERRORS = "GET_ERRORS";

@@ -2,8 +2,22 @@ import React, { Component } from "react";
 import "./route.css";
 import { Button, Row, Col } from "reactstrap";
 import { connect } from "react-redux";
-import { shelveBook, libraryLoaded } from "../actions/libraryActions";
+import {
+  shelveBook,
+  libraryLoaded,
+  clearShelf
+} from "../actions/libraryActions";
 import getBook from "../features/utils/getBook";
+import { css } from "@emotion/core";
+// Another way to import. This is recommended to reduce bundle size
+import BeatLoader from "react-spinners/BeatLoader";
+
+const override = css`
+  display: block;
+  margin: 0 auto;
+  border-color: red;
+  padding-top: 10rem;
+`;
 
 export class Catalog extends Component {
   constructor(props) {
@@ -17,10 +31,17 @@ export class Catalog extends Component {
   }
 
   async componentDidMount() {
-    if (!this.props.loaded) {
-      await this.loadCatalog();
-    } else {
-      this.setState({ catalogData: this.props.library });
+    await this.loadCatalog();
+    this.setState({ catalogData: this.props.library });
+  }
+
+  //TODO clear library props data on unmount, and reload on page remount
+  async componentWillUnmount() {
+    try {
+      await this.props.clearShelf();
+      this.setState({ catalogData: {} });
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -56,17 +77,29 @@ export class Catalog extends Component {
 
   render() {
     const { catalogData } = this.state;
-    let rows = catalogData.map((book, index) => {
-      return (
-        <CatalogRow
-          key={book.id}
-          catalogData={book}
-          handleOnClick={this.handleCheckoutBtn}
-          index={index}
-        />
-      );
-    });
-    return <div className="pageBody catalog">{rows}</div>;
+    let rows = catalogData.map((book, index) => (
+      <CatalogRow
+        key={book.id}
+        catalogData={book}
+        handleOnClick={this.handleCheckoutBtn}
+        index={index}
+      />
+    ));
+    return (
+      <div className="pageBody catalog">
+        {this.props.isLoading ? (
+          <BeatLoader
+            css={override}
+            sizeUnit={"rem"}
+            size={2}
+            color={"#0a960c"}
+            loading={this.props.isLoading}
+          />
+        ) : (
+          <div>{rows}</div>
+        )}
+      </div>
+    );
   }
 }
 
@@ -107,7 +140,12 @@ const mapStateToProps = state => ({
   userAccount: state.user.userAccount,
   book: state.library.book,
   library: state.library.library,
-  loaded: state.library.loadingDone
+  loaded: state.library.loadingDone,
+  isLoading: state.library.libraryLoading
 });
 
-export default connect(mapStateToProps, { shelveBook, libraryLoaded })(Catalog);
+export default connect(mapStateToProps, {
+  shelveBook,
+  libraryLoaded,
+  clearShelf
+})(Catalog);

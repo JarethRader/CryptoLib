@@ -5,7 +5,8 @@ import {
   MINT_NEW_FAIL,
   MINT_NEW_SUCCESS,
   SHELVE_BOOK_FAIL,
-  SHELVE_BOOK_SUCCESS
+  SHELVE_BOOK_SUCCESS,
+  CLEAR_SHELF
 } from "../actions/types";
 
 const initialState = {
@@ -27,6 +28,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         libraryLoaded: false
+      };
+    case CLEAR_SHELF:
+      return {
+        ...state,
+        library: [],
+        book: {}
       };
     case SHELVE_BOOK_SUCCESS:
       return {

@@ -93,7 +93,7 @@ router.get("/", async (req, res) => {
               })
               .then(owner => {
                 // console.log("Comparing");
-                if (coo === owner) {
+                if ("0x" + coo.substring(26, coo.length) === owner) {
                   // console.log("Returning book");
                   res.status(200).json({
                     title,
@@ -183,6 +183,67 @@ router.post("/checkout", async (req, res) => {
               res.status(400).json({ error: err });
             });
         }
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(400).json({ err: err });
+      });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ err: err });
+  }
+});
+
+//@route POST /library/return
+//@desc Return cehcked out book to COO Address
+//@access public
+//Changed this to private eventually
+router.post("/return", async (req, res) => {
+  //bookID to return
+  const { bookID } = req.body;
+
+  try {
+    await web3.eth
+      .call({
+        to: libraryContract.address,
+        data: library.methods.cooAddress().encodeABI()
+      })
+      .then(async coo => {
+        await web3.eth
+          .call({
+            to: libraryContract.address,
+            data: library.methods.ownerOf(bookID).encodeABI()
+          })
+          .then(async owner => {
+            const data = await library.methods
+              .transferFrom(
+                "0x" + owner.substring(26, owner.length),
+                "0x" + coo.substring(26, coo.length),
+                bookID
+              )
+              .encodeABI();
+
+            await library.methods
+              .transferFrom(
+                "0x" + owner.substring(26, owner.length),
+                "0x" + coo.substring(26, coo.length),
+                bookID
+              )
+              .estimateGas({ from: process.env.CEO_ADDRESS, gas: 5000000 })
+              .then(async gasAmount => {
+                await sendTransaction(gasAmount, data)
+                  .then(receipt => {
+                    res.status(200).json({ transactionReceipt: receipt });
+                  })
+                  .catch(err => {
+                    res.status(400).json({ err: err });
+                  });
+              })
+              .catch(err => {
+                console.log(err);
+                res.status(400).json({ err: err });
+              });
+          });
       })
       .catch(err => {
         console.log(err);

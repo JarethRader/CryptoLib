@@ -93,7 +93,7 @@ router.get("/", async (req, res) => {
               })
               .then(owner => {
                 // console.log("Comparing");
-                if ("0x" + coo.substring(26, coo.length) === owner) {
+                if (coo === owner) {
                   // console.log("Returning book");
                   res.status(200).json({
                     title,
@@ -158,6 +158,7 @@ router.post("/checkout", async (req, res) => {
           console.log("Transfering book");
           console.log(userAddress);
 
+          //change transfer method to checkout method, which will transfer and approve in one function
           const data = await library.methods
             .transfer(userAddress, bookID)
             .encodeABI();
@@ -190,6 +191,40 @@ router.post("/checkout", async (req, res) => {
       });
   } catch (err) {
     console.log(err);
+    res.status(400).json({ err: err });
+  }
+});
+
+//@route POST /library/getOwn
+//@desc get books checked out by user
+//@access public - change to private later
+router.post("/getOwn", async (req, res) => {
+  const { userAddress } = req.body;
+
+  try {
+    await web3.eth
+      .call({
+        to: libraryContract.address,
+        data: await library.methods.tokensOfOwner(userAddress).encodeABI()
+      })
+      .then(async tokensOfOwner => {
+        await web3.eth.call({
+          to: libraryContract.address,
+          data: await library.methods.balanceOf(userAddress).encodeABI()
+        });
+        console.log(tokensOfOwner);
+        let stripped = tokensOfOwner.slice(2);
+        let booksOfOwner = stripped
+          .match(/.{1,64}/g)
+          .map(s => parseInt("0x" + s));
+        booksOfOwner.splice(0, 2);
+        res.status(200).json({ booksOfOwner });
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(400).json({ err: err });
+      });
+  } catch (err) {
     res.status(400).json({ err: err });
   }
 });
@@ -256,3 +291,6 @@ router.post("/return", async (req, res) => {
 });
 
 module.exports = router;
+
+// 0xdee0601f952c2f2c9163dfbfce4581b14da3dee2
+// 0xe8300c51fb172484f544369edfc9082b8cf653df

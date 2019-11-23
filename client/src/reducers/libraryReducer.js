@@ -6,7 +6,12 @@ import {
   MINT_NEW_SUCCESS,
   SHELVE_BOOK_FAIL,
   SHELVE_BOOK_SUCCESS,
-  CLEAR_SHELF
+  CLEAR_SHELF,
+  CHECKOUT_FAIL,
+  CHECKOUT_SUCCESS,
+  RETURN_FAIL,
+  GET_OWN_SUCCESS,
+  GET_OWN_FAIL
 } from "../actions/types";
 
 const initialState = {
@@ -14,7 +19,9 @@ const initialState = {
   loadingDone: false,
   library: [],
   transactionHash: null,
-  book: {}
+  shelvingBook: {},
+  checkedOut: {},
+  ownShelf: []
 };
 
 export default function(state = initialState, action) {
@@ -29,16 +36,30 @@ export default function(state = initialState, action) {
         ...state,
         libraryLoaded: false
       };
+    case GET_OWN_SUCCESS:
+      return {
+        ...state,
+        ownShelf: [action.payload.book, ...state.ownShelf],
+        libraryLoading: false
+      };
+    case CHECKOUT_SUCCESS:
+      return {
+        ...state,
+        transactionHash: action.payload,
+        libraryLoading: false
+      };
     case CLEAR_SHELF:
       return {
         ...state,
         library: [],
-        book: {}
+        shelvingBook: {}
       };
     case SHELVE_BOOK_SUCCESS:
+      console.log("Reducer");
+      console.log(action.payload);
       return {
         ...state,
-        book: action.payload,
+        shelvingBook: action.payload,
         library: [action.payload, ...state.library]
       };
     case MINT_NEW_SUCCESS:
@@ -50,9 +71,18 @@ export default function(state = initialState, action) {
     case SHELVE_BOOK_FAIL:
       return {
         ...state,
-        book: {},
+        shelvingBook: {},
         libraryLoading: false
       };
+    case GET_OWN_FAIL:
+      return {
+        ...state,
+        ownShelf: [],
+        transactionHash: null,
+        libraryLoading: false
+      };
+    case RETURN_FAIL:
+    case CHECKOUT_FAIL:
     case MINT_NEW_FAIL:
       return {
         ...state,

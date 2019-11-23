@@ -6,9 +6,20 @@ import {
   MINT_NEW_SUCCESS,
   SHELVE_BOOK_SUCCESS,
   SHELVE_BOOK_FAIL,
-  CLEAR_SHELF
+  CLEAR_SHELF,
+  CHECKOUT_FAIL,
+  CHECKOUT_SUCCESS,
+  GET_OWN_SUCCESS,
+  GET_OWN_FAIL
 } from "./types";
 import axios from "axios";
+
+const config = {
+  headers: {
+    "Content-type": "application/json",
+    "Project-Secret": "1a1819184ea44c2a8d834a3f209344d8"
+  }
+};
 
 export const mintNewBook = (userAddress, title, author, hash) => dispatch => {
   const body = {
@@ -18,12 +29,6 @@ export const mintNewBook = (userAddress, title, author, hash) => dispatch => {
     hash
   };
 
-  const config = {
-    headers: {
-      "Content-type": "application/json",
-      "Project-Secret": "1a1819184ea44c2a8d834a3f209344d8"
-    }
-  };
   dispatch(setLibraryLoading());
 
   axios
@@ -43,6 +48,8 @@ export const mintNewBook = (userAddress, title, author, hash) => dispatch => {
 };
 
 export const shelveBook = book => dispatch => {
+  console.log("Action");
+  console.log(book);
   dispatch(setLibraryLoading());
   if (book) {
     dispatch({
@@ -64,6 +71,47 @@ export const clearShelf = () => {
   return {
     type: CLEAR_SHELF
   };
+};
+
+export const checkout = id => dispatch => {
+  dispatch(setLibraryLoading());
+
+  const body = {
+    id
+  };
+
+  axios
+    .post("library/checkout", id, body, config)
+    .then(res => {
+      dispatch({
+        type: CHECKOUT_SUCCESS,
+        payload: res.data
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      dispatch({ type: CHECKOUT_FAIL });
+    });
+};
+
+export const getOwn = id => dispatch => {
+  dispatch(setLibraryLoading());
+
+  const body = {
+    id
+  };
+
+  axios.post("/library/getOwn", body).then(res => {
+    dispatch({
+      type: GET_OWN_SUCCESS,
+      payload: res.data
+    }).catch(err => {
+      console.log(err);
+      dispatch({
+        type: GET_OWN_FAIL
+      });
+    });
+  });
 };
 
 export const setLibraryLoading = () => {

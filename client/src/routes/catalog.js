@@ -5,7 +5,8 @@ import { connect } from "react-redux";
 import {
   shelveBook,
   libraryLoaded,
-  clearShelf
+  clearShelf,
+  checkout
 } from "../actions/libraryActions";
 import getBook from "../features/utils/getBook";
 import { css } from "@emotion/core";
@@ -31,6 +32,7 @@ export class Catalog extends Component {
   }
 
   async componentDidMount() {
+    console.log("Loading catalog");
     await this.loadCatalog();
     this.setState({ catalogData: this.props.library });
   }
@@ -46,18 +48,19 @@ export class Catalog extends Component {
   }
 
   loadCatalog = async () => {
+    console.log("Start Loading");
     let i = 0;
     await getBook(i).then(async book => {
-      // console.log(book);
+      console.log(book);
       try {
         await this.props.shelveBook(book);
-        console.log(this.props.book.available);
+        console.log(this.props.book);
         while (this.props.book.found === true) {
           i++;
           await getBook(i).then(nextBook => {
             try {
               this.props.shelveBook(nextBook);
-              console.log(this.props.book);
+              console.log(this.props.book.book);
             } catch (err) {
               console.log(err);
             }
@@ -70,6 +73,14 @@ export class Catalog extends Component {
     this.setState({ catalogData: this.props.library });
     try {
       this.props.libraryLoaded();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  handleOnClick = index => {
+    try {
+      this.props.checkout(index);
     } catch (err) {
       console.log(err);
     }
@@ -106,6 +117,7 @@ export class Catalog extends Component {
 class CatalogRow extends Catalog {
   render() {
     const { index, handleOnClick } = this.props;
+    console.log(index);
     return (
       <Row className="catalogRow">
         <Col className="catalogCol">{this.props.catalogData.title}</Col>
@@ -138,7 +150,7 @@ class CatalogRow extends Catalog {
 
 const mapStateToProps = state => ({
   userAccount: state.user.userAccount,
-  book: state.library.book,
+  book: state.library.shelvingBook,
   library: state.library.library,
   loaded: state.library.loadingDone,
   isLoading: state.library.libraryLoading
@@ -147,5 +159,6 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   shelveBook,
   libraryLoaded,
-  clearShelf
+  clearShelf,
+  checkout
 })(Catalog);

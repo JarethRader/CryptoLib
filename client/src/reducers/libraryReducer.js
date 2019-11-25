@@ -55,8 +55,6 @@ export default function(state = initialState, action) {
         shelvingBook: {}
       };
     case SHELVE_BOOK_SUCCESS:
-      console.log("Reducer");
-      console.log(action.payload);
       return {
         ...state,
         shelvingBook: action.payload,

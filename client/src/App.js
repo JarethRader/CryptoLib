@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import { Provider } from "react-redux";
 import store from "./store";
-// import { getMetamaskAddress, loadUser } from "./actions/userAction";
+import { getMetamaskAddress } from "./actions/userAction";
 // import loadUserAddress from "./features/utils/loadUserAddress.js";
 
 //Page Routes and components/modals
@@ -17,6 +17,14 @@ import Catalog from "./routes/catalog";
 import User from "./routes/user";
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    window.ethereum.on("accountsChanged", function(accounts) {
+      // Time to reload your interface with accounts[0]!
+      store.dispatch(getMetamaskAddress(accounts[0]));
+    });
+  }
   // async componentDidMount() {
   //   try {
   //     await loadUserAddress().then(async account => {

@@ -32,7 +32,6 @@ export class Catalog extends Component {
   }
 
   async componentDidMount() {
-    console.log("Loading catalog");
     await this.loadCatalog();
     this.setState({ catalogData: this.props.library });
   }
@@ -43,46 +42,34 @@ export class Catalog extends Component {
       await this.props.clearShelf();
       this.setState({ catalogData: {} });
     } catch (err) {
-      console.log(err);
+      // console.log(err);
     }
   }
 
   loadCatalog = async () => {
-    console.log("Start Loading");
     let i = 0;
     await getBook(i).then(async book => {
-      console.log(book);
       try {
         await this.props.shelveBook(book);
-        console.log(this.props.book);
         while (this.props.book.found === true) {
           i++;
           await getBook(i).then(nextBook => {
             try {
               this.props.shelveBook(nextBook);
-              console.log(this.props.book.book);
             } catch (err) {
-              console.log(err);
+              // console.log(err);
             }
           });
         }
       } catch (err) {
-        console.log(err);
+        // console.log(err);
       }
     });
     this.setState({ catalogData: this.props.library });
     try {
       this.props.libraryLoaded();
     } catch (err) {
-      console.log(err);
-    }
-  };
-
-  handleOnClick = index => {
-    try {
-      this.props.checkout(index);
-    } catch (err) {
-      console.log(err);
+      // console.log(err);
     }
   };
 
@@ -90,10 +77,11 @@ export class Catalog extends Component {
     const { catalogData } = this.state;
     let rows = catalogData.map((book, index) => (
       <CatalogRow
-        key={book.id}
+        key={index}
         catalogData={book}
-        handleOnClick={this.handleCheckoutBtn}
-        index={index}
+        checkout={this.props.checkout}
+        bookId={book.id}
+        userAddress={this.props.userAddress}
       />
     ));
     return (
@@ -115,15 +103,26 @@ export class Catalog extends Component {
 }
 
 class CatalogRow extends Catalog {
+  handleOnClick = async e => {
+    // TODO: add payment from user to contract owner before initiating book transfer
+    // -> https://davekiss.com/ethereum-web3-node-tutorial/
+    e.preventDefault();
+    console.log(this.props.bookId);
+    try {
+      await this.props.checkout(this.props.bookId, this.props.userAddress);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   render() {
-    const { index, handleOnClick } = this.props;
-    console.log(index);
+    const { catalogData } = this.props;
     return (
       <Row className="catalogRow">
-        <Col className="catalogCol">{this.props.catalogData.title}</Col>
-        <Col className="catalogCol">{this.props.catalogData.author}</Col>
+        <Col className="catalogCol">{catalogData.title}</Col>
+        <Col className="catalogCol">{catalogData.author}</Col>
 
-        {this.props.catalogData.available ? (
+        {catalogData.available ? (
           <Col className="catalogCol">
             <b>available</b>
           </Col>
@@ -133,11 +132,11 @@ class CatalogRow extends Catalog {
           </Col>
         )}
 
-        {this.props.catalogData.available ? (
+        {catalogData.available ? (
           <Col className="catalogCol">
             <Button
               className="checkoutBtn"
-              onClick={() => handleOnClick(index)}
+              onClick={e => this.handleOnClick(e)}
             >
               Checkout
             </Button>
@@ -149,7 +148,7 @@ class CatalogRow extends Catalog {
 }
 
 const mapStateToProps = state => ({
-  userAccount: state.user.userAccount,
+  userAddress: state.user.userAddress,
   book: state.library.shelvingBook,
   library: state.library.library,
   loaded: state.library.loadingDone,

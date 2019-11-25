@@ -23,7 +23,7 @@ const getBook = async id => {
         });
     });
   } catch (err) {
-    console.log(err);
+    // console.log(err);
   }
 };
 

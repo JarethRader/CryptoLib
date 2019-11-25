@@ -34,7 +34,7 @@ class LoginModal extends Component {
     const user = {
       username: enteredUsername,
       password: enteredPassword,
-      address: this.props.userAccount
+      address: this.props.userAddress
     };
 
     this.props.login(user);
@@ -53,7 +53,7 @@ class LoginModal extends Component {
               <hr className="my-2" />
               <b>Metamask Address</b>
               <br />
-              {this.props.userAccount}
+              {this.props.userAddress}
               <br />
               <div style={{ textAlign: "left" }}>
                 <Form>
@@ -98,7 +98,7 @@ class LoginModal extends Component {
 const mapStateToProps = state => ({
   isAuthenticated: state.user.isAuthenticated,
   user: state.user.user,
-  userAccount: state.user.userAccount,
+  userAddress: state.user.userAddress,
   error: state.error
 });
 

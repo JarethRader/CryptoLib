@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Button } from "reactstrap";
 import { connect } from "react-redux";
 import { getMetamaskAddress, loadUser } from "../actions/userAction";
+import { getOwn } from "../actions/libraryActions"
 import loadUserAddress from "../features/utils/loadUserAddress";
 import LoginModal from "../components/loginModal";
 
@@ -14,11 +15,16 @@ export class User extends Component {
     };
   }
   async componentDidMount() {
-    if (window.web3 || !this.props.userAccount) {
-      await loadUserAddress().then(async account => {
-        await this.props.getMetamaskAddress(account);
-        await this.props.loadUser();
-      });
+    if (window.web3 || !this.props.userAddress) {
+      try{
+        await loadUserAddress().then(async account => {
+          await this.props.getMetamaskAddress(account);
+          await this.props.loadUser();
+          await this.props.getOwn(this.props.userAddress);
+        });
+      } catch(err) {
+        console.log(err);
+      }
     }
   }
 
@@ -27,12 +33,12 @@ export class User extends Component {
   };
 
   render() {
-    const { isAuthenticated, userAccount } = this.props;
+    const { isAuthenticated, userAddress } = this.props;
     return (
       <div className="pageBody user">
         {window.web3 ? (
           <div>
-            {userAccount ? (
+            {userAddress ? (
               <div>
                 {isAuthenticated ? (
                   <div>
@@ -70,10 +76,12 @@ export class User extends Component {
 const mapStateToProps = state => ({
   isAuthenticated: state.user.isAuthenticated,
   user: state.user.user,
-  userAccount: state.user.userAccount
+  userAddress: state.user.userAddress,
+  ownShelf: state.library.ownShelf
 });
 
 export default connect(mapStateToProps, {
   getMetamaskAddress,
-  loadUser
+  loadUser,
+  getOwn
 })(User);

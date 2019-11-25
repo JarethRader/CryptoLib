@@ -8,24 +8,24 @@ const loadWeb3 = () => {
       window.ethereum
         .enable()
         .then(() => {
-          console.log("Accounts now exposed");
+          // console.log("Accounts now exposed");
         })
         .catch(error => {
-          console.log(error);
+          // console.log(error);
         });
     } catch (error) {
       // User denied account access
-      console.log(error).then(() => {
-        console.log("unable to obtain MetaMask Account");
-      });
+      // console.log(error).then(() => {
+      //   // console.log("unable to obtain MetaMask Account");
+      // });
     }
   } else if (window.web3) {
     window.web3 = new Web3(window.web3.currentProvider)
       .then(() => {
-        console.log("Accounts always exposed");
+        // console.log("Accounts always exposed");
       })
       .catch(error => {
-        console.log(error);
+        // console.log(error);
       });
   } else {
     alert(

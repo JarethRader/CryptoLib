@@ -40,7 +40,7 @@ export const mintNewBook = (userAddress, title, author, hash) => dispatch => {
       });
     })
     .catch(err => {
-      console.log(err);
+      // console.log(err);
       dispatch({
         type: MINT_NEW_FAIL
       });
@@ -48,8 +48,6 @@ export const mintNewBook = (userAddress, title, author, hash) => dispatch => {
 };
 
 export const shelveBook = book => dispatch => {
-  console.log("Action");
-  console.log(book);
   dispatch(setLibraryLoading());
   if (book) {
     dispatch({
@@ -73,15 +71,18 @@ export const clearShelf = () => {
   };
 };
 
-export const checkout = id => dispatch => {
+export const checkout = (bookID, userAddress) => dispatch => {
   dispatch(setLibraryLoading());
 
   const body = {
-    id
+    bookID,
+    userAddress
   };
 
+  console.log(body);
+
   axios
-    .post("library/checkout", id, body, config)
+    .post("library/checkout", body, config)
     .then(res => {
       dispatch({
         type: CHECKOUT_SUCCESS,
@@ -106,7 +107,7 @@ export const getOwn = id => dispatch => {
       type: GET_OWN_SUCCESS,
       payload: res.data
     }).catch(err => {
-      console.log(err);
+      // console.log(err);
       dispatch({
         type: GET_OWN_FAIL
       });

@@ -12,7 +12,7 @@ import {
 } from "../actions/types";
 
 const initialState = {
-  userAccount: null,
+  userAddress: null,
   user: {},
   token: localStorage.getItem("token"),
   isAuthenticated: false,
@@ -52,13 +52,13 @@ export default function(state = initialState, action) {
     case GET_ADDRESS_SUCCESS:
       return {
         ...state,
-        userAccount: action.payload,
+        userAddress: action.payload,
         isLoading: false
       };
     case GET_ADDRESS_FAIL:
       return {
         ...state,
-        userAccount: null,
+        userAddress: null,
         isLoading: false
       };
     case USER_LOADING:

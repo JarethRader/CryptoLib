@@ -113,7 +113,7 @@ router.get("/", auth, (req, res) => {
       res.status(200).json({ user });
     })
     .catch(err => {
-      console.log(err);
+      // console.log(err);
       return res.status(400).json({ msg: "User not found" });
     });
 });

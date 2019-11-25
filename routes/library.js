@@ -25,7 +25,6 @@ const library = new web3.eth.Contract(
 // @desc adds new book to smart contract
 // @access public - change to private later
 router.post("/mint", async (req, res) => {
-  // console.log("Minting new book");
   const { userAddress, title, author, hash } = req.body;
   let bytesTitle = web3.utils.hexToBytes(web3.utils.utf8ToHex(title));
   let bytesAuthor = web3.utils.hexToBytes(web3.utils.utf8ToHex(author));
@@ -34,26 +33,20 @@ router.post("/mint", async (req, res) => {
   const data = await library.methods
     .mint(bytesTitle, bytesAuthor, bytesHash)
     .encodeABI();
-  console.log(data);
 
   await library.methods
     .mint(bytesTitle, bytesAuthor, bytesHash)
     .estimateGas({ from: userAddress, gas: 5000000 })
     .then(async gasAmount => {
-      // console.log("Sending transaction");
-
       await sendTransaction(gasAmount, data)
         .then(receipt => {
-          // console.log("Got transaction");
           res.status(200).json({ transactionReceipt: receipt });
         })
         .catch(err => {
-          // console.log(err);
           res.status(400).json({ err: err });
         });
     })
     .catch(err => {
-      // console.log(err);
       res.status(400).json({ error: err });
     });
 });
@@ -78,24 +71,21 @@ router.get("/", async (req, res) => {
           book.match(/([a-z][A-Z][a-z])/).index + 1,
           book.indexOf("Qm")
         );
-        // console.log("Getting Coo address");
         await web3.eth
           .call({
             to: libraryContract.address,
             data: await library.methods.cooAddress().encodeABI()
           })
           .then(async coo => {
-            // console.log("Getting owner");
             await web3.eth
               .call({
                 to: libraryContract.address,
                 data: await library.methods.ownerOf(id).encodeABI()
               })
               .then(owner => {
-                // console.log("Comparing");
                 if (coo === owner) {
-                  // console.log("Returning book");
                   res.status(200).json({
+                    id,
                     title,
                     author,
                     hash,
@@ -103,7 +93,6 @@ router.get("/", async (req, res) => {
                     found: true
                   });
                 } else {
-                  // console.log("Returning book");
                   res.status(200).json({
                     title,
                     author,
@@ -122,7 +111,6 @@ router.get("/", async (req, res) => {
           });
       })
       .catch(err => {
-        // console.log("Book not found");
         res.status(204).json({ err: err, found: false });
       });
   } catch (err) {
@@ -212,7 +200,6 @@ router.post("/getOwn", async (req, res) => {
           to: libraryContract.address,
           data: await library.methods.balanceOf(userAddress).encodeABI()
         });
-        console.log(tokensOfOwner);
         let stripped = tokensOfOwner.slice(2);
         let booksOfOwner = stripped
           .match(/.{1,64}/g)
@@ -221,7 +208,6 @@ router.post("/getOwn", async (req, res) => {
         res.status(200).json({ booksOfOwner });
       })
       .catch(err => {
-        console.log(err);
         res.status(400).json({ err: err });
       });
   } catch (err) {
@@ -275,22 +261,16 @@ router.post("/return", async (req, res) => {
                   });
               })
               .catch(err => {
-                console.log(err);
                 res.status(400).json({ err: err });
               });
           });
       })
       .catch(err => {
-        console.log(err);
         res.status(400).json({ err: err });
       });
   } catch (err) {
-    console.log(err);
     res.status(400).json({ err: err });
   }
 });
 
 module.exports = router;
-
-// 0xdee0601f952c2f2c9163dfbfce4581b14da3dee2
-// 0xe8300c51fb172484f544369edfc9082b8cf653df

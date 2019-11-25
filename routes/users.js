@@ -21,11 +21,14 @@ const User = require("../models/User");
 router.post("/signup", (req, res) => {
   const { username, email, password, address } = req.body;
 
-  if (!username || !email || !password) {
+  if (!email || !password) {
     return res.status(400).json({ msg: "Please enter all fields" });
   }
   if (!address) {
     return res.status(400).json({ msg: "No web3 provider detected" });
+  }
+  if (!username) {
+    username = "";
   }
 
   User.findOne({ email }).then(user => {
@@ -71,8 +74,8 @@ router.post("/signup", (req, res) => {
 //@desc authenticates a user when they login again
 //@access public
 router.post("/auth", (req, res) => {
-  const { username, password, address } = req.body;
-  if (!username || !password) {
+  const { password, address } = req.body;
+  if (!password) {
     return res.status(400).json({ msg: "Please enter all fields" });
   }
   if (!address) {
@@ -107,7 +110,7 @@ router.post("/auth", (req, res) => {
 //@route GET /user/auth
 //@desc get user data
 //@access private
-router.get("/", auth, (req, res) => {
+router.get("/auth", auth, (req, res) => {
   User.findById(req.user.id)
     .then(user => {
       res.status(200).json({ user });
@@ -115,6 +118,27 @@ router.get("/", auth, (req, res) => {
     .catch(err => {
       // console.log(err);
       return res.status(400).json({ msg: "User not found" });
+    });
+});
+
+//@route /user
+//@desc check if user exists
+//@access public
+router.get("/", (req, res) => {
+  const { address } = req.query;
+  console.log(address);
+  User.find({ address: address })
+    .then(user => {
+      console.log(user);
+      if (user.id) {
+        res.status(200).json({ success: true });
+      } else {
+        res.status(400).json({ success: false });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(400).json({ success: false });
     });
 });
 

@@ -8,7 +8,9 @@ import {
   REGISTER_SUCCESS,
   REGISTER_FAIL,
   AUTH_ERROR,
-  LOGOUT_SUCCESS
+  LOGOUT_SUCCESS,
+  CHECK_USER_SUCCESS,
+  CHECK_USER_FAIL
 } from "../actions/types";
 
 const initialState = {
@@ -16,7 +18,8 @@ const initialState = {
   user: {},
   token: localStorage.getItem("token"),
   isAuthenticated: false,
-  isLoading: false
+  isLoading: false,
+  userExists: null
 };
 
 export default function(state = initialState, action) {
@@ -36,15 +39,24 @@ export default function(state = initialState, action) {
         token: action.payload.token,
         user: action.payload.user,
         isAuthenticated: true,
+        userExists: true,
         isLoading: false
       };
+    case CHECK_USER_SUCCESS:
+      return {
+        ...state,
+        userExists: false,
+        isLoading: false
+      };
+    case CHECK_USER_FAIL:
+    case LOGIN_FAIL:
     case LOGOUT_SUCCESS:
     case AUTH_ERROR:
-    case LOGIN_FAIL:
     case REGISTER_FAIL:
       localStorage.removeItem("token");
       return {
         ...state,
+        userExists: false,
         token: null,
         isAuthenticated: false,
         isLoading: false

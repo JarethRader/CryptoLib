@@ -8,7 +8,9 @@ import {
   LOGOUT_SUCCESS,
   REGISTER_SUCCESS,
   REGISTER_FAIL,
-  AUTH_ERROR
+  AUTH_ERROR,
+  CHECK_USER_SUCCESS,
+  CHECK_USER_FAIL
 } from "./types";
 import { tokenConfig } from "./actionUtils/tokenConfig";
 import { returnErrors } from "./errorActions";
@@ -43,12 +45,7 @@ export const loadUser = () => (dispatch, getState) => {
     });
 };
 
-export const register = ({
-  username,
-  password,
-  email,
-  address
-}) => dispatch => {
+export const register = (username, password, email, address) => dispatch => {
   //Headers
   const config = {
     headers: {
@@ -56,9 +53,21 @@ export const register = ({
     }
   };
 
+  console.log(username + " " + password + " " + email + " " + address);
+
+  if (!email || !password) {
+    throw Error("Please enter all fields");
+  }
+  if (!address) {
+    throw Error("No web3 provider detected");
+  }
+  if (!username) {
+    username = "";
+  }
+
   // Request body
   const body = JSON.stringify({ username, email, password, address });
-
+  console.log(body);
   axios
     .post("/user/signup", body, config)
     .then(res => {
@@ -73,7 +82,37 @@ export const register = ({
     });
 };
 
-export const login = ({ username, password, address }) => dispatch => {
+export const checkUser = userAddress => dispatch => {
+  const config = {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  };
+
+  dispatch(setUserLoading());
+
+  axios
+    .get(`/user?address=${userAddress}`, config)
+    .then(res => {
+      if (res.success) {
+        dispatch({
+          type: CHECK_USER_SUCCESS
+        });
+      } else {
+        dispatch({
+          type: CHECK_USER_FAIL
+        });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      dispatch({
+        type: CHECK_USER_FAIL
+      });
+    });
+};
+
+export const login = (username, password, address) => dispatch => {
   const config = {
     headers: {
       "Content-Type": "application/json"

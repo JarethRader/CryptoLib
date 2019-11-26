@@ -111,14 +111,12 @@ router.post("/login", (req, res) => {
 //@desc get user data
 //@access private
 router.get("/auth", auth, (req, res) => {
-  console.log(req.user.id);
   User.findById(req.user.id)
     .then(user => {
-      console.log(user);
       res.status(200).json({ user });
     })
     .catch(err => {
-      // console.log(err);
+      console.log(err);
       return res.status(400).json({ msg: "User not found" });
     });
 });
@@ -127,10 +125,8 @@ router.get("/auth", auth, (req, res) => {
 //@desc check if user exists
 //@access public
 router.get("/", (req, res) => {
-  console.log(req.query.address);
   User.find({ address: req.query.address })
     .then(user => {
-      console.log(user[0].address);
       if (user[0].address === req.query.address) {
         res.status(200).json({ success: true });
       } else {

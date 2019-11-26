@@ -31,14 +31,12 @@ class LoginModal extends Component {
 
   handleLogin = async e => {
     e.preventDefault();
-    console.log("Login");
     const { enteredPassword } = this.state;
     const user = {
       password: enteredPassword,
       address: this.props.userAddress
     };
     try {
-      console.log("Logging in");
       await this.props.login(user);
     } catch (err) {
       console.log(err);
@@ -49,7 +47,6 @@ class LoginModal extends Component {
 
   handleRegister = async e => {
     e.preventDefault();
-    console.log("Login");
     const { enteredUsername, enteredPassword, enteredEmail } = this.state;
     const user = {
       username: enteredUsername,
@@ -61,7 +58,6 @@ class LoginModal extends Component {
     console.log(user);
 
     try {
-      console.log("Logging in");
       await this.props.register(user);
     } catch (err) {
       console.log(err);

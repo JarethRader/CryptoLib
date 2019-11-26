@@ -13,7 +13,6 @@ const checkUserExists = userAddress => {
       .then(res => {
         // console.log(res.data.success);
         if (res.data.success) {
-          console.log("User exists");
           resolve(true);
         } else {
           resolve(false);

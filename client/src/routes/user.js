@@ -4,8 +4,9 @@ import { connect } from "react-redux";
 import { getMetamaskAddress, loadUser } from "../actions/userAction";
 import { getOwn } from "../actions/libraryActions";
 import loadUserAddress from "../features/utils/loadUserAddress";
-import LoginModal from "../components/loginModal";
 import checkUserExists from "../features/utils/checkUserExists";
+import LoginModal from "../components/loginModal";
+import UserDashboard from "../components/userDashboard";
 
 export class User extends Component {
   constructor(props) {
@@ -29,7 +30,6 @@ export class User extends Component {
         console.log(err);
       }
     }
-    console.log(this.props.isAuthenticated);
     if (!this.props.isAuthenticated) {
       await checkUserExists(this.props.userAddress)
         .then(exists => {
@@ -60,7 +60,7 @@ export class User extends Component {
               <div>
                 {isAuthenticated ? (
                   <div>
-                    <h1>You are logged in</h1>
+                    <UserDashboard />
                   </div>
                 ) : (
                   <div>

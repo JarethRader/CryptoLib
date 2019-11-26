@@ -1,33 +1,48 @@
 import React, { Component } from "react";
 import { Button } from "reactstrap";
 import { connect } from "react-redux";
-import { getMetamaskAddress, loadUser, checkUser } from "../actions/userAction";
+import { getMetamaskAddress, loadUser } from "../actions/userAction";
 import { getOwn } from "../actions/libraryActions";
 import loadUserAddress from "../features/utils/loadUserAddress";
 import LoginModal from "../components/loginModal";
+import checkUserExists from "../features/utils/checkUserExists";
 
 export class User extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      showLoginModal: false
+      showLoginModal: false,
+      userExists: null
     };
   }
   async componentDidMount() {
-    if (window.web3 || !this.props.userAddress) {
+    if (window.web3) {
       try {
-        await loadUserAddress().then(async account => {
-          await this.props.getMetamaskAddress(account);
-          await this.props.loadUser();
-          await this.props.checkUser();
-          if (this.props.userExists) {
-            await this.props.getOwn();
-          }
-        });
+        if (!this.props.userAddress) {
+          await loadUserAddress().then(async account => {
+            await this.props.getMetamaskAddress(account);
+            await this.props.loadUser();
+          });
+        }
       } catch (err) {
         console.log(err);
       }
+    }
+    console.log(this.props.isAuthenticated);
+    if (!this.props.isAuthenticated) {
+      await checkUserExists(this.props.userAddress)
+        .then(exists => {
+          if (exists) {
+            this.setState({ userExists: true });
+          } else {
+            this.setState({ userExists: false });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.setState({ userExists: false });
+        });
     }
   }
 
@@ -54,6 +69,7 @@ export class User extends Component {
                     <LoginModal
                       toggleModal={this.toggleLoginModal}
                       showModal={this.state.showLoginModal}
+                      userExists={this.state.userExists}
                     />
                   </div>
                 )}
@@ -80,13 +96,11 @@ const mapStateToProps = state => ({
   isAuthenticated: state.user.isAuthenticated,
   user: state.user.user,
   userAddress: state.user.userAddress,
-  ownShelf: state.library.ownShelf,
-  userExists: state.user.userExists
+  ownShelf: state.library.ownShelf
 });
 
 export default connect(mapStateToProps, {
   getMetamaskAddress,
   loadUser,
-  getOwn,
-  checkUser
+  getOwn
 })(User);

@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import { Provider } from "react-redux";
 import store from "./store";
-import { getMetamaskAddress } from "./actions/userAction";
+import { getMetamaskAddress, loadUser } from "./actions/userAction";
 // import loadUserAddress from "./features/utils/loadUserAddress.js";
 
 //Page Routes and components/modals
@@ -24,17 +24,8 @@ class App extends Component {
       // Time to reload your interface with accounts[0]!
       store.dispatch(getMetamaskAddress(accounts[0]));
     });
+    store.dispatch(loadUser());
   }
-  // async componentDidMount() {
-  //   try {
-  //     await loadUserAddress().then(async account => {
-  //       await store.dispatch(getMetamaskAddress(account));
-  //       await store.dispatch(loadUser());
-  //     });
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }
 
   render() {
     return (

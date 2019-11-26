@@ -9,8 +9,6 @@ export const LOGIN_FAIL = "LOGIN_FAIL";
 export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
 export const REGISTER_SUCCESS = "REGISTER_SUCCESS";
 export const REGISTER_FAIL = "REGISTER_FAIL";
-export const CHECK_USER_SUCCESS = "CHECK_USER_SUCCESS";
-export const CHECK_USER_FAIL = "CHECK_USER_FAIL";
 
 //Library contract actions
 export const LIBRARY_LOADING = "LIBRARY_LOADING";

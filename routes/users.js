@@ -73,7 +73,7 @@ router.post("/signup", (req, res) => {
 //@route POST /user/login
 //@desc authenticates a user when they login again
 //@access public
-router.post("/auth", (req, res) => {
+router.post("/login", (req, res) => {
   const { password, address } = req.body;
   if (!password) {
     return res.status(400).json({ msg: "Please enter all fields" });
@@ -111,8 +111,10 @@ router.post("/auth", (req, res) => {
 //@desc get user data
 //@access private
 router.get("/auth", auth, (req, res) => {
+  console.log(req.user.id);
   User.findById(req.user.id)
     .then(user => {
+      console.log(user);
       res.status(200).json({ user });
     })
     .catch(err => {
@@ -125,12 +127,11 @@ router.get("/auth", auth, (req, res) => {
 //@desc check if user exists
 //@access public
 router.get("/", (req, res) => {
-  const { address } = req.query;
-  console.log(address);
-  User.find({ address: address })
+  console.log(req.query.address);
+  User.find({ address: req.query.address })
     .then(user => {
-      console.log(user);
-      if (user.id) {
+      console.log(user[0].address);
+      if (user[0].address === req.query.address) {
         res.status(200).json({ success: true });
       } else {
         res.status(400).json({ success: false });

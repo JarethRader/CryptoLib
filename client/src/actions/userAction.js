@@ -8,9 +8,7 @@ import {
   LOGOUT_SUCCESS,
   REGISTER_SUCCESS,
   REGISTER_FAIL,
-  AUTH_ERROR,
-  CHECK_USER_SUCCESS,
-  CHECK_USER_FAIL
+  AUTH_ERROR
 } from "./types";
 import { tokenConfig } from "./actionUtils/tokenConfig";
 import { returnErrors } from "./errorActions";
@@ -29,23 +27,34 @@ export const getMetamaskAddress = account => dispatch => {
 };
 
 export const loadUser = () => (dispatch, getState) => {
+  //user loading
   dispatch(setUserLoading());
-
-  axios
-    .get("/user", tokenConfig(getState))
-    .then(res => {
-      dispatch({
-        type: USER_LOADED,
-        payload: res.data
+  if (!getState().user.token === null) {
+    axios
+      .get("users/auth", tokenConfig(getState))
+      .then(res => {
+        dispatch({
+          type: USER_LOADED,
+          payload: res.data
+        });
+      })
+      .catch(err => {
+        dispatch(returnErrors(err.data, err.status));
+        dispatch({
+          type: AUTH_ERROR
+        });
       });
-    })
-    .catch(err => {
-      dispatch(returnErrors(err.msg, err.status));
-      dispatch({ type: AUTH_ERROR });
-    });
+  } else {
+    dispatch({ type: REGISTER_FAIL });
+  }
 };
 
-export const register = (username, password, email, address) => dispatch => {
+export const register = ({
+  username,
+  password,
+  email,
+  address
+}) => dispatch => {
   //Headers
   const config = {
     headers: {
@@ -82,49 +91,21 @@ export const register = (username, password, email, address) => dispatch => {
     });
 };
 
-export const checkUser = userAddress => dispatch => {
+export const login = ({ password, address }) => dispatch => {
   const config = {
     headers: {
       "Content-Type": "application/json"
     }
   };
 
-  dispatch(setUserLoading());
+  console.log(password + " " + address);
 
-  axios
-    .get(`/user?address=${userAddress}`, config)
-    .then(res => {
-      if (res.success) {
-        dispatch({
-          type: CHECK_USER_SUCCESS
-        });
-      } else {
-        dispatch({
-          type: CHECK_USER_FAIL
-        });
-      }
-    })
-    .catch(err => {
-      console.log(err);
-      dispatch({
-        type: CHECK_USER_FAIL
-      });
-    });
-};
-
-export const login = (username, password, address) => dispatch => {
-  const config = {
-    headers: {
-      "Content-Type": "application/json"
-    }
-  };
-
-  const body = JSON.stringify({ username, password, address });
+  const body = JSON.stringify({ password, address });
 
   dispatch(setUserLoading());
 
   axios
-    .post("/user/auth", body, config)
+    .post("/user/login", body, config)
     .then(res => {
       dispatch({
         type: LOGIN_SUCCESS,

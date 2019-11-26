@@ -29,27 +29,40 @@ class LoginModal extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  onSubmit = async e => {
+  handleLogin = async e => {
     e.preventDefault();
-    console.log("Submit");
-    const { enteredUsername, enteredPassword, enteredEmail } = this.state;
+    console.log("Login");
+    const { enteredPassword } = this.state;
+    const user = {
+      password: enteredPassword,
+      address: this.props.userAddress
+    };
     try {
-      if (this.props.userExists) {
-        console.log("Logging in");
-        await this.props.login(
-          enteredUsername,
-          enteredPassword,
-          this.props.userAddress
-        );
-      } else {
-        console.log("Registering");
-        await this.props.register(
-          enteredUsername,
-          enteredPassword,
-          enteredEmail,
-          this.props.userAddress
-        );
-      }
+      console.log("Logging in");
+      await this.props.login(user);
+    } catch (err) {
+      console.log(err);
+    }
+
+    this.setState({ enteredPassword: "" });
+  };
+
+  handleRegister = async e => {
+    e.preventDefault();
+    console.log("Login");
+    const { enteredUsername, enteredPassword, enteredEmail } = this.state;
+    const user = {
+      username: enteredUsername,
+      password: enteredPassword,
+      email: enteredEmail,
+      address: this.props.userAddress
+    };
+
+    console.log(user);
+
+    try {
+      console.log("Logging in");
+      await this.props.register(user);
     } catch (err) {
       console.log(err);
     }
@@ -89,7 +102,10 @@ class LoginModal extends Component {
                         onChange={e => this.onChange(e)}
                       />
                     </FormGroup>
-                    <Button style={{ opacity: "100%" }} onClick={this.onSubmit}>
+                    <Button
+                      style={{ opacity: "100%" }}
+                      onClick={this.handleLogin}
+                    >
                       Submit
                     </Button>
                   </Form>
@@ -144,7 +160,10 @@ class LoginModal extends Component {
                         onChange={e => this.onChange(e)}
                       />
                     </FormGroup>
-                    <Button style={{ opacity: "100%" }} onClick={this.onSubmit}>
+                    <Button
+                      style={{ opacity: "100%" }}
+                      onClick={this.handleRegister}
+                    >
                       Submit
                     </Button>
                   </Form>
@@ -162,8 +181,7 @@ const mapStateToProps = state => ({
   isAuthenticated: state.user.isAuthenticated,
   user: state.user.user,
   userAddress: state.user.userAddress,
-  error: state.error,
-  userExists: state.user.userExists
+  error: state.error
 });
 
 export default connect(mapStateToProps, {

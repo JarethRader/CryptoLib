@@ -18,23 +18,28 @@ export class User extends Component {
     };
   }
   async componentDidMount() {
-    if (window.web3) {
-      try {
+    try {
+      if (window.web3) {
         if (!this.props.userAddress) {
           await loadUserAddress().then(async account => {
             await this.props.getMetamaskAddress(account);
             await this.props.loadUser();
           });
         }
-      } catch (err) {
-        console.log(err);
       }
+      await this.checkExists();
+    } catch (err) {
+      console.log(err);
     }
+  }
+
+  checkExists = async () => {
     if (!this.props.isAuthenticated) {
       await checkUserExists(this.props.userAddress)
-        .then(exists => {
+        .then(async exists => {
           if (exists) {
             this.setState({ userExists: true });
+            await this.props.getOwn(this.props.userAddress);
           } else {
             this.setState({ userExists: false });
           }
@@ -44,9 +49,10 @@ export class User extends Component {
           this.setState({ userExists: false });
         });
     }
-  }
+  };
 
-  toggleLoginModal = () => {
+  toggleLoginModal = async () => {
+    await this.checkExists();
     this.setState({ showLoginModal: !this.state.showLoginModal });
   };
 

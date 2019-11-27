@@ -95,24 +95,33 @@ export const checkout = (bookID, userAddress) => dispatch => {
     });
 };
 
-export const getOwn = id => dispatch => {
+export const getOwn = address => dispatch => {
   dispatch(setLibraryLoading());
+  console.log(address);
 
   const body = {
-    id
+    address
   };
 
-  axios.post("/library/getOwn", body).then(res => {
-    dispatch({
-      type: GET_OWN_SUCCESS,
-      payload: res.data
-    }).catch(err => {
+  console.log(body);
+
+  axios
+    .post("/library/getOwn", body)
+    .then(res => {
+      console.log("Own Books: ");
+      let books = res.data.booksOfOwner;
+      console.log(books);
+      dispatch({
+        type: GET_OWN_SUCCESS,
+        payload: books
+      });
+    })
+    .catch(err => {
       // console.log(err);
       dispatch({
         type: GET_OWN_FAIL
       });
     });
-  });
 };
 
 export const setLibraryLoading = () => {

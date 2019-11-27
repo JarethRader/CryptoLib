@@ -56,6 +56,16 @@
   cursor: pointer;
 }
 
+.userDashboard {
+  margin-top: 5rem;
+  padding-left: 5rem;
+  padding-right: 5rem;
+}
+
+.userDashboardBtn:hover {
+  cursor: pointer;
+}
+
 .footer {
   margin: 0;
   max-width: 100%;

@@ -29,8 +29,7 @@ class LoginModal extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  handleLogin = async e => {
-    e.preventDefault();
+  handleLogin = async () => {
     const { enteredPassword } = this.state;
     const user = {
       password: enteredPassword,

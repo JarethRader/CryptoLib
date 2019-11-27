@@ -94,6 +94,7 @@ router.get("/", async (req, res) => {
                   });
                 } else {
                   res.status(200).json({
+                    id,
                     title,
                     author,
                     hash,
@@ -187,18 +188,19 @@ router.post("/checkout", async (req, res) => {
 //@desc get books checked out by user
 //@access public - change to private later
 router.post("/getOwn", async (req, res) => {
-  const { userAddress } = req.body;
-  console.log(userAddress);
+  const { address } = req.body;
+  console.log("Running API Method");
+  console.log(address);
   try {
     await web3.eth
       .call({
         to: libraryContract.address,
-        data: await library.methods.tokensOfOwner(userAddress).encodeABI()
+        data: await library.methods.tokensOfOwner(address).encodeABI()
       })
       .then(async tokensOfOwner => {
         await web3.eth.call({
           to: libraryContract.address,
-          data: await library.methods.balanceOf(userAddress).encodeABI()
+          data: await library.methods.balanceOf(address).encodeABI()
         });
         let stripped = tokensOfOwner.slice(2);
         let booksOfOwner = stripped

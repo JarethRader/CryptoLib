@@ -10,12 +10,15 @@ const getBook = async id => {
   try {
     await loadWeb3();
     return new Promise(async (resolve, reject) => {
-      axios
+      console.log("Id: " + id);
+      await axios
         .get(`/library?id=${id}`, config)
         .then(res => {
           if (res.data.found === false) {
             reject("No book found");
           }
+          console.log("data");
+          console.log(res.data);
           resolve(res.data);
         })
         .catch(err => {
@@ -23,7 +26,7 @@ const getBook = async id => {
         });
     });
   } catch (err) {
-    // console.log(err);
+    console.log(err);
   }
 };
 

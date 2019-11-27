@@ -20,7 +20,6 @@ const initialState = {
   library: [],
   transactionHash: null,
   shelvingBook: {},
-  checkedOut: {},
   ownShelf: []
 };
 
@@ -39,7 +38,7 @@ export default function(state = initialState, action) {
     case GET_OWN_SUCCESS:
       return {
         ...state,
-        ownShelf: [action.payload.book, ...state.ownShelf],
+        ownShelf: action.payload,
         libraryLoading: false
       };
     case CHECKOUT_SUCCESS:

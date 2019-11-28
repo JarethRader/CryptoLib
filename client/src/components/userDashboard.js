@@ -18,6 +18,7 @@ import { getOwn, returnBook } from "../actions/libraryActions";
 import getBook from "../features/utils/getBook";
 import PDFViewer from "../features/PDFViewer";
 import PDFJSBackend from "../features/pdfBackend/pdfjs";
+import WebviewerBackend from "../features/pdfBackend/webviewer";
 
 export class UserDashboard extends Component {
   constructor(props) {
@@ -117,7 +118,7 @@ export class UserDashboard extends Component {
               {this.state.showSelected ? (
                 <Container style={{ height: "1000px" }}>
                   <PDFViewer
-                    backend={PDFJSBackend}
+                    backend={WebviewerBackend}
                     src={this.state.selectedBook}
                   />
                 </Container>

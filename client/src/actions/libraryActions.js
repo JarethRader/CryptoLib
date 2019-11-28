@@ -10,7 +10,9 @@ import {
   CHECKOUT_FAIL,
   CHECKOUT_SUCCESS,
   GET_OWN_SUCCESS,
-  GET_OWN_FAIL
+  GET_OWN_FAIL,
+  RETURN_SUCCESS,
+  RETURN_FAIL
 } from "./types";
 import axios from "axios";
 
@@ -79,8 +81,6 @@ export const checkout = (bookID, userAddress) => dispatch => {
     userAddress
   };
 
-  console.log(body);
-
   axios
     .post("library/checkout", body, config)
     .then(res => {
@@ -95,22 +95,41 @@ export const checkout = (bookID, userAddress) => dispatch => {
     });
 };
 
+export const returnBook = bookID => dispatch => {
+  dispatch(setLibraryLoading());
+
+  const body = {
+    bookID
+  };
+
+  axios
+    .post("/library/return", body)
+    .then(res => {
+      dispatch({
+        type: RETURN_SUCCESS,
+        payload: res.data,
+        returned: bookID
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      dispatch({
+        type: RETURN_FAIL
+      });
+    });
+};
+
 export const getOwn = address => dispatch => {
   dispatch(setLibraryLoading());
-  console.log(address);
 
   const body = {
     address
   };
 
-  console.log(body);
-
   axios
     .post("/library/getOwn", body)
     .then(res => {
-      console.log("Own Books: ");
       let books = res.data.booksOfOwner;
-      console.log(books);
       dispatch({
         type: GET_OWN_SUCCESS,
         payload: books

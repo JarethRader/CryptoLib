@@ -9,9 +9,10 @@ import {
   CLEAR_SHELF,
   CHECKOUT_FAIL,
   CHECKOUT_SUCCESS,
-  RETURN_FAIL,
   GET_OWN_SUCCESS,
-  GET_OWN_FAIL
+  GET_OWN_FAIL,
+  RETURN_SUCCESS,
+  RETURN_FAIL
 } from "../actions/types";
 
 const initialState = {
@@ -41,6 +42,14 @@ export default function(state = initialState, action) {
         ownShelf: action.payload,
         libraryLoading: false
       };
+    case RETURN_SUCCESS:
+      return {
+        ...state,
+        ownShelf: state.ownShelf.filter(bookID => bookID !== action.returned),
+        transactionHash: action.payload,
+        libraryLoading: false
+      };
+    case MINT_NEW_SUCCESS:
     case CHECKOUT_SUCCESS:
       return {
         ...state,
@@ -58,12 +67,6 @@ export default function(state = initialState, action) {
         ...state,
         shelvingBook: action.payload,
         library: [action.payload, ...state.library]
-      };
-    case MINT_NEW_SUCCESS:
-      return {
-        ...state,
-        transactionHash: action.payload,
-        libraryLoading: false
       };
     case SHELVE_BOOK_FAIL:
       return {

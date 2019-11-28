@@ -14,8 +14,10 @@ import {
   NavLink
 } from "reactstrap";
 import { connect } from "react-redux";
-import { getOwn } from "../actions/libraryActions";
+import { getOwn, returnBook } from "../actions/libraryActions";
 import getBook from "../features/utils/getBook";
+import PDFViewer from "../features/PDFViewer";
+import PDFJSBackend from "../features/pdfBackend/pdfjs";
 
 export class UserDashboard extends Component {
   constructor(props) {
@@ -24,7 +26,9 @@ export class UserDashboard extends Component {
     this.state = {
       isOpen: false,
       dashboardPage: "",
-      ownBooks: []
+      ownBooks: [],
+      selectedBook: null,
+      showSelected: false
     };
   }
 
@@ -67,9 +71,23 @@ export class UserDashboard extends Component {
     }
   };
 
+  setSelected = book => {
+    let bookHash = book.hash;
+    let address =
+      "https://ipfs.infura.io/ipfs/" + bookHash + "#toolbar=0&navpanes=0";
+    this.setState({ selectedBook: address }, () => {
+      this.setState({ showSelected: true });
+    });
+  };
+
   render() {
     let rows = this.state.ownBooks.map((book, bookID) => (
-      <ShelfRow key={bookID} book={book} />
+      <ShelfRow
+        key={bookID}
+        book={book}
+        setSelected={this.setSelected}
+        returnBook={this.props.returnBook}
+      />
     ));
     return (
       <div>
@@ -93,6 +111,17 @@ export class UserDashboard extends Component {
             <div>
               <h1>Shelf</h1>
               {rows}
+              <br />
+              <hr className="my-2" />
+              <br />
+              {this.state.showSelected ? (
+                <Container style={{ height: "1000px" }}>
+                  <PDFViewer
+                    backend={PDFJSBackend}
+                    src={this.state.selectedBook}
+                  />
+                </Container>
+              ) : null}
             </div>
           ) : null}
         </Container>
@@ -104,13 +133,13 @@ export class UserDashboard extends Component {
 class ShelfRow extends UserDashboard {
   handleSelect = async e => {
     e.preventDefault();
-    console.log(this.props.book.id);
-    //TODO: add selectBook method and display selected book
+    this.props.setSelected(this.props.book);
   };
 
   handleReturn = async e => {
     e.preventDefault();
-    console.log(this.props.book);
+    console.log("returning");
+    await this.props.returnBook(this.props.book.id);
   };
 
   render() {
@@ -141,4 +170,4 @@ const mapPropsToState = state => ({
   ownShelf: state.library.ownShelf
 });
 
-export default connect(mapPropsToState, { getOwn })(UserDashboard);
+export default connect(mapPropsToState, { getOwn, returnBook })(UserDashboard);

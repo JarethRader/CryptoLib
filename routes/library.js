@@ -129,57 +129,42 @@ router.post("/checkout", async (req, res) => {
     return res.status(400).json({ msg: "Invalid Input" });
   }
   try {
-    console.log("Getting balance of");
     await web3.eth
       .call({
         to: libraryContract.address,
         data: await library.methods.balanceOf(userAddress).encodeABI()
       })
       .then(async balance => {
-        console.log(web3.utils.hexToNumber(balance));
         if (web3.utils.hexToNumber(balance) === 2) {
           return res
             .status(400)
             .json({ msg: "Too many books checked out already" });
         } else {
-          //Transfer book: bookID to: userAddress
-          console.log("Getting Coo Address");
-          console.log("Transfering book");
-          console.log(userAddress);
-
           //change transfer method to checkout method, which will transfer and approve in one function
           const data = await library.methods
             .transfer(userAddress, bookID)
             .encodeABI();
-          console.log(data);
-
           await library.methods
             .transfer(userAddress, bookID)
             .estimateGas({ from: process.env.CEO_ADDRESS, gas: 5000000 })
             .then(async gasAmount => {
-              console.log("Sending transaction");
               await sendTransaction(gasAmount, data)
                 .then(receipt => {
-                  console.log("Transacton successful");
                   res.status(200).json({ transactionReceipt: receipt });
                 })
                 .catch(err => {
-                  console.log(err);
                   res.status(400).json({ err: err });
                 });
             })
             .catch(err => {
-              console.log(err);
               res.status(400).json({ error: err });
             });
         }
       })
       .catch(err => {
-        console.log(err);
         res.status(400).json({ err: err });
       });
   } catch (err) {
-    console.log(err);
     res.status(400).json({ err: err });
   }
 });
@@ -189,8 +174,6 @@ router.post("/checkout", async (req, res) => {
 //@access public - change to private later
 router.post("/getOwn", async (req, res) => {
   const { address } = req.body;
-  console.log("Running API Method");
-  console.log(address);
   try {
     await web3.eth
       .call({

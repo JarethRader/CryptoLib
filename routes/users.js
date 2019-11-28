@@ -127,7 +127,6 @@ router.get("/auth", auth, (req, res) => {
 router.get("/", (req, res) => {
   User.find({ address: req.query.address })
     .then(user => {
-      console.log(user[0]);
       if (user[0].address === req.query.address) {
         res.status(200).json({ success: true });
       } else {

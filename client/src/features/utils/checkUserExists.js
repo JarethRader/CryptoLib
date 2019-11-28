@@ -11,7 +11,6 @@ const checkUserExists = userAddress => {
     await axios
       .get(`/user?address=${userAddress}`, config)
       .then(res => {
-        // console.log(res.data.success);
         if (res.data.success) {
           resolve(true);
         } else {

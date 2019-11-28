@@ -7,27 +7,25 @@ const getBook = async id => {
       "Project-Secret": "1a1819184ea44c2a8d834a3f209344d8"
     }
   };
-  try {
-    await loadWeb3();
-    return new Promise(async (resolve, reject) => {
-      console.log("Id: " + id);
+  return new Promise(async (resolve, reject) => {
+    try {
+      await loadWeb3();
+
       await axios
         .get(`/library?id=${id}`, config)
         .then(res => {
           if (res.data.found === false) {
             reject("No book found");
           }
-          console.log("data");
-          console.log(res.data);
           resolve(res.data);
         })
         .catch(err => {
           reject(err);
         });
-    });
-  } catch (err) {
-    console.log(err);
-  }
+    } catch (err) {
+      reject(err);
+    }
+  });
 };
 
 export default getBook;

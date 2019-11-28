@@ -10,6 +10,7 @@ import {
 } from "../actions/libraryActions";
 import getBook from "../features/utils/getBook";
 import { css } from "@emotion/core";
+import { returnErrors } from "../actions/errorActions";
 // Another way to import. This is recommended to reduce bundle size
 import BeatLoader from "react-spinners/BeatLoader";
 
@@ -42,7 +43,7 @@ export class Catalog extends Component {
       await this.props.clearShelf();
       this.setState({ catalogData: {} });
     } catch (err) {
-      // console.log(err);
+      this.props.returnErrors(err, 400);
     }
   }
 
@@ -57,19 +58,19 @@ export class Catalog extends Component {
             try {
               this.props.shelveBook(nextBook);
             } catch (err) {
-              // console.log(err);
+              this.props.returnErrors(err, 400);
             }
           });
         }
       } catch (err) {
-        // console.log(err);
+        this.props.returnErrors(err, 400);
       }
     });
     this.setState({ catalogData: this.props.library });
     try {
       this.props.libraryLoaded();
     } catch (err) {
-      // console.log(err);
+      this.props.returnErrors(err, 400);
     }
   };
 
@@ -107,11 +108,10 @@ class CatalogRow extends Catalog {
     // TODO: add payment from user to contract owner before initiating book transfer
     // -> https://davekiss.com/ethereum-web3-node-tutorial/
     e.preventDefault();
-    console.log(this.props.bookId);
     try {
       await this.props.checkout(this.props.bookId, this.props.userAddress);
     } catch (err) {
-      console.log(err);
+      this.props.returnErrors(err, 400);
     }
   };
 
@@ -159,5 +159,6 @@ export default connect(mapStateToProps, {
   shelveBook,
   libraryLoaded,
   clearShelf,
-  checkout
+  checkout,
+  returnErrors
 })(Catalog);

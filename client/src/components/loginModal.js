@@ -12,7 +12,7 @@ import {
 } from "reactstrap";
 import { connect } from "react-redux";
 import { login, loadUser, register } from "../actions/userAction";
-import { clearErrors } from "../actions/errorActions";
+import { clearErrors, returnErrors } from "../actions/errorActions";
 
 class LoginModal extends Component {
   constructor(props) {
@@ -38,7 +38,7 @@ class LoginModal extends Component {
     try {
       await this.props.login(user);
     } catch (err) {
-      console.log(err);
+      this.props.returnErrors(err, 400);
     }
 
     this.setState({ enteredPassword: "" });
@@ -54,12 +54,10 @@ class LoginModal extends Component {
       address: this.props.userAddress
     };
 
-    console.log(user);
-
     try {
       await this.props.register(user);
     } catch (err) {
-      console.log(err);
+      this.props.returnErrors(err, 400);
     }
 
     this.setState({
@@ -182,6 +180,7 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   login,
   clearErrors,
+  returnErrors,
   loadUser,
   register
 })(LoginModal);

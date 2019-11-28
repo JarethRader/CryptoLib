@@ -62,8 +62,6 @@ export const register = ({
     }
   };
 
-  console.log(username + " " + password + " " + email + " " + address);
-
   if (!email || !password) {
     throw Error("Please enter all fields");
   }
@@ -76,7 +74,6 @@ export const register = ({
 
   // Request body
   const body = JSON.stringify({ username, email, password, address });
-  console.log(body);
   axios
     .post("/user/signup", body, config)
     .then(res => {
@@ -97,8 +94,6 @@ export const login = ({ password, address }) => dispatch => {
       "Content-Type": "application/json"
     }
   };
-
-  console.log(password + " " + address);
 
   const body = JSON.stringify({ password, address });
 

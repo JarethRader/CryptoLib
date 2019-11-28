@@ -1,7 +1,6 @@
 import {
   LIBRARY_LOADING,
   LIBRARY_LOADED,
-  UPDATE_LIBRARY,
   MINT_NEW_FAIL,
   MINT_NEW_SUCCESS,
   SHELVE_BOOK_SUCCESS,
@@ -15,13 +14,8 @@ import {
   RETURN_FAIL
 } from "./types";
 import axios from "axios";
-
-const config = {
-  headers: {
-    "Content-type": "application/json",
-    "Project-Secret": "1a1819184ea44c2a8d834a3f209344d8"
-  }
-};
+import { returnErrors } from "./errorActions";
+import config from "./actionUtils/libraryConfig";
 
 export const mintNewBook = (userAddress, title, author, hash) => dispatch => {
   const body = {
@@ -42,7 +36,6 @@ export const mintNewBook = (userAddress, title, author, hash) => dispatch => {
       });
     })
     .catch(err => {
-      // console.log(err);
       dispatch({
         type: MINT_NEW_FAIL
       });
@@ -90,7 +83,7 @@ export const checkout = (bookID, userAddress) => dispatch => {
       });
     })
     .catch(err => {
-      console.log(err);
+      dispatch(returnErrors(err.err, err.status));
       dispatch({ type: CHECKOUT_FAIL });
     });
 };
@@ -112,7 +105,7 @@ export const returnBook = bookID => dispatch => {
       });
     })
     .catch(err => {
-      console.log(err);
+      dispatch(returnErrors(err.err, err.status));
       dispatch({
         type: RETURN_FAIL
       });
@@ -136,7 +129,7 @@ export const getOwn = address => dispatch => {
       });
     })
     .catch(err => {
-      // console.log(err);
+      dispatch(returnErrors(err.err, err.status));
       dispatch({
         type: GET_OWN_FAIL
       });

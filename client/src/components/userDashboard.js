@@ -17,8 +17,9 @@ import { connect } from "react-redux";
 import { getOwn, returnBook } from "../actions/libraryActions";
 import getBook from "../features/utils/getBook";
 import PDFViewer from "../features/PDFViewer";
-import PDFJSBackend from "../features/pdfBackend/pdfjs";
+// import PDFJSBackend from "../features/pdfBackend/pdfjs";
 import WebviewerBackend from "../features/pdfBackend/webviewer";
+import { returnErrors } from "../actions/errorActions";
 
 export class UserDashboard extends Component {
   constructor(props) {
@@ -59,16 +60,16 @@ export class UserDashboard extends Component {
                 this.setState({ ownBooks: [nextBook, ...this.state.ownBooks] });
               })
               .catch(err => {
-                console.log(err);
+                this.props.returnErrors(err, 400);
               });
             i++;
           }
         })
         .catch(err => {
-          console.log(err);
+          this.props.returnErrors(err, 400);
         });
     } catch (err) {
-      console.log(err);
+      this.props.returnErrors(err, 400);
     }
   };
 
@@ -171,4 +172,6 @@ const mapPropsToState = state => ({
   ownShelf: state.library.ownShelf
 });
 
-export default connect(mapPropsToState, { getOwn, returnBook })(UserDashboard);
+export default connect(mapPropsToState, { getOwn, returnBook, returnErrors })(
+  UserDashboard
+);

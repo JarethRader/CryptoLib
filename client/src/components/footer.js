@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "../App.css";
-import { Row, Col } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 import { Link } from "react-router-dom";
 
 export class Footer extends Component {
@@ -15,7 +15,7 @@ export class Footer extends Component {
   render() {
     const { currentYear } = this.state;
     return (
-      <div className="footer">
+      <Container className="footer">
         <Row>
           <Col sm="4" className="orbitronFont footerHeader">
             CryptoLib
@@ -54,7 +54,7 @@ export class Footer extends Component {
             <small>&copy; Copyright {currentYear}, CryptoLib</small>
           </Col>
         </Row>
-      </div>
+      </Container>
     );
   }
 }

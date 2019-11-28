@@ -23,7 +23,7 @@ class NavBar extends Component {
   render() {
     return (
       <div>
-        <Navbar color="dark" dark expand="sm" className="mb-5">
+        <Navbar dark expand="sm" className="navBar" fixed="top">
           <Container>
             <NavbarBrand href="/" className="orbitronFont">
               CryptoLib

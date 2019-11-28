@@ -376,7 +376,6 @@ contract Library is LibraryOwnership {
 
     function getBook(uint256 _bookId) external view returns (bytes memory title, bytes memory author, bytes memory hash) {
         Book storage book = books[_bookId];
-
         title = book.title;
         author = book.author;
         hash = book.hash;

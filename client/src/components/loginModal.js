@@ -35,10 +35,12 @@ class LoginModal extends Component {
   };
 
   onChange = e => {
+    e.preventDefault();
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  handleLogin = async () => {
+  async handleLogin(e) {
+    e.preventDefault();
     const { enteredPassword } = this.state;
     const user = {
       password: enteredPassword,
@@ -51,7 +53,7 @@ class LoginModal extends Component {
     }
 
     this.setState({ enteredPassword: "" });
-  };
+  }
 
   handleRegister = async e => {
     e.preventDefault();
@@ -95,23 +97,23 @@ class LoginModal extends Component {
                 {this.props.userAddress}
                 <br />
                 <div style={{ textAlign: "left" }}>
-                  <Form>
+                  <Form onSubmit={e => this.handleLogin(e)}>
                     <FormGroup>
                       <Label for="password">
                         <b>Password</b>
                       </Label>
                       <Input
                         type="password"
-                        id="password"
                         placeholder="Password"
                         name="enteredPassword"
                         onChange={e => this.onChange(e)}
                       />
                     </FormGroup>
                     <Button
+                      type="button"
                       color="primary"
                       style={{ opacity: "100%" }}
-                      onClick={this.handleLogin}
+                      onClick={e => this.handleLogin(e)}
                     >
                       Login
                     </Button>
@@ -130,14 +132,13 @@ class LoginModal extends Component {
                 {this.props.userAddress}
                 <br />
                 <div style={{ textAlign: "left" }}>
-                  <Form>
+                  <Form onSubmit={e => this.handleRegister(e)}>
                     <FormGroup>
                       <Label for="username">
                         <b>Username</b>
                       </Label>
                       <Input
                         type="username"
-                        id="username"
                         placeholder="Username (Optional)"
                         name="enteredUsername"
                         onChange={e => this.onChange(e)}
@@ -149,7 +150,6 @@ class LoginModal extends Component {
                       </Label>
                       <Input
                         type="email"
-                        id="email"
                         placeholder="Email"
                         name="enteredEmail"
                         onChange={e => this.onChange(e)}
@@ -161,7 +161,6 @@ class LoginModal extends Component {
                       </Label>
                       <Input
                         type="password"
-                        id="password"
                         placeholder="Password"
                         name="enteredPassword"
                         onChange={e => this.onChange(e)}
@@ -173,7 +172,7 @@ class LoginModal extends Component {
                         <Button
                           color="primary"
                           style={{ opacity: "100%" }}
-                          onClick={this.handleRegister}
+                          onClick={e => this.handleRegister(e)}
                         >
                           Register
                         </Button>

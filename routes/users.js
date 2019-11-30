@@ -52,7 +52,10 @@ router.post("/signup", (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: 3600 },
             (err, token) => {
-              if (err) throw err;
+              if (err) {
+                console.log(err);
+                throw err;
+              }
               res.json({
                 token,
                 user: {
@@ -91,7 +94,10 @@ router.post("/login", (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: 3600 },
         (err, token) => {
-          if (err) throw err;
+          if (err) {
+            console.log(err);
+            throw err;
+          }
           res.json({
             token,
             user: {

@@ -45,10 +45,12 @@ router.post("/mint", async (req, res) => {
           res.status(200).json({ transactionReceipt: receipt });
         })
         .catch(err => {
+          console.log(err);
           res.status(400).json({ err: err });
         });
     })
     .catch(err => {
+      console.log(err);
       res.status(400).json({ error: err });
     });
 });
@@ -106,17 +108,21 @@ router.get("/", async (req, res) => {
                 }
               })
               .catch(err => {
+                console.log(err);
                 res.status(400).json({ err });
               });
           })
           .catch(err => {
+            console.log(err);
             res.status(400).json({ err });
           });
       })
       .catch(err => {
+        console.log(err);
         res.status(204).json({ err: err, found: false });
       });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ error: err.data });
   }
 });
@@ -155,18 +161,22 @@ router.post("/checkout", async (req, res) => {
                   res.status(200).json({ transactionReceipt: receipt });
                 })
                 .catch(err => {
+                  console.log(err);
                   res.status(400).json({ err: err });
                 });
             })
             .catch(err => {
+              console.log(err);
               res.status(400).json({ error: err });
             });
         }
       })
       .catch(err => {
+        console.log(err);
         res.status(400).json({ err: err });
       });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ err: err });
   }
 });
@@ -195,9 +205,11 @@ router.post("/getOwn", async (req, res) => {
         res.status(200).json({ booksOfOwner });
       })
       .catch(err => {
+        console.log(err);
         res.status(400).json({ err: err });
       });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ err: err });
   }
 });
@@ -244,18 +256,22 @@ router.post("/return", async (req, res) => {
                     res.status(200).json({ transactionReceipt: receipt });
                   })
                   .catch(err => {
+                    console.log(err);
                     res.status(400).json({ err: err });
                   });
               })
               .catch(err => {
+                console.log(err);
                 res.status(400).json({ err: err });
               });
           });
       })
       .catch(err => {
+        console.log(err);
         res.status(400).json({ err: err });
       });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ err: err });
   }
 });

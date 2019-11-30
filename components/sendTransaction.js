@@ -8,7 +8,7 @@ const Tx = require("ethereumjs-tx").Transaction;
 const libraryContract = require("../components/LibraryContract");
 
 const sendTransaction = (gasAmount, data) => {
-  const key = new Buffer(process.env.PRIVATE_INFURA_KEY, "hex");
+  const key = new Buffer(process.env.PRIVATE_METAMASK_KEY, "hex");
   const txData = {
     gasLimit: web3.utils.toHex(gasAmount),
     gasPrice: web3.utils.toHex(10e9), // 10 Gwei

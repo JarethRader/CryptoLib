@@ -129,7 +129,7 @@ router.get("/", async (req, res) => {
 
 //@route POST /library/checkout
 //@desc checkout a book
-//@access private
+//@access public - change to private later
 router.post("/checkout", async (req, res) => {
   const { bookID, userAddress } = req.body;
 

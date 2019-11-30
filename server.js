@@ -2,7 +2,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
-require("newrelic");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -37,6 +36,8 @@ app.use("/user", require("./routes/users"));
 
 if (process.env.NODE_ENV == "production") {
   // Set a static folder
+  require("newrelic");
+
   app.use(express.static("client/build"));
 
   app.get("*", () => (req, res) => {

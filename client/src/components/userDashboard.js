@@ -19,7 +19,6 @@ import getBook from "../features/utils/getBook";
 import PDFViewer from "../features/PDFViewer";
 // import PDFJSBackend from "../features/pdfBackend/pdfjs";
 import WebviewerBackend from "../features/pdfBackend/webviewer";
-import { returnErrors } from "../actions/errorActions";
 
 export class UserDashboard extends Component {
   constructor(props) {
@@ -60,16 +59,16 @@ export class UserDashboard extends Component {
                 this.setState({ ownBooks: [nextBook, ...this.state.ownBooks] });
               })
               .catch(err => {
-                this.props.returnErrors(err, 400);
+                // console.log(err)
               });
             i++;
           }
         })
         .catch(err => {
-          this.props.returnErrors(err, 400);
+          // console.log(err)
         });
     } catch (err) {
-      this.props.returnErrors(err, 400);
+      // console.log(err)
     }
   };
 
@@ -118,6 +117,7 @@ export class UserDashboard extends Component {
               <br />
               {this.state.showSelected ? (
                 <Container style={{ height: "1000px" }}>
+                  {/* TODO: Check if user is approved for token before displaying book */}
                   <PDFViewer
                     backend={WebviewerBackend}
                     src={this.state.selectedBook}
@@ -172,6 +172,4 @@ const mapPropsToState = state => ({
   ownShelf: state.library.ownShelf
 });
 
-export default connect(mapPropsToState, { getOwn, returnBook, returnErrors })(
-  UserDashboard
-);
+export default connect(mapPropsToState, { getOwn, returnBook })(UserDashboard);

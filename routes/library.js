@@ -11,7 +11,7 @@ const sendTransaction = require("../components/sendTransaction");
 const Web3 = require("web3");
 const web3 = new Web3(
   new Web3.providers.HttpProvider(
-    "https://rinkeby.infura.io/v3/aef01b012e024dc5a94f3096aa2be24f"
+    `https://rinkeby.infura.io/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
   )
 );
 const libraryContract = require("../components/LibraryContract");
@@ -25,10 +25,12 @@ const library = new web3.eth.Contract(
 // @desc adds new book to smart contract
 // @access public - change to private later
 router.post("/mint", async (req, res) => {
-  const { userAddress, title, author, hash } = req.body;
+  const { title, author, hash } = req.body;
   let bytesTitle = web3.utils.hexToBytes(web3.utils.utf8ToHex(title));
   let bytesAuthor = web3.utils.hexToBytes(web3.utils.utf8ToHex(author));
   let bytesHash = web3.utils.hexToBytes(web3.utils.utf8ToHex(hash));
+
+  console.log(typeof bytesTitle);
 
   const data = await library.methods
     .mint(bytesTitle, bytesAuthor, bytesHash)
@@ -36,7 +38,7 @@ router.post("/mint", async (req, res) => {
 
   await library.methods
     .mint(bytesTitle, bytesAuthor, bytesHash)
-    .estimateGas({ from: userAddress, gas: 5000000 })
+    .estimateGas({ from: process.env.CEO_ADDRESS, gas: 5000000 })
     .then(async gasAmount => {
       await sendTransaction(gasAmount, data)
         .then(receipt => {

@@ -7,7 +7,6 @@ import loadUserAddress from "../features/utils/loadUserAddress";
 import checkUserExists from "../features/utils/checkUserExists";
 import LoginModal from "../components/loginModal";
 import UserDashboard from "../components/userDashboard";
-import { returnErrors } from "../actions/errorActions";
 
 export class User extends Component {
   constructor(props) {
@@ -30,7 +29,7 @@ export class User extends Component {
       }
       await this.checkExists();
     } catch (err) {
-      this.props.returnErrors(err, 400);
+      // console.log(err)
     }
   }
 
@@ -46,7 +45,6 @@ export class User extends Component {
           }
         })
         .catch(err => {
-          this.props.returnErrors(err, 400);
           this.setState({ userExists: false });
         });
     }
@@ -109,6 +107,5 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   getMetamaskAddress,
   loadUser,
-  getOwn,
-  returnErrors
+  getOwn
 })(User);

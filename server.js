@@ -13,7 +13,7 @@ const app = express();
 const db = process.env.MONGO_URI;
 
 //define mongoos port
-const port = process.env.PORT || 5001;
+const port = process.env.PORT || 5000;
 
 // connect to Mongo
 mongoose

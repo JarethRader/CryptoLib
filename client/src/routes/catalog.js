@@ -10,7 +10,6 @@ import {
 } from "../actions/libraryActions";
 import getBook from "../features/utils/getBook";
 import { css } from "@emotion/core";
-import { returnErrors } from "../actions/errorActions";
 // Another way to import. This is recommended to reduce bundle size
 import BeatLoader from "react-spinners/BeatLoader";
 
@@ -43,7 +42,7 @@ export class Catalog extends Component {
       await this.props.clearShelf();
       this.setState({ catalogData: {} });
     } catch (err) {
-      this.props.returnErrors(err, 400);
+      // console.log(err)
     }
   }
 
@@ -58,19 +57,19 @@ export class Catalog extends Component {
             try {
               this.props.shelveBook(nextBook);
             } catch (err) {
-              this.props.returnErrors(err, 400);
+              // console.log(err)
             }
           });
         }
       } catch (err) {
-        this.props.returnErrors(err, 400);
+        // console.log(err)
       }
     });
     this.setState({ catalogData: this.props.library });
     try {
       this.props.libraryLoaded();
     } catch (err) {
-      this.props.returnErrors(err, 400);
+      // console.log(err)
     }
   };
 
@@ -86,18 +85,20 @@ export class Catalog extends Component {
       />
     ));
     return (
-      <div className="pageBody catalog">
-        {this.props.isLoading ? (
-          <BeatLoader
-            css={override}
-            sizeUnit={"rem"}
-            size={2}
-            color={"#0a960c"}
-            loading={this.props.isLoading}
-          />
-        ) : (
-          <div>{rows}</div>
-        )}
+      <div className="pageBody">
+        <div className="catalog">
+          {this.props.isLoading ? (
+            <BeatLoader
+              css={override}
+              sizeUnit={"rem"}
+              size={2}
+              color={"#0a960c"}
+              loading={this.props.isLoading}
+            />
+          ) : (
+            <div>{rows}</div>
+          )}
+        </div>
       </div>
     );
   }
@@ -111,7 +112,7 @@ class CatalogRow extends Catalog {
     try {
       await this.props.checkout(this.props.bookId, this.props.userAddress);
     } catch (err) {
-      this.props.returnErrors(err, 400);
+      //  console.log(err)
     }
   };
 
@@ -159,6 +160,5 @@ export default connect(mapStateToProps, {
   shelveBook,
   libraryLoaded,
   clearShelf,
-  checkout,
-  returnErrors
+  checkout
 })(Catalog);

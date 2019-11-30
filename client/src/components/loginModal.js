@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import "../App.css";
 import {
+  Row,
+  Col,
   Container,
   Button,
   Form,
@@ -12,7 +14,7 @@ import {
 } from "reactstrap";
 import { connect } from "react-redux";
 import { login, loadUser, register } from "../actions/userAction";
-import { clearErrors, returnErrors } from "../actions/errorActions";
+import { clearErrors } from "../actions/errorActions";
 
 class LoginModal extends Component {
   constructor(props) {
@@ -21,7 +23,8 @@ class LoginModal extends Component {
     this.state = {
       enteredPassword: "",
       enteredUsername: "",
-      enteredEmail: ""
+      enteredEmail: "",
+      login: false
     };
   }
 
@@ -38,7 +41,7 @@ class LoginModal extends Component {
     try {
       await this.props.login(user);
     } catch (err) {
-      this.props.returnErrors(err, 400);
+      // console.log(err)
     }
 
     this.setState({ enteredPassword: "" });
@@ -57,7 +60,7 @@ class LoginModal extends Component {
     try {
       await this.props.register(user);
     } catch (err) {
-      this.props.returnErrors(err, 400);
+      // console.log(err)
     }
 
     this.setState({
@@ -67,11 +70,20 @@ class LoginModal extends Component {
     });
   };
 
+  switchToLogin = () => {
+    this.setState({ login: !this.state.login });
+  };
+
   render() {
     return (
       <div>
-        <Modal isOpen={this.props.showModal} toggle={this.props.toggleModal}>
-          {this.props.userExists ? (
+        <Modal
+          color="dark"
+          dark
+          isOpen={this.props.showModal}
+          toggle={this.props.toggleModal}
+        >
+          {this.state.login ? (
             <ModalBody>
               <Container style={{ textAlign: "center" }}>
                 <h4 className="orbitronFont">Sign in</h4>
@@ -96,10 +108,11 @@ class LoginModal extends Component {
                       />
                     </FormGroup>
                     <Button
+                      color="primary"
                       style={{ opacity: "100%" }}
                       onClick={this.handleLogin}
                     >
-                      Submit
+                      Login
                     </Button>
                   </Form>
                 </div>
@@ -153,12 +166,29 @@ class LoginModal extends Component {
                         onChange={e => this.onChange(e)}
                       />
                     </FormGroup>
-                    <Button
-                      style={{ opacity: "100%" }}
-                      onClick={this.handleRegister}
-                    >
-                      Submit
-                    </Button>
+
+                    <Row>
+                      <Col sm="6">
+                        <Button
+                          color="primary"
+                          style={{ opacity: "100%" }}
+                          onClick={this.handleRegister}
+                        >
+                          Register
+                        </Button>
+                      </Col>
+
+                      <Col sm="6">
+                        Already have and account?
+                        <Button
+                          color="secondary"
+                          style={{ opacity: "100%" }}
+                          onClick={this.switchToLogin}
+                        >
+                          Login
+                        </Button>
+                      </Col>
+                    </Row>
                   </Form>
                 </div>
               </Container>
@@ -180,7 +210,6 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   login,
   clearErrors,
-  returnErrors,
   loadUser,
   register
 })(LoginModal);

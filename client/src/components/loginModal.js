@@ -16,17 +16,23 @@ import { connect } from "react-redux";
 import { login, loadUser, register } from "../actions/userAction";
 import { clearErrors } from "../actions/errorActions";
 
+const initialState = {
+  enteredPassword: "",
+  enteredUsername: "",
+  enteredEmail: "",
+  login: false
+};
+
 class LoginModal extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      enteredPassword: "",
-      enteredUsername: "",
-      enteredEmail: "",
-      login: false
-    };
+    this.state = initialState;
   }
+
+  componentWillUnmount = () => {
+    this.setState({ initialState });
+  };
 
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });
@@ -77,12 +83,7 @@ class LoginModal extends Component {
   render() {
     return (
       <div>
-        <Modal
-          color="dark"
-          dark
-          isOpen={this.props.showModal}
-          toggle={this.props.toggleModal}
-        >
+        <Modal isOpen={this.props.showModal} toggle={this.props.toggleModal}>
           {this.state.login ? (
             <ModalBody>
               <Container style={{ textAlign: "center" }}>

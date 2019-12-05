@@ -27,6 +27,14 @@ class App extends Component {
     store.dispatch(loadUser());
   }
 
+  useEffect = () => {
+    window.ethereum.on("accountsChanged", function(accounts) {
+      // Time to reload your interface with accounts[0]!
+      store.dispatch(getMetamaskAddress(accounts[0]));
+    });
+    store.dispatch(loadUser());
+  };
+
   render() {
     return (
       <Provider store={store}>

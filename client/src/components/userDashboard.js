@@ -20,18 +20,28 @@ import PDFViewer from "../features/PDFViewer";
 // import PDFJSBackend from "../features/pdfBackend/pdfjs";
 import WebviewerBackend from "../features/pdfBackend/webviewer";
 
+const initialState = {
+  isOpen: false,
+  dashboardPage: "",
+  ownBooks: [],
+  selectedBook: null,
+  showSelected: false
+};
+
 export class UserDashboard extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      isOpen: false,
-      dashboardPage: "",
-      ownBooks: [],
-      selectedBook: null,
-      showSelected: false
-    };
+    this.state = initialState;
   }
+
+  componentDidMount = async () => {
+    try {
+      await this.props.getOwn(this.props.userAddress);
+    } catch (err) {
+      // console.log
+    }
+  };
 
   toggleNav = () => {
     this.setState({ isOpen: !this.state.isOpen });

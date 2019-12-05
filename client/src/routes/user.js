@@ -17,6 +17,7 @@ export class User extends Component {
       userExists: null
     };
   }
+
   async componentDidMount() {
     try {
       if (window.web3) {

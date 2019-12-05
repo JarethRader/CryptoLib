@@ -103,14 +103,28 @@ class LoginModal extends Component {
                         onChange={e => this.onChange(e)}
                       />
                     </FormGroup>
-                    <Button
-                      type="button"
-                      color="primary"
-                      style={{ opacity: "100%" }}
-                      onClick={e => this.handleLogin(e)}
-                    >
-                      Login
-                    </Button>
+                    <Row>
+                      <Col sm="6">
+                        <Button
+                          type="button"
+                          color="primary"
+                          style={{ opacity: "100%" }}
+                          onClick={e => this.handleLogin(e)}
+                        >
+                          Login
+                        </Button>
+                      </Col>
+                      <Col sm="6">
+                        Need an account?
+                        <Button
+                          color="secondary"
+                          style={{ opacity: "100%" }}
+                          onClick={this.switchToLogin}
+                        >
+                          Register
+                        </Button>
+                      </Col>
+                    </Row>
                   </Form>
                 </div>
               </Container>
@@ -173,7 +187,7 @@ class LoginModal extends Component {
                       </Col>
 
                       <Col sm="6">
-                        Already have and account?
+                        Already have an account?
                         <Button
                           color="secondary"
                           style={{ opacity: "100%" }}

@@ -189,6 +189,7 @@ router.post("/checkout", async (req, res) => {
 //@access public - change to private later
 router.post("/getOwn", async (req, res) => {
   const { address } = req.body;
+  console.log(address);
   try {
     await web3.eth
       .call({

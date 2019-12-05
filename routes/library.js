@@ -1,7 +1,6 @@
 //Express dependencies
 const express = require("express");
 const router = express.Router();
-const dotenv = require("dotenv");
 
 //authorization dependencies
 const auth = require("../middleware/auth");
@@ -45,10 +44,12 @@ router.post("/mint", async (req, res) => {
           res.status(200).json({ transactionReceipt: receipt });
         })
         .catch(err => {
+          console.log(err);
           res.status(400).json({ err: err });
         });
     })
     .catch(err => {
+      console.log(err);
       res.status(400).json({ error: err });
     });
 });
@@ -65,14 +66,18 @@ router.get("/", async (req, res) => {
         data: await library.methods.getBook(id).encodeABI()
       })
       .then(async book => {
-        book = web3.utils.toAscii(book);
-        book = book.replace(/\0[^0-9a-zA-Z]+/g, "");
-        hash = book.substring(book.indexOf("Qm"), book.length);
-        title = book.substring(0, book.match(/([a-z][A-Z][a-z])/).index + 1);
-        author = book.substring(
-          book.match(/([a-z][A-Z][a-z])/).index + 1,
-          book.indexOf("Qm")
-        );
+        if (book) {
+          book = web3.utils.toAscii(book);
+          book = book.replace(/\0[^0-9a-zA-Z]+/g, "");
+          hash = book.substring(book.indexOf("Qm"), book.length);
+          title = book.substring(0, book.match(/([a-z][A-Z][a-z])/).index + 1);
+          author = book.substring(
+            book.match(/([a-z][A-Z][a-z])/).index + 1,
+            book.indexOf("Qm")
+          );
+        } else {
+          return res.status(400).json({ msg: "No book found" });
+        }
         await web3.eth
           .call({
             to: libraryContract.address,
@@ -106,24 +111,28 @@ router.get("/", async (req, res) => {
                 }
               })
               .catch(err => {
+                console.log(err);
                 res.status(400).json({ err });
               });
           })
           .catch(err => {
+            console.log(err);
             res.status(400).json({ err });
           });
       })
       .catch(err => {
+        console.log(err);
         res.status(204).json({ err: err, found: false });
       });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ error: err.data });
   }
 });
 
 //@route POST /library/checkout
 //@desc checkout a book
-//@access private
+//@access public - change to private later
 router.post("/checkout", async (req, res) => {
   const { bookID, userAddress } = req.body;
 
@@ -155,18 +164,22 @@ router.post("/checkout", async (req, res) => {
                   res.status(200).json({ transactionReceipt: receipt });
                 })
                 .catch(err => {
+                  console.log(err);
                   res.status(400).json({ err: err });
                 });
             })
             .catch(err => {
+              console.log(err);
               res.status(400).json({ error: err });
             });
         }
       })
       .catch(err => {
+        console.log(err);
         res.status(400).json({ err: err });
       });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ err: err });
   }
 });
@@ -195,9 +208,11 @@ router.post("/getOwn", async (req, res) => {
         res.status(200).json({ booksOfOwner });
       })
       .catch(err => {
+        console.log(err);
         res.status(400).json({ err: err });
       });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ err: err });
   }
 });
@@ -244,18 +259,22 @@ router.post("/return", async (req, res) => {
                     res.status(200).json({ transactionReceipt: receipt });
                   })
                   .catch(err => {
+                    console.log(err);
                     res.status(400).json({ err: err });
                   });
               })
               .catch(err => {
+                console.log(err);
                 res.status(400).json({ err: err });
               });
           });
       })
       .catch(err => {
+        console.log(err);
         res.status(400).json({ err: err });
       });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ err: err });
   }
 });

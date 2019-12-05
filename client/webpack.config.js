@@ -1,5 +1,4 @@
-const path = require("path");
-
+require("newrelic");
 module.exports = {
   entry: "./src/index.js",
   output: {

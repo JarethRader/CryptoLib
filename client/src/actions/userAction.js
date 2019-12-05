@@ -14,6 +14,13 @@ import { tokenConfig } from "./actionUtils/tokenConfig";
 import { returnErrors } from "./errorActions";
 import axios from "axios";
 
+//Headers
+const config = {
+  headers: {
+    "Content-Type": "application/json"
+  }
+};
+
 export const getMetamaskAddress = account => dispatch => {
   dispatch(setUserLoading());
   if (account) {
@@ -55,13 +62,6 @@ export const register = ({
   email,
   address
 }) => dispatch => {
-  //Headers
-  const config = {
-    headers: {
-      "Content-Type": "application/json"
-    }
-  };
-
   if (!email || !password) {
     throw Error("Please enter all fields");
   }
@@ -89,13 +89,15 @@ export const register = ({
 };
 
 export const login = ({ password, address }) => dispatch => {
-  const config = {
-    headers: {
-      "Content-Type": "application/json"
-    }
-  };
+  if (!password) {
+    throw Error("Please enter password");
+  } else if (!address) {
+    throw Error("Now address detected. Please connect MetaMask");
+  }
 
   const body = JSON.stringify({ password, address });
+
+  console.log(body);
 
   dispatch(setUserLoading());
 

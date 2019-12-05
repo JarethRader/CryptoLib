@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
+const bodyParser = require("body-parser");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -28,6 +29,7 @@ mongoose
 //body-parser middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(cors());
 
 //use routes
@@ -36,6 +38,8 @@ app.use("/user", require("./routes/users"));
 
 if (process.env.NODE_ENV == "production") {
   // Set a static folder
+  require("newrelic");
+
   app.use(express.static("client/build"));
 
   app.get("*", () => (req, res) => {

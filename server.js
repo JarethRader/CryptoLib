@@ -46,13 +46,13 @@ if (process.env.NODE_ENV == "production") {
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
   });
 
-  app.use((req, res, next) => {
-    if (req.header("x-forwarded-proto") !== "https") {
-      res.redirect(`https://${req.header("host")}${req.url}`);
-    } else {
-      next();
-    }
-  });
+  // app.use((req, res, next) => {
+  //   if (req.header("x-forwarded-proto") !== "https") {
+  //     res.redirect(`https://${req.header("host")}${req.url}`);
+  //   } else {
+  //     next();
+  //   }
+  // });
 }
 
 app.listen(port, () => {

@@ -36,18 +36,23 @@ export class User extends Component {
 
   checkExists = async () => {
     if (!this.props.isAuthenticated) {
-      await checkUserExists(this.props.userAddress)
-        .then(async exists => {
-          if (this.props.isAuthenticated && exists) {
-            this.setState({ userExists: true });
-            await this.props.getOwn(this.props.userAddress);
-          } else {
+      try{
+        await checkUserExists(this.props.userAddress)
+          .then(async exists => {
+            if (this.props.isAuthenticated && exists) {
+              this.setState({ userExists: true });
+              await this.props.getOwn(this.props.userAddress);
+            } else {
+              this.setState({ userExists: false });
+            }
+          })
+          .catch(err => {
+            //console.log(err)
             this.setState({ userExists: false });
-          }
-        })
-        .catch(err => {
-          this.setState({ userExists: false });
-        });
+          });
+      } catch(err) {
+        // console.log(err)
+      }
     }
   };
 

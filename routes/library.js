@@ -1,7 +1,6 @@
 //Express dependencies
 const express = require("express");
 const router = express.Router();
-const dotenv = require("dotenv");
 
 //authorization dependencies
 const auth = require("../middleware/auth");
@@ -11,7 +10,7 @@ const sendTransaction = require("../components/sendTransaction");
 const Web3 = require("web3");
 const web3 = new Web3(
   new Web3.providers.HttpProvider(
-    "https://rinkeby.infura.io/v3/aef01b012e024dc5a94f3096aa2be24f"
+    `https://rinkeby.infura.io/v3/${process.env.WEB3_INFURA_PROJECT_ID}`
   )
 );
 const libraryContract = require("../components/LibraryContract");
@@ -25,10 +24,12 @@ const library = new web3.eth.Contract(
 // @desc adds new book to smart contract
 // @access public - change to private later
 router.post("/mint", async (req, res) => {
-  const { userAddress, title, author, hash } = req.body;
+  const { title, author, hash } = req.body;
   let bytesTitle = web3.utils.hexToBytes(web3.utils.utf8ToHex(title));
   let bytesAuthor = web3.utils.hexToBytes(web3.utils.utf8ToHex(author));
   let bytesHash = web3.utils.hexToBytes(web3.utils.utf8ToHex(hash));
+
+  console.log(typeof bytesTitle);
 
   const data = await library.methods
     .mint(bytesTitle, bytesAuthor, bytesHash)
@@ -36,17 +37,19 @@ router.post("/mint", async (req, res) => {
 
   await library.methods
     .mint(bytesTitle, bytesAuthor, bytesHash)
-    .estimateGas({ from: userAddress, gas: 5000000 })
+    .estimateGas({ from: process.env.CEO_ADDRESS, gas: 5000000 })
     .then(async gasAmount => {
       await sendTransaction(gasAmount, data)
         .then(receipt => {
           res.status(200).json({ transactionReceipt: receipt });
         })
         .catch(err => {
+          console.log(err);
           res.status(400).json({ err: err });
         });
     })
     .catch(err => {
+      console.log(err);
       res.status(400).json({ error: err });
     });
 });
@@ -63,14 +66,18 @@ router.get("/", async (req, res) => {
         data: await library.methods.getBook(id).encodeABI()
       })
       .then(async book => {
-        book = web3.utils.toAscii(book);
-        book = book.replace(/\0[^0-9a-zA-Z]+/g, "");
-        hash = book.substring(book.indexOf("Qm"), book.length);
-        title = book.substring(0, book.match(/([a-z][A-Z][a-z])/).index + 1);
-        author = book.substring(
-          book.match(/([a-z][A-Z][a-z])/).index + 1,
-          book.indexOf("Qm")
-        );
+        if (book) {
+          book = web3.utils.toAscii(book);
+          book = book.replace(/\0[^0-9a-zA-Z]+/g, "");
+          hash = book.substring(book.indexOf("Qm"), book.length);
+          title = book.substring(0, book.match(/([a-z][A-Z][a-z])/).index + 1);
+          author = book.substring(
+            book.match(/([a-z][A-Z][a-z])/).index + 1,
+            book.indexOf("Qm")
+          );
+        } else {
+          return res.status(400).json({ msg: "No book found" });
+        }
         await web3.eth
           .call({
             to: libraryContract.address,
@@ -104,24 +111,28 @@ router.get("/", async (req, res) => {
                 }
               })
               .catch(err => {
+                console.log(err);
                 res.status(400).json({ err });
               });
           })
           .catch(err => {
+            console.log(err);
             res.status(400).json({ err });
           });
       })
       .catch(err => {
+        console.log(err);
         res.status(204).json({ err: err, found: false });
       });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ error: err.data });
   }
 });
 
 //@route POST /library/checkout
 //@desc checkout a book
-//@access private
+//@access public - change to private later
 router.post("/checkout", async (req, res) => {
   const { bookID, userAddress } = req.body;
 
@@ -129,38 +140,27 @@ router.post("/checkout", async (req, res) => {
     return res.status(400).json({ msg: "Invalid Input" });
   }
   try {
-    console.log("Getting balance of");
     await web3.eth
       .call({
         to: libraryContract.address,
         data: await library.methods.balanceOf(userAddress).encodeABI()
       })
       .then(async balance => {
-        console.log(web3.utils.hexToNumber(balance));
         if (web3.utils.hexToNumber(balance) === 2) {
           return res
             .status(400)
             .json({ msg: "Too many books checked out already" });
         } else {
-          //Transfer book: bookID to: userAddress
-          console.log("Getting Coo Address");
-          console.log("Transfering book");
-          console.log(userAddress);
-
           //change transfer method to checkout method, which will transfer and approve in one function
           const data = await library.methods
             .transfer(userAddress, bookID)
             .encodeABI();
-          console.log(data);
-
           await library.methods
             .transfer(userAddress, bookID)
             .estimateGas({ from: process.env.CEO_ADDRESS, gas: 5000000 })
             .then(async gasAmount => {
-              console.log("Sending transaction");
               await sendTransaction(gasAmount, data)
                 .then(receipt => {
-                  console.log("Transacton successful");
                   res.status(200).json({ transactionReceipt: receipt });
                 })
                 .catch(err => {
@@ -189,8 +189,6 @@ router.post("/checkout", async (req, res) => {
 //@access public - change to private later
 router.post("/getOwn", async (req, res) => {
   const { address } = req.body;
-  console.log("Running API Method");
-  console.log(address);
   try {
     await web3.eth
       .call({
@@ -210,9 +208,11 @@ router.post("/getOwn", async (req, res) => {
         res.status(200).json({ booksOfOwner });
       })
       .catch(err => {
+        console.log(err);
         res.status(400).json({ err: err });
       });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ err: err });
   }
 });
@@ -259,18 +259,22 @@ router.post("/return", async (req, res) => {
                     res.status(200).json({ transactionReceipt: receipt });
                   })
                   .catch(err => {
+                    console.log(err);
                     res.status(400).json({ err: err });
                   });
               })
               .catch(err => {
+                console.log(err);
                 res.status(400).json({ err: err });
               });
           });
       })
       .catch(err => {
+        console.log(err);
         res.status(400).json({ err: err });
       });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ err: err });
   }
 });

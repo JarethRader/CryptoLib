@@ -19,7 +19,9 @@ const User = require("../models/User");
 //@desc register new user
 //@access public
 router.post("/signup", (req, res) => {
-  const { username, email, password, address } = req.body;
+  const { username, password } = req.body;
+  const address = req.body.address.toLowerCase();
+  const email = req.body.email.toLowerCase();
 
   if (!email || !password) {
     return res.status(400).json({ msg: "Please enter all fields" });
@@ -52,7 +54,10 @@ router.post("/signup", (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: 3600 },
             (err, token) => {
-              if (err) throw err;
+              if (err) {
+                console.log(err);
+                throw err;
+              }
               res.json({
                 token,
                 user: {
@@ -74,24 +79,28 @@ router.post("/signup", (req, res) => {
 //@desc authenticates a user when they login again
 //@access public
 router.post("/login", (req, res) => {
-  const { password, address } = req.body;
-  if (!password) {
-    return res.status(400).json({ msg: "Please enter all fields" });
+  if (!req.body.password) {
+    return res.status(400).json({ msg: "Please enter password" });
   }
-  if (!address) {
+  if (!req.body.address) {
     return res.status(400).json({ msg: "Web3 provider not detected" });
   }
-  User.findOne({ address }).then(user => {
-    if (!user) res.status(400).json({ msg: "User does not exists" });
+  User.findOne({ address: req.body.address.toLowerCase() }).then(user => {
+    if (!user || user === null) {
+      res.status(400).json({ msg: "Invalid password" });
+    }
     //Compare hash with
-    bcrypt.compare(password, user.password).then(isMatch => {
+    bcrypt.compare(req.body.password, user.password).then(isMatch => {
       if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
       jwt.sign(
         { id: user.id },
         process.env.JWT_SECRET,
         { expiresIn: 3600 },
         (err, token) => {
-          if (err) throw err;
+          if (err) {
+            console.log(err);
+            res.status(400).json({ err: err });
+          }
           res.json({
             token,
             user: {
@@ -125,9 +134,9 @@ router.get("/auth", auth, (req, res) => {
 //@desc check if user exists
 //@access public
 router.get("/", (req, res) => {
+  console.log(req.query.address);
   User.find({ address: req.query.address })
     .then(user => {
-      console.log(user[0]);
       if (user[0].address === req.query.address) {
         res.status(200).json({ success: true });
       } else {

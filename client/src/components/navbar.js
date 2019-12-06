@@ -10,6 +10,7 @@ import {
   Container
 } from "reactstrap";
 import { Link } from "react-router-dom";
+import Cryptolib_Icon from "../features/resources/Cryptolib_Icon.png";
 
 class NavBar extends Component {
   state = {
@@ -26,6 +27,16 @@ class NavBar extends Component {
         <Navbar dark expand="sm" className="navBar" fixed="top">
           <Container>
             <NavbarBrand href="/" className="orbitronFont">
+              <img
+                src={Cryptolib_Icon}
+                alt="#"
+                style={{
+                  width: "2rem",
+                  marginRight: "1rem",
+                  backgroundColor: "white",
+                  borderRadius: "0.2rem"
+                }}
+              />
               CryptoLib
             </NavbarBrand>
             <NavbarToggler onClick={this.toggle} />

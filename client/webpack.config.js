@@ -1,4 +1,5 @@
-const path = require("path");
+import CopyWebpackPlugin from "copy-webpack-plugin";
+require("newrelic");
 
 module.exports = {
   entry: "./src/index.js",
@@ -7,6 +8,14 @@ module.exports = {
     filename: "build.js",
     publicPath: "/"
   },
+  plugins: [
+    new CopyWebpackPlugin([
+      {
+        from: "node_modules/pdfjs-dist/cmaps/",
+        to: "cmaps/"
+      }
+    ])
+  ],
   module: {
     rules: [
       {

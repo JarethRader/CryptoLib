@@ -17,21 +17,31 @@ import { connect } from "react-redux";
 import { getOwn, returnBook } from "../actions/libraryActions";
 import getBook from "../features/utils/getBook";
 import PDFViewer from "../features/PDFViewer";
-import PDFJSBackend from "../features/pdfBackend/pdfjs";
+// import PDFJSBackend from "../features/pdfBackend/pdfjs";
 import WebviewerBackend from "../features/pdfBackend/webviewer";
+
+const initialState = {
+  isOpen: false,
+  dashboardPage: "",
+  ownBooks: [],
+  selectedBook: null,
+  showSelected: false
+};
 
 export class UserDashboard extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      isOpen: false,
-      dashboardPage: "",
-      ownBooks: [],
-      selectedBook: null,
-      showSelected: false
-    };
+    this.state = initialState;
   }
+
+  componentDidMount = async () => {
+    try {
+      await this.props.getOwn(this.props.userAddress);
+    } catch (err) {
+      // console.log
+    }
+  };
 
   toggleNav = () => {
     this.setState({ isOpen: !this.state.isOpen });
@@ -59,16 +69,16 @@ export class UserDashboard extends Component {
                 this.setState({ ownBooks: [nextBook, ...this.state.ownBooks] });
               })
               .catch(err => {
-                console.log(err);
+                // console.log(err)
               });
             i++;
           }
         })
         .catch(err => {
-          console.log(err);
+          // console.log(err)
         });
     } catch (err) {
-      console.log(err);
+      // console.log(err)
     }
   };
 
@@ -117,6 +127,7 @@ export class UserDashboard extends Component {
               <br />
               {this.state.showSelected ? (
                 <Container style={{ height: "1000px" }}>
+                  {/* TODO: Check if user is approved for token before displaying book */}
                   <PDFViewer
                     backend={WebviewerBackend}
                     src={this.state.selectedBook}

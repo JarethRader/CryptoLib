@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import "../App.css";
 import {
+  Row,
+  Col,
   Container,
   Button,
   Form,
@@ -14,35 +16,44 @@ import { connect } from "react-redux";
 import { login, loadUser, register } from "../actions/userAction";
 import { clearErrors } from "../actions/errorActions";
 
+const initialState = {
+  enteredPassword: "",
+  enteredUsername: "",
+  enteredEmail: "",
+  login: false
+};
+
 class LoginModal extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      enteredPassword: "",
-      enteredUsername: "",
-      enteredEmail: ""
-    };
+    this.state = initialState;
   }
 
+  componentWillUnmount = () => {
+    this.setState({ initialState });
+  };
+
   onChange = e => {
+    e.preventDefault();
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  handleLogin = async () => {
+  async handleLogin(e) {
+    e.preventDefault();
     const { enteredPassword } = this.state;
     const user = {
       password: enteredPassword,
       address: this.props.userAddress
     };
+
+    console.log(user);
     try {
       await this.props.login(user);
     } catch (err) {
-      console.log(err);
+      alert(err);
     }
-
-    this.setState({ enteredPassword: "" });
-  };
+  }
 
   handleRegister = async e => {
     e.preventDefault();
@@ -54,26 +65,22 @@ class LoginModal extends Component {
       address: this.props.userAddress
     };
 
-    console.log(user);
-
     try {
       await this.props.register(user);
     } catch (err) {
-      console.log(err);
+      // console.log(err)
     }
+  };
 
-    this.setState({
-      enteredUsername: "",
-      enteredPassword: "",
-      enteredEmail: ""
-    });
+  switchToLogin = () => {
+    this.setState({ login: !this.state.login });
   };
 
   render() {
     return (
       <div>
         <Modal isOpen={this.props.showModal} toggle={this.props.toggleModal}>
-          {this.props.userExists ? (
+          {this.state.login ? (
             <ModalBody>
               <Container style={{ textAlign: "center" }}>
                 <h4 className="orbitronFont">Sign in</h4>
@@ -84,25 +91,40 @@ class LoginModal extends Component {
                 {this.props.userAddress}
                 <br />
                 <div style={{ textAlign: "left" }}>
-                  <Form>
+                  <Form onSubmit={e => this.handleLogin(e)}>
                     <FormGroup>
                       <Label for="password">
                         <b>Password</b>
                       </Label>
                       <Input
                         type="password"
-                        id="password"
                         placeholder="Password"
                         name="enteredPassword"
                         onChange={e => this.onChange(e)}
                       />
                     </FormGroup>
-                    <Button
-                      style={{ opacity: "100%" }}
-                      onClick={this.handleLogin}
-                    >
-                      Submit
-                    </Button>
+                    <Row>
+                      <Col sm="6">
+                        <Button
+                          type="button"
+                          color="primary"
+                          style={{ opacity: "100%" }}
+                          onClick={e => this.handleLogin(e)}
+                        >
+                          Login
+                        </Button>
+                      </Col>
+                      <Col sm="6">
+                        Need an account?
+                        <Button
+                          color="secondary"
+                          style={{ opacity: "100%" }}
+                          onClick={this.switchToLogin}
+                        >
+                          Register
+                        </Button>
+                      </Col>
+                    </Row>
                   </Form>
                 </div>
               </Container>
@@ -118,14 +140,13 @@ class LoginModal extends Component {
                 {this.props.userAddress}
                 <br />
                 <div style={{ textAlign: "left" }}>
-                  <Form>
+                  <Form onSubmit={e => this.handleRegister(e)}>
                     <FormGroup>
                       <Label for="username">
                         <b>Username</b>
                       </Label>
                       <Input
                         type="username"
-                        id="username"
                         placeholder="Username (Optional)"
                         name="enteredUsername"
                         onChange={e => this.onChange(e)}
@@ -137,7 +158,6 @@ class LoginModal extends Component {
                       </Label>
                       <Input
                         type="email"
-                        id="email"
                         placeholder="Email"
                         name="enteredEmail"
                         onChange={e => this.onChange(e)}
@@ -149,18 +169,34 @@ class LoginModal extends Component {
                       </Label>
                       <Input
                         type="password"
-                        id="password"
                         placeholder="Password"
                         name="enteredPassword"
                         onChange={e => this.onChange(e)}
                       />
                     </FormGroup>
-                    <Button
-                      style={{ opacity: "100%" }}
-                      onClick={this.handleRegister}
-                    >
-                      Submit
-                    </Button>
+
+                    <Row>
+                      <Col sm="6">
+                        <Button
+                          color="primary"
+                          style={{ opacity: "100%" }}
+                          onClick={e => this.handleRegister(e)}
+                        >
+                          Register
+                        </Button>
+                      </Col>
+
+                      <Col sm="6">
+                        Already have an account?
+                        <Button
+                          color="secondary"
+                          style={{ opacity: "100%" }}
+                          onClick={this.switchToLogin}
+                        >
+                          Login
+                        </Button>
+                      </Col>
+                    </Row>
                   </Form>
                 </div>
               </Container>

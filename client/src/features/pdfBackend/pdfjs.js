@@ -1,11 +1,12 @@
+import React from "react";
+import { Document } from "react-pdf/dist/entry.webpack";
+
 export default class PDFJs {
   init = (source, element) => {
-    const iframe = document.createElement("iframe");
+    const pdfViewer = document.createElement("DOCUMENT");
 
-    iframe.src = source;
-    iframe.width = "100%";
-    iframe.height = "100%";
+    pdfViewer.file = source;
 
-    element.appendChild(iframe);
+    element.appendChild(pdfViewer);
   };
 }

@@ -17,6 +17,7 @@ export class User extends Component {
       userExists: null
     };
   }
+
   async componentDidMount() {
     try {
       if (window.web3) {
@@ -29,7 +30,7 @@ export class User extends Component {
       }
       await this.checkExists();
     } catch (err) {
-      console.log(err);
+      // console.log(err)
     }
   }
 
@@ -37,7 +38,7 @@ export class User extends Component {
     if (!this.props.isAuthenticated) {
       await checkUserExists(this.props.userAddress)
         .then(async exists => {
-          if (exists) {
+          if (this.props.isAuthenticated && exists) {
             this.setState({ userExists: true });
             await this.props.getOwn(this.props.userAddress);
           } else {
@@ -45,7 +46,6 @@ export class User extends Component {
           }
         })
         .catch(err => {
-          console.log(err);
           this.setState({ userExists: false });
         });
     }

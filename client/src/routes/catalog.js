@@ -42,7 +42,7 @@ export class Catalog extends Component {
       await this.props.clearShelf();
       this.setState({ catalogData: {} });
     } catch (err) {
-      // console.log(err);
+      // console.log(err)
     }
   }
 
@@ -57,19 +57,19 @@ export class Catalog extends Component {
             try {
               this.props.shelveBook(nextBook);
             } catch (err) {
-              // console.log(err);
+              // console.log(err)
             }
           });
         }
       } catch (err) {
-        // console.log(err);
+        // console.log(err)
       }
     });
     this.setState({ catalogData: this.props.library });
     try {
       this.props.libraryLoaded();
     } catch (err) {
-      // console.log(err);
+      // console.log(err)
     }
   };
 
@@ -85,18 +85,20 @@ export class Catalog extends Component {
       />
     ));
     return (
-      <div className="pageBody catalog">
-        {this.props.isLoading ? (
-          <BeatLoader
-            css={override}
-            sizeUnit={"rem"}
-            size={2}
-            color={"#0a960c"}
-            loading={this.props.isLoading}
-          />
-        ) : (
-          <div>{rows}</div>
-        )}
+      <div className="pageBody">
+        <div className="catalog">
+          {this.props.isLoading ? (
+            <BeatLoader
+              css={override}
+              sizeUnit={"rem"}
+              size={2}
+              color={"#0a960c"}
+              loading={this.props.isLoading}
+            />
+          ) : (
+            <div>{rows}</div>
+          )}
+        </div>
       </div>
     );
   }
@@ -106,8 +108,6 @@ class CatalogRow extends Catalog {
   handleOnClick = async e => {
     // TODO: add payment from user to contract owner before initiating book transfer
     // -> https://davekiss.com/ethereum-web3-node-tutorial/
-    e.preventDefault();
-    console.log(this.props.bookId);
     try {
       await this.props.checkout(this.props.bookId, this.props.userAddress);
     } catch (err) {

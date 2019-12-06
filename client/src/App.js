@@ -27,7 +27,7 @@ class App extends Component {
       });
       store.dispatch(loadUser());
     } catch (err) {
-      alert("Metamask is not detected");
+      //console.log(err)
     }
   }
 

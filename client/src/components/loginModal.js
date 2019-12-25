@@ -58,17 +58,21 @@ class LoginModal extends Component {
   handleRegister = async e => {
     e.preventDefault();
     const { enteredUsername, enteredPassword, enteredEmail } = this.state;
-    const user = {
-      username: enteredUsername,
-      password: enteredPassword,
-      email: enteredEmail,
-      address: this.props.userAddress
-    };
-
-    try {
-      await this.props.register(user);
-    } catch (err) {
-      // console.log(err)
+    const regexPat = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (regexPat.test(enteredEmail)) {
+      const user = {
+        username: enteredUsername,
+        password: enteredPassword,
+        email: enteredEmail,
+        address: this.props.userAddress
+      };
+      try {
+        await this.props.register(user);
+      } catch (err) {
+        // console.log(err)
+      }
+    } else {
+      alert("Email invalid");
     }
   };
 

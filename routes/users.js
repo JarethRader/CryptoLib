@@ -33,7 +33,7 @@ router.post("/signup", (req, res) => {
     username = "";
   }
 
-  User.findOne({ email }).then(user => {
+  User.findOne({ address }).then(user => {
     if (user) return res.status(400).json({ msg: "User already exists" });
 
     const newUser = new User({

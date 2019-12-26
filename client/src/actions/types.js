@@ -12,6 +12,8 @@ export const REGISTER_FAIL = "REGISTER_FAIL";
 
 //Library contract actions
 export const LIBRARY_LOADING = "LIBRARY_LOADING";
+export const CHECKOUT_LOADING = "CHECKOUT_LOADING";
+export const RETURN_LOADING = "RETURN_LOADING";
 export const LIBRARY_LOADED = "LIBRARY_LOADED";
 export const UPDATE_LIBRARY = "UPDATE_LIBRARY";
 export const MINT_NEW_SUCCESS = "MINT_NEW_SUCCUESS";

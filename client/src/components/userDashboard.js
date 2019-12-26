@@ -19,6 +19,8 @@ import getBook from "../features/utils/getBook";
 import PDFViewer from "../features/PDFViewer";
 // import PDFJSBackend from "../features/pdfBackend/pdfjs";
 import WebviewerBackend from "../features/pdfBackend/webviewer";
+import BeatLoader from "react-spinners/BeatLoader";
+import { shelf } from "../features/utils/override";
 
 const initialState = {
   isOpen: false,
@@ -98,6 +100,7 @@ export class UserDashboard extends Component {
         book={book}
         setSelected={this.setSelected}
         returnBook={this.props.returnBook}
+        returning={this.props.returning}
       />
     ));
     return (
@@ -166,9 +169,20 @@ class ShelfRow extends UserDashboard {
           </Button>
         </Col>
         <Col className="catalogCol">
-          <Button className="checkoutBtn" onClick={e => this.handleReturn(e)}>
-            Return
-          </Button>
+          {this.props.returning.returnLoading &&
+          this.props.returning.bookID === this.props.book.id ? (
+            <BeatLoader
+              css={shelf}
+              sizeUnit={"rem"}
+              size={1}
+              color={"#0a960c"}
+              loading={this.props.returning}
+            />
+          ) : (
+            <Button className="checkoutBtn" onClick={e => this.handleReturn(e)}>
+              Return
+            </Button>
+          )}
         </Col>
       </Row>
     );
@@ -179,7 +193,8 @@ const mapPropsToState = state => ({
   isAuthenticated: state.user.isAuthenticated,
   user: state.user.user,
   userAddress: state.user.userAddress,
-  ownShelf: state.library.ownShelf
+  ownShelf: state.library.ownShelf,
+  returning: state.library.returning
 });
 
 export default connect(mapPropsToState, { getOwn, returnBook })(UserDashboard);

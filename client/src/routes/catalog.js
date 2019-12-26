@@ -9,16 +9,8 @@ import {
   checkout
 } from "../actions/libraryActions";
 import getBook from "../features/utils/getBook";
-import { css } from "@emotion/core";
-// Another way to import. This is recommended to reduce bundle size
 import BeatLoader from "react-spinners/BeatLoader";
-
-const override = css`
-  display: block;
-  margin: 0 auto;
-  border-color: red;
-  padding-top: 10rem;
-`;
+import { override, shelf } from "../features/utils/override";
 
 export class Catalog extends Component {
   constructor(props) {
@@ -82,6 +74,7 @@ export class Catalog extends Component {
         checkout={this.props.checkout}
         bookId={book.id}
         userAddress={this.props.userAddress}
+        checkingOut={this.props.checkingOut}
       />
     ));
     return (
@@ -105,11 +98,15 @@ export class Catalog extends Component {
 }
 
 class CatalogRow extends Catalog {
+  state = {
+    checkedOut: false
+  };
   handleOnClick = async e => {
     // TODO: add payment from user to contract owner before initiating book transfer
     // -> https://davekiss.com/ethereum-web3-node-tutorial/
     try {
       await this.props.checkout(this.props.bookId, this.props.userAddress);
+      this.setState({ checkedOut: true });
     } catch (err) {
       console.log(err);
     }
@@ -132,14 +129,25 @@ class CatalogRow extends Catalog {
           </Col>
         )}
 
-        {catalogData.available ? (
+        {catalogData.available || this.state.checkedOut === true ? (
           <Col className="catalogCol">
-            <Button
-              className="checkoutBtn"
-              onClick={e => this.handleOnClick(e)}
-            >
-              Checkout
-            </Button>
+            {this.props.checkingOut.checkoutLoading &&
+            this.props.checkingOut.bookID === this.props.bookId ? (
+              <BeatLoader
+                css={shelf}
+                sizeUnit={"rem"}
+                size={1}
+                color={"#0a960c"}
+                loading={this.props.checkingOut}
+              />
+            ) : (
+              <Button
+                className="checkoutBtn"
+                onClick={e => this.handleOnClick(e)}
+              >
+                Checkout
+              </Button>
+            )}
           </Col>
         ) : null}
       </Row>
@@ -152,7 +160,8 @@ const mapStateToProps = state => ({
   book: state.library.shelvingBook,
   library: state.library.library,
   loaded: state.library.loadingDone,
-  isLoading: state.library.libraryLoading
+  isLoading: state.library.libraryLoading,
+  checkingOut: state.library.checkingOut
 });
 
 export default connect(mapStateToProps, {

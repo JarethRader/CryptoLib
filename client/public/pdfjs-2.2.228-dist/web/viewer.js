@@ -147,9 +147,9 @@ function getViewerConfiguration() {
       zoomOut: document.getElementById('zoomOut'),
       viewFind: document.getElementById('viewFind'),
       openFile: document.getElementById('openFile'),
-      print: document.getElementById('print'),
+      // print: document.getElementById('print'),
       presentationModeButton: document.getElementById('presentationMode'),
-      download: document.getElementById('download'),
+      // download: document.getElementById('download'),
       viewBookmark: document.getElementById('viewBookmark')
     },
     secondaryToolbar: {
@@ -158,8 +158,8 @@ function getViewerConfiguration() {
       toolbarButtonContainer: document.getElementById('secondaryToolbarButtonContainer'),
       presentationModeButton: document.getElementById('secondaryPresentationMode'),
       openFileButton: document.getElementById('secondaryOpenFile'),
-      printButton: document.getElementById('secondaryPrint'),
-      downloadButton: document.getElementById('secondaryDownload'),
+      // printButton: document.getElementById('secondaryPrint'),
+      // downloadButton: document.getElementById('secondaryDownload'),
       viewBookmarkButton: document.getElementById('secondaryViewBookmark'),
       firstPageButton: document.getElementById('firstPage'),
       lastPageButton: document.getElementById('lastPage'),
@@ -1752,7 +1752,7 @@ var PDFViewerApplication = {
 exports.PDFViewerApplication = PDFViewerApplication;
 var validateFileURL;
 {
-  var HOSTED_VIEWER_ORIGINS = ['null', 'http://mozilla.github.io', 'https://mozilla.github.io'];
+  var HOSTED_VIEWER_ORIGINS = ['null', 'http://mozilla.github.io', 'https://mozilla.github.io', 'http://localhost:3000', "https://cryptolib.co", "http://cryptolib.co"];
 
   validateFileURL = function validateFileURL(file) {
     if (file === undefined) {
@@ -1855,10 +1855,10 @@ function webViewerInitialized() {
     });
   });
 
-  if (!PDFViewerApplication.supportsPrinting) {
-    appConfig.toolbar.print.classList.add('hidden');
-    appConfig.secondaryToolbar.printButton.classList.add('hidden');
-  }
+  // if (!PDFViewerApplication.supportsPrinting) {
+  //   appConfig.toolbar.print.classList.add('hidden');
+  //   appConfig.secondaryToolbar.printButton.classList.add('hidden');
+  // }
 
   if (!PDFViewerApplication.supportsFullscreen) {
     appConfig.toolbar.presentationModeButton.classList.add('hidden');
@@ -2109,8 +2109,8 @@ var webViewerFileInputChange;
     var appConfig = PDFViewerApplication.appConfig;
     appConfig.toolbar.viewBookmark.setAttribute('hidden', 'true');
     appConfig.secondaryToolbar.viewBookmarkButton.setAttribute('hidden', 'true');
-    appConfig.toolbar.download.setAttribute('hidden', 'true');
-    appConfig.secondaryToolbar.downloadButton.setAttribute('hidden', 'true');
+    // appConfig.toolbar.download.setAttribute('hidden', 'true');
+    // appConfig.secondaryToolbar.downloadButton.setAttribute('hidden', 'true');
   };
 }
 
@@ -12725,15 +12725,18 @@ function () {
       element: options.openFileButton,
       eventName: 'openfile',
       close: true
-    }, {
-      element: options.printButton,
-      eventName: 'print',
-      close: true
-    }, {
-      element: options.downloadButton,
-      eventName: 'download',
-      close: true
-    }, {
+    }, 
+    // {
+    //   element: options.printButton,
+    //   eventName: 'print',
+    //   close: true
+    // },
+    //  {
+    //   element: options.downloadButton,
+    //   eventName: 'download',
+    //   close: true
+    // }, 
+    {
       element: options.viewBookmarkButton,
       eventName: null,
       close: true
@@ -13338,16 +13341,16 @@ function () {
           source: self
         });
       });
-      items.print.addEventListener('click', function () {
-        eventBus.dispatch('print', {
-          source: self
-        });
-      });
-      items.download.addEventListener('click', function () {
-        eventBus.dispatch('download', {
-          source: self
-        });
-      });
+      // items.print.addEventListener('click', function () {
+      //   eventBus.dispatch('print', {
+      //     source: self
+      //   });
+      // });
+      // items.download.addEventListener('click', function () {
+      //   eventBus.dispatch('download', {
+      //     source: self
+      //   });
+      // });
       items.scaleSelect.oncontextmenu = _ui_utils.noContextMenuHandler;
       eventBus.on('localized', function () {
         _this._localized();

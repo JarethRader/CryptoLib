@@ -1,5 +1,7 @@
 import {
   LIBRARY_LOADING,
+  CHECKOUT_LOADING,
+  RETURN_LOADING,
   LIBRARY_LOADED,
   MINT_NEW_FAIL,
   MINT_NEW_SUCCESS,
@@ -67,7 +69,7 @@ export const clearShelf = () => {
 };
 
 export const checkout = (bookID, userAddress) => dispatch => {
-  dispatch(setLibraryLoading());
+  dispatch(setCheckoutLoading(bookID));
 
   const body = {
     bookID,
@@ -89,7 +91,7 @@ export const checkout = (bookID, userAddress) => dispatch => {
 };
 
 export const returnBook = bookID => dispatch => {
-  dispatch(setLibraryLoading());
+  dispatch(setReturnLoading(bookID));
 
   const body = {
     bookID
@@ -139,5 +141,19 @@ export const getOwn = address => dispatch => {
 export const setLibraryLoading = () => {
   return {
     type: LIBRARY_LOADING
+  };
+};
+
+export const setCheckoutLoading = bookID => {
+  return {
+    type: CHECKOUT_LOADING,
+    bookID: bookID
+  };
+};
+
+export const setReturnLoading = bookID => {
+  return {
+    type: RETURN_LOADING,
+    bookID: bookID
   };
 };

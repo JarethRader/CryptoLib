@@ -64,13 +64,13 @@ router.get("/", async (req, res) => {
         data: await library.methods.getBook(id).encodeABI()
       })
       .then(async book => {
-        if (book) {
+        if (book !== null) {
           book = web3.utils.toAscii(book);
           book = book.replace(/\0[^0-9a-zA-Z]+/g, "");
           hash = book.substring(book.indexOf("Qm"), book.length);
-          title = book.substring(0, book.match(/([a-z][A-Z][a-z.])/).index + 1);
+          title = book.substring(0, book.match(/([a-z][A-Z][.a-z])/).index + 1);
           author = book.substring(
-            book.match(/([a-z][A-Z][a-z.])/).index + 1,
+            book.match(/([a-z][A-Z][.a-z])/).index + 1,
             book.indexOf("Qm")
           );
         } else {

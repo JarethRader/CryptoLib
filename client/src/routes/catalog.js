@@ -127,14 +127,11 @@ class CatalogRow extends Catalog {
   handleOnClick = async e => {
     // TODO: add payment from user to contract owner before initiating book transfer
     // -> https://davekiss.com/ethereum-web3-node-tutorial/
-    handleOnClick = async e => {
-    // TODO: add payment from user to contract owner before initiating book transfer
-    // -> https://davekiss.com/ethereum-web3-node-tutorial/
     try {
       await this.props.checkout(this.props.bookId, this.props.userAddress);
       this.setState({ checkedOut: true });
     } catch (err) {
-      console.log(err);
+      // console.log(err);
     }
   };
 

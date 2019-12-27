@@ -17,8 +17,7 @@ import { connect } from "react-redux";
 import { getOwn, returnBook } from "../actions/libraryActions";
 import getBook from "../features/utils/getBook";
 import PDFViewer from "../features/PDFViewer";
-// import PDFJSBackend from "../features/pdfBackend/pdfjs";
-import WebviewerBackend from "../features/pdfBackend/webviewer";
+import PDFJSBackend from "../features/pdfBackend/pdfjs";
 import BeatLoader from "react-spinners/BeatLoader";
 import { shelf } from "../features/utils/override";
 
@@ -88,6 +87,7 @@ export class UserDashboard extends Component {
     let bookHash = book.hash;
     let address =
       "https://ipfs.infura.io/ipfs/" + bookHash + "#toolbar=0&navpanes=0";
+    console.log(address);
     this.setState({ selectedBook: address }, () => {
       this.setState({ showSelected: true });
     });
@@ -132,7 +132,7 @@ export class UserDashboard extends Component {
                 <Container style={{ height: "1000px" }}>
                   {/* TODO: Check if user is approved for token before displaying book */}
                   <PDFViewer
-                    backend={WebviewerBackend}
+                    backend={PDFJSBackend}
                     src={this.state.selectedBook}
                   />
                 </Container>

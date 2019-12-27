@@ -1,5 +1,7 @@
 import {
   LIBRARY_LOADING,
+  CHECKOUT_LOADING,
+  RETURN_LOADING,
   LIBRARY_LOADED,
   UPDATE_LIBRARY,
   MINT_NEW_FAIL,
@@ -17,6 +19,14 @@ import {
 
 const initialState = {
   libraryLoading: false,
+  checkingOut: {
+    checkoutLoading: false,
+    bookID: null
+  },
+  returning: {
+    returnLoading: false,
+    bookID: null
+  },
   loadingDone: false,
   library: [],
   transactionHash: null,
@@ -47,14 +57,20 @@ export default function(state = initialState, action) {
         ...state,
         ownShelf: state.ownShelf.filter(bookID => bookID !== action.returned),
         transactionHash: action.payload,
-        libraryLoading: false
+        returning: {
+          returnLoading: false,
+          bookID: null
+        }
       };
     case MINT_NEW_SUCCESS:
     case CHECKOUT_SUCCESS:
       return {
         ...state,
         transactionHash: action.payload,
-        libraryLoading: false
+        checkingOut: {
+          checkoutLoading: false,
+          bookID: null
+        }
       };
     case CLEAR_SHELF:
       return {
@@ -81,8 +97,24 @@ export default function(state = initialState, action) {
         transactionHash: null,
         libraryLoading: false
       };
-    case RETURN_FAIL:
     case CHECKOUT_FAIL:
+      return {
+        ...state,
+        transactionHash: null,
+        checkingOut: {
+          checkoutLoading: false,
+          bookID: null
+        }
+      };
+    case RETURN_FAIL:
+      return {
+        ...state,
+        transactionHash: null,
+        returning: {
+          returnLoading: false,
+          bookID: null
+        }
+      };
     case MINT_NEW_FAIL:
       return {
         ...state,
@@ -93,6 +125,22 @@ export default function(state = initialState, action) {
       return {
         ...state,
         libraryLoading: true
+      };
+    case CHECKOUT_LOADING:
+      return {
+        ...state,
+        checkingOut: {
+          checkoutLoading: true,
+          bookID: action.bookID
+        }
+      };
+    case RETURN_LOADING:
+      return {
+        ...state,
+        returning: {
+          returnLoading: true,
+          bookID: action.bookID
+        }
       };
     default:
       return state;

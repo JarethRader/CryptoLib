@@ -97,8 +97,6 @@ export const login = ({ password, address }) => dispatch => {
 
   const body = JSON.stringify({ password, address });
 
-  console.log(body);
-
   dispatch(setUserLoading());
 
   axios

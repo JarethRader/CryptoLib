@@ -29,8 +29,6 @@ router.post("/mint", async (req, res) => {
   let bytesAuthor = web3.utils.hexToBytes(web3.utils.utf8ToHex(author));
   let bytesHash = web3.utils.hexToBytes(web3.utils.utf8ToHex(hash));
 
-  console.log(typeof bytesTitle);
-
   const data = await library.methods
     .mint(bytesTitle, bytesAuthor, bytesHash)
     .encodeABI();

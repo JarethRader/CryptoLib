@@ -47,11 +47,10 @@ class LoginModal extends Component {
       address: this.props.userAddress
     };
 
-    console.log(user);
     try {
       await this.props.login(user);
     } catch (err) {
-      alert(err);
+      // alert(err);
     }
   }
 

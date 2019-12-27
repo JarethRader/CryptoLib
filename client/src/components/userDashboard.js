@@ -40,7 +40,7 @@ export class UserDashboard extends Component {
     try {
       await this.props.getOwn(this.props.userAddress);
     } catch (err) {
-      // console.log
+      // console.log(err)
     }
   };
 

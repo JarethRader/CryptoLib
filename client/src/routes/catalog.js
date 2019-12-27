@@ -19,16 +19,37 @@ export class Catalog extends Component {
     this.state = {
       catalogData: [],
       startIndex: 0,
-      endIndex: 20
+      endIndex: 50,
+      scrolling: false
     };
   }
 
-  async componentDidMount() {
+  async componentWillMount() {
     await this.loadCatalog();
     this.setState({ catalogData: this.props.library });
+    // this.scrollListener = window.addEventListener("scroll", e => {
+    //   this.handleScroll(e);
+    // });
   }
 
-  //TODO clear library props data on unmount, and reload on page remount
+  // handleScroll = async e => {
+  //   const { scrolling, endIndex } = this.state;
+  //   if (scrolling) return;
+  //   try {
+  //     await getBook(endIndex + 1);
+  //   } catch (err) {
+  //     return;
+  //   }
+  //   const lastLi = document.querySelector("div.catalogRow > div.0");
+  //   const lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
+  //   const pageOffset = window.pafeYOffset + window.innerHeight;
+  //   var bottomOffset = 20;
+  //   if (pageOffset > lastLiOffset - bottomOffset) {
+  //     this.setState({ endIndex: this.state.endIndex + 1 });
+  //     await this.loadCatalog();
+  //   }
+  // };
+
   async componentWillUnmount() {
     try {
       await this.props.clearShelf();
@@ -39,9 +60,10 @@ export class Catalog extends Component {
   }
 
   loadCatalog = async () => {
-    let i = 0;
+    let i = this.state.startIndex;
     await getBook(i).then(async book => {
       try {
+        // while (i < this.state.endIndex) {
         await this.props.shelveBook(book);
         while (this.props.book.found === true) {
           i++;
@@ -53,6 +75,8 @@ export class Catalog extends Component {
             }
           });
         }
+        // }
+        this.setState({ startIndex: this.state.endIndex + 1 });
       } catch (err) {
         // console.log(err)
       }
@@ -80,6 +104,7 @@ export class Catalog extends Component {
     return (
       <div className="pageBody">
         <div className="catalog">
+          <div className="shelf">{rows}</div>
           {this.props.isLoading ? (
             <BeatLoader
               css={override}
@@ -88,9 +113,7 @@ export class Catalog extends Component {
               color={"#0a960c"}
               loading={this.props.isLoading}
             />
-          ) : (
-            <div>{rows}</div>
-          )}
+          ) : null}
         </div>
       </div>
     );
@@ -104,6 +127,9 @@ class CatalogRow extends Catalog {
   handleOnClick = async e => {
     // TODO: add payment from user to contract owner before initiating book transfer
     // -> https://davekiss.com/ethereum-web3-node-tutorial/
+    handleOnClick = async e => {
+    // TODO: add payment from user to contract owner before initiating book transfer
+    // -> https://davekiss.com/ethereum-web3-node-tutorial/
     try {
       await this.props.checkout(this.props.bookId, this.props.userAddress);
       this.setState({ checkedOut: true });
@@ -115,7 +141,7 @@ class CatalogRow extends Catalog {
   render() {
     const { catalogData } = this.props;
     return (
-      <Row className="catalogRow">
+      <Row className={`catalogRow ${this.props.bookId}`}>
         <Col className="catalogCol">{catalogData.title}</Col>
         <Col className="catalogCol">{catalogData.author}</Col>
 

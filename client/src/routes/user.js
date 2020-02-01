@@ -64,7 +64,7 @@ export class User extends Component {
           <div>
             {userAddress ? (
               <div>
-                {isAuthenticated ? (
+                {!isAuthenticated ? (
                   <div>
                     <UserDashboard />
                   </div>

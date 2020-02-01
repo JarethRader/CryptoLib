@@ -17,6 +17,7 @@ const getBook = async id => {
           if (res.data.found === false) {
             reject("No book found");
           }
+          console.log(res.data);
           resolve(res.data);
         })
         .catch(err => {

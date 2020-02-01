@@ -20,6 +20,8 @@ const library = new web3.eth.Contract(
   libraryContract.address
 );
 
+const Book = require("../models/Book");
+
 // @route post to /library/mint
 // @desc adds new book to smart contract
 // @access public - change to private later
@@ -29,7 +31,12 @@ router.post("/mint", async (req, res) => {
   let bytesAuthor = web3.utils.hexToBytes(web3.utils.utf8ToHex(author));
   let bytesHash = web3.utils.hexToBytes(web3.utils.utf8ToHex(hash));
 
-  console.log(typeof bytesTitle);
+  let newBook = new Book({
+    title,
+    hash,
+    password: null,
+    owner: process.env.CEO_ADDRESS
+  });
 
   const data = await library.methods
     .mint(bytesTitle, bytesAuthor, bytesHash)
@@ -41,6 +48,7 @@ router.post("/mint", async (req, res) => {
     .then(async gasAmount => {
       await sendTransaction(gasAmount, data)
         .then(receipt => {
+          newBook.save();
           res.status(200).json({ transactionReceipt: receipt });
         })
         .catch(err => {
@@ -277,6 +285,37 @@ router.post("/return", async (req, res) => {
     console.log(err);
     res.status(400).json({ err: err });
   }
+});
+
+router.get("/search", async (req, res) => {
+  const { search, field } = req.query;
+  let query = new RegExp(search, "i");
+
+  let idList = [];
+
+  await Book.find({ title: query }, "bookID")
+    .then(async res => {
+      await res.forEach(element => {
+        idList.push(element.bookID);
+      });
+    })
+    .catch(err => {
+      return res.status(400).json({ msg: "Invalid query" });
+    });
+
+  await Book.find({ author: query }, "bookID")
+    .then(async res => {
+      await res.forEach(async element => {
+        if (!idList.includes(element.bookID)) {
+          idList.push(element.bookID);
+        }
+      });
+    })
+    .catch(err => {
+      return res.status(400).json({ msg: "Invalid query" });
+    });
+
+  return res.status(200).json(idList);
 });
 
 module.exports = router;

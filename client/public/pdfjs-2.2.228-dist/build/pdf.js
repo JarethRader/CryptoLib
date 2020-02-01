@@ -9894,7 +9894,6 @@ function setPDFNetworkStreamFactory(pdfNetworkStreamFactory) {
 function getDocument(src) {
   var task = new PDFDocumentLoadingTask();
   var source;
-
   if (typeof src === 'string') {
     source = {
       url: src

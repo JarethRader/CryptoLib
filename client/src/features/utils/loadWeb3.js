@@ -16,7 +16,7 @@ const loadWeb3 = () => {
     } catch (error) {
       // User denied account access
       // console.log(error).then(() => {
-      //   // console.log("unable to obtain MetaMask Account");
+      //   console.log("unable to obtain MetaMask Account");
       // });
     }
   } else if (window.web3) {

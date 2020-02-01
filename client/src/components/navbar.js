@@ -43,22 +43,22 @@ class NavBar extends Component {
             <Collapse isOpen={this.state.isOpen} navbar>
               <Nav className="ml-auto" navbar>
                 <NavItem>
-                  <Link to="/" className="navBtn">
+                  <Link to="/" className="navBtn orbitronFont">
                     Home
                   </Link>
                 </NavItem>
                 <NavItem>
-                  <Link to="/about" className="navBtn">
+                  <Link to="/about" className="navBtn orbitronFont">
                     About
                   </Link>
                 </NavItem>
                 <NavItem>
-                  <Link to="/catalog" className="navBtn">
+                  <Link to="/catalog" className="navBtn orbitronFont">
                     Catalog
                   </Link>
                 </NavItem>
                 <NavItem>
-                  <Link to="/user" className="navBtn">
+                  <Link to="/user" className="navBtn orbitronFont">
                     User
                   </Link>
                 </NavItem>

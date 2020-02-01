@@ -108,7 +108,7 @@ class CatalogRow extends Catalog {
       await this.props.checkout(this.props.bookId, this.props.userAddress);
       this.setState({ checkedOut: true });
     } catch (err) {
-      console.log(err);
+      // console.log(err);
     }
   };
 

@@ -51,6 +51,7 @@ class LoginModal extends Component {
     try {
       await this.props.login(user);
     } catch (err) {
+      console.log(err);
       alert(err);
     }
   }

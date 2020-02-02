@@ -51,6 +51,11 @@ export class Catalog extends Component {
   }
 
   updateCatalog = async () => {
+    try {
+      await this.props.clearShelf();
+    } catch (err) {
+      //console.log(err)
+    }
     await this.setShelfList()
       .then(async () => {
         await this.loadCatalog()
@@ -116,7 +121,6 @@ export class Catalog extends Component {
       this.state.startIndex - 20 < 0 ? 0 : this.state.startIndex - 20;
     this.setState({ startIndex: tmpIndex });
     this.setState({ endIndex: tmpIndex + 20 });
-    await this.props.clearShelf();
     await this.updateCatalog();
   };
 
@@ -128,7 +132,6 @@ export class Catalog extends Component {
         ? this.state.libraryLength
         : tmpIndex + 20;
     this.setState({ endIndex: tmpIndex });
-    await this.props.clearShelf();
     await this.updateCatalog();
   };
 
@@ -173,13 +176,27 @@ export class Catalog extends Component {
       <div className="pageBody">
         <div className="catalogHeader">
           <InputGroup className="searchBar">
+            <Button
+              color="secondary"
+              style={{
+                marginRight: "5%",
+                paddingLeft: "5%",
+                paddingRight: "5%"
+              }}
+              onClick={this.updateCatalog}
+            >
+              Latest
+            </Button>
             <Input
+              style={{ borderRadius: "5px" }}
               type="search"
               name="query"
               onChange={e => this.onChange(e)}
             />
             <InputGroupAddon addonType="append">
-              <Button onClick={e => this.handleQuery(e)}>Search</Button>
+              <Button color="secondary" onClick={e => this.handleQuery(e)}>
+                Search
+              </Button>
             </InputGroupAddon>
           </InputGroup>
           <br />
@@ -210,12 +227,20 @@ export class Catalog extends Component {
         <div className="mb-2 mt-2">
           <ButtonGroup className="catalogNavBtns">
             {this.state.startIndex === 0 ? null : (
-              <Button className="catalogBtn" onClick={this.handleBackClick}>
+              <Button
+                color="secondary"
+                className="catalogBtn"
+                onClick={this.handleBackClick}
+              >
                 <b>&larr;</b>
               </Button>
             )}
             {this.state.shelfList.length < 20 ? null : (
-              <Button className="catalogBtn" onClick={this.handleForwardClick}>
+              <Button
+                color="secondary"
+                className="catalogBtn"
+                onClick={this.handleForwardClick}
+              >
                 <b>&rarr;</b>
               </Button>
             )}
@@ -271,6 +296,7 @@ class CatalogRow extends Catalog {
               />
             ) : (
               <Button
+                color="secondary"
                 className="checkoutBtn"
                 onClick={e => this.handleOnClick(e)}
               >

@@ -23,28 +23,28 @@ export class Footer extends Component {
         </Row>
         <Row>
           <Col sm="4">
-            <Link className="ftrBtn" to="/">
+            <Link className="ftrBtn orbitronFont" to="/">
               Home
             </Link>
           </Col>
         </Row>
         <Row>
           <Col sm="4">
-            <Link className="ftrBtn" to="/about">
+            <Link className="ftrBtn orbitronFont" to="/about">
               About
             </Link>
           </Col>
         </Row>
         <Row>
           <Col sm="4">
-            <Link className="ftrBtn" to="/catalog">
+            <Link className="ftrBtn orbitronFont" to="/catalog">
               Catalog
             </Link>
           </Col>
         </Row>
         <Row>
           <Col sm="4">
-            <Link className="ftrBtn" to="/user">
+            <Link className="ftrBtn orbitronFont" to="/user">
               User
             </Link>
           </Col>

@@ -287,6 +287,7 @@ router.post("/return", async (req, res) => {
   }
 });
 
+//TODO add support for searching different catagories
 router.get("/search", async (req, res) => {
   const { search, field } = req.query;
   let query = new RegExp(search, "i");
@@ -316,6 +317,15 @@ router.get("/search", async (req, res) => {
     });
 
   return res.status(200).json(idList);
+});
+
+router.get("/lastIndex", async (req, res) => {
+  try {
+    let len = await Book.countDocuments({}).exec();
+    return res.status(200).json({ data: len });
+  } catch (err) {
+    res.status(400);
+  }
 });
 
 module.exports = router;

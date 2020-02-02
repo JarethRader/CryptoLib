@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./route.css";
-import { Button, Row, Col } from "reactstrap";
+import { Button, ButtonGroup, Row, Col, InputGroup, Input } from "reactstrap";
 import { connect } from "react-redux";
 import {
   shelveBook,
@@ -11,6 +11,7 @@ import {
 import getBook from "../features/utils/getBook";
 import BeatLoader from "react-spinners/BeatLoader";
 import { override, shelf } from "../features/utils/override";
+import axios from "axios";
 
 export class Catalog extends Component {
   constructor(props) {
@@ -19,14 +20,38 @@ export class Catalog extends Component {
     this.state = {
       catalogData: [],
       startIndex: 0,
-      endIndex: 20
+      endIndex: 20,
+      shelfList: [],
+      libraryLength: 0
     };
   }
 
   async componentDidMount() {
-    await this.loadCatalog();
-    this.setState({ catalogData: this.props.library });
+    this.getLibraryLength();
+    await this.updateCatalog();
   }
+
+  updateCatalog = async () => {
+    await this.setShelfList()
+      .then(async () => {
+        await this.loadCatalog()
+          .then(async () => {
+            this.setState({ catalogData: this.props.library });
+            await this.props.libraryLoaded();
+          })
+          .catch(err => {
+            // console.log(err);
+          });
+      })
+      .catch(err => {
+        // console.log(err);
+      });
+  };
+
+  getLibraryLength = async () => {
+    let len = (await (await axios.get("/library/lastIndex")).data.data) - 1;
+    this.setState({ libraryLength: len });
+  };
 
   //TODO clear library props data on unmount, and reload on page remount
   async componentWillUnmount() {
@@ -34,35 +59,68 @@ export class Catalog extends Component {
       await this.props.clearShelf();
       this.setState({ catalogData: {} });
     } catch (err) {
-      // console.log(err)
+      // console.log(err);
     }
   }
 
-  loadCatalog = async () => {
-    let i = 0;
-    await getBook(i).then(async book => {
+  setShelfList = () => {
+    return new Promise((resolve, reject) => {
+      let tmpList = [];
       try {
-        await this.props.shelveBook(book);
-        while (this.props.book.found === true) {
-          i++;
-          await getBook(i).then(nextBook => {
-            try {
-              this.props.shelveBook(nextBook);
-            } catch (err) {
-              // console.log(err)
-            }
-          });
+        for (let i = this.state.startIndex; i <= this.state.endIndex; i++) {
+          tmpList.push(i);
         }
+        this.setState({ shelfList: tmpList }, () => {
+          resolve();
+        });
       } catch (err) {
-        // console.log(err)
+        // console.log(err);
+        reject(err);
       }
     });
-    this.setState({ catalogData: this.props.library });
-    try {
-      this.props.libraryLoaded();
-    } catch (err) {
-      // console.log(err)
-    }
+  };
+
+  loadCatalog = async () => {
+    return new Promise(async (resolve, reject) => {
+      for (
+        let i = this.state.shelfList[0];
+        i <= this.state.shelfList[this.state.shelfList.length - 1];
+        i++
+      ) {
+        try {
+          await getBook(i).then(async book => {
+            await this.props.shelveBook(book);
+          });
+        } catch (err) {
+          // console.log(err);
+          reject(err);
+        }
+      }
+      this.setState({ catalogData: this.props.library });
+      resolve();
+    });
+  };
+
+  handleBackClick = async () => {
+    let tmpIndex =
+      this.state.startIndex - 20 < 0 ? 0 : this.state.startIndex - 20;
+    this.setState({ startIndex: tmpIndex });
+    this.setState({ endIndex: tmpIndex + 20 });
+    await this.props.clearShelf();
+    await this.updateCatalog();
+  };
+
+  handleForwardClick = async () => {
+    let tmpIndex = this.state.endIndex;
+    this.setState({ startIndex: tmpIndex + 1 });
+    console.log(this.state.libraryLength);
+    tmpIndex =
+      tmpIndex + 20 > this.state.libraryLength
+        ? this.state.libraryLength
+        : tmpIndex + 20;
+    this.setState({ endIndex: tmpIndex });
+    await this.props.clearShelf();
+    await this.updateCatalog();
   };
 
   render() {
@@ -79,7 +137,22 @@ export class Catalog extends Component {
     ));
     return (
       <div className="pageBody">
+        <div className="catalogHeader">
+          <InputGroup className="searchBar">
+            <Input placeholder="search" />
+          </InputGroup>
+          <br />
+        </div>
         <div className="catalog">
+          <div>
+            <Row className="tableHeader">
+              <Col className="catalogCol">Title</Col>
+              <Col className="catalogCol">Author(s)</Col>
+              <Col className="catalogCol">Availablity</Col>
+              <Col className="catalogCol">Checkout</Col>
+            </Row>
+          </div>
+          <hr className="my-auto" />
           {this.props.isLoading ? (
             <BeatLoader
               css={override}
@@ -91,6 +164,21 @@ export class Catalog extends Component {
           ) : (
             <div>{rows}</div>
           )}
+        </div>
+        <hr className="my-1" />
+        <div className="mb-2 mt-2">
+          <ButtonGroup className="catalogNavBtns">
+            {this.state.startIndex === 0 ? null : (
+              <Button className="catalogBtn" onClick={this.handleBackClick}>
+                <b>&larr;</b>
+              </Button>
+            )}
+            {this.state.shelfList.length < 20 ? null : (
+              <Button className="catalogBtn" onClick={this.handleForwardClick}>
+                <b>&rarr;</b>
+              </Button>
+            )}
+          </ButtonGroup>
         </div>
       </div>
     );

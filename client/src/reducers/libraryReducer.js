@@ -39,7 +39,8 @@ export default function(state = initialState, action) {
     case LIBRARY_LOADED:
       return {
         ...state,
-        loadingDone: true
+        loadingDone: true,
+        libraryLoading: false
       };
     case UPDATE_LIBRARY:
       return {

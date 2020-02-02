@@ -1,6 +1,14 @@
 import React, { Component } from "react";
 import "./route.css";
-import { Button, ButtonGroup, Row, Col, InputGroup, Input } from "reactstrap";
+import {
+  Button,
+  ButtonGroup,
+  Row,
+  Col,
+  InputGroup,
+  InputGroupAddon,
+  Input
+} from "reactstrap";
 import { connect } from "react-redux";
 import {
   shelveBook,
@@ -22,7 +30,8 @@ export class Catalog extends Component {
       startIndex: 0,
       endIndex: 20,
       shelfList: [],
-      libraryLength: 0
+      libraryLength: 0,
+      query: null
     };
   }
 
@@ -31,13 +40,27 @@ export class Catalog extends Component {
     await this.updateCatalog();
   }
 
+  //TODO clear library props data on unmount, and reload on page remount
+  async componentWillUnmount() {
+    try {
+      await this.props.clearShelf();
+      this.setState({ catalogData: {} });
+    } catch (err) {
+      // console.log(err);
+    }
+  }
+
   updateCatalog = async () => {
     await this.setShelfList()
       .then(async () => {
         await this.loadCatalog()
           .then(async () => {
             this.setState({ catalogData: this.props.library });
-            await this.props.libraryLoaded();
+            try {
+              await this.props.libraryLoaded();
+            } catch (err) {
+              return;
+            }
           })
           .catch(err => {
             // console.log(err);
@@ -52,16 +75,6 @@ export class Catalog extends Component {
     let len = (await (await axios.get("/library/lastIndex")).data.data) - 1;
     this.setState({ libraryLength: len });
   };
-
-  //TODO clear library props data on unmount, and reload on page remount
-  async componentWillUnmount() {
-    try {
-      await this.props.clearShelf();
-      this.setState({ catalogData: {} });
-    } catch (err) {
-      // console.log(err);
-    }
-  }
 
   setShelfList = () => {
     return new Promise((resolve, reject) => {
@@ -82,17 +95,14 @@ export class Catalog extends Component {
 
   loadCatalog = async () => {
     return new Promise(async (resolve, reject) => {
-      for (
-        let i = this.state.shelfList[0];
-        i <= this.state.shelfList[this.state.shelfList.length - 1];
-        i++
-      ) {
+      console.log(this.state.shelfList);
+      for (let i = 0; i <= this.state.shelfList.length - 1; i++) {
         try {
-          await getBook(i).then(async book => {
+          await getBook(this.state.shelfList[i]).then(async book => {
             await this.props.shelveBook(book);
           });
         } catch (err) {
-          // console.log(err);
+          console.log(err);
           reject(err);
         }
       }
@@ -113,7 +123,6 @@ export class Catalog extends Component {
   handleForwardClick = async () => {
     let tmpIndex = this.state.endIndex;
     this.setState({ startIndex: tmpIndex + 1 });
-    console.log(this.state.libraryLength);
     tmpIndex =
       tmpIndex + 20 > this.state.libraryLength
         ? this.state.libraryLength
@@ -121,6 +130,31 @@ export class Catalog extends Component {
     this.setState({ endIndex: tmpIndex });
     await this.props.clearShelf();
     await this.updateCatalog();
+  };
+
+  onChange = e => {
+    e.preventDefault();
+    this.setState({ [e.target.name]: e.target.value });
+  };
+
+  handleQuery = async e => {
+    e.preventDefault();
+    console.log(this.state.query);
+    let queryShelf = await axios.get(
+      `/library/search?search=${this.state.query}`
+    );
+    this.setState({ shelfList: queryShelf.data }, async () => {
+      console.log(this.state.shelfList);
+      this.props.clearShelf();
+      await this.loadCatalog()
+        .then(async () => {
+          this.setState({ catalogData: this.props.library });
+          await this.props.libraryLoaded();
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    });
   };
 
   render() {
@@ -139,7 +173,14 @@ export class Catalog extends Component {
       <div className="pageBody">
         <div className="catalogHeader">
           <InputGroup className="searchBar">
-            <Input placeholder="search" />
+            <Input
+              type="search"
+              name="query"
+              onChange={e => this.onChange(e)}
+            />
+            <InputGroupAddon addonType="append">
+              <Button onClick={e => this.handleQuery(e)}>Search</Button>
+            </InputGroupAddon>
           </InputGroup>
           <br />
         </div>

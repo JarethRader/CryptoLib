@@ -70,7 +70,6 @@ class LoginModal extends Component {
       } catch (err) {
         // console.log(err)
       }
-
     } else {
       alert("Email invalid");
     }

@@ -1,4 +1,4 @@
-import loadWeb3 from "./loadWeb3";
+// import loadWeb3 from "./loadWeb3";
 import axios from "axios";
 
 const getBook = async id => {
@@ -9,7 +9,7 @@ const getBook = async id => {
   };
   return new Promise(async (resolve, reject) => {
     try {
-      await loadWeb3();
+      // await loadWeb3();
 
       await axios
         .get(`/library?id=${id}`, config)

@@ -26,7 +26,9 @@ const initialState = {
   dashboardPage: "",
   ownBooks: [],
   selectedBook: null,
-  showSelected: false
+  selectedID: null,
+  showSelected: false,
+  width: window.innerWidth
 };
 
 export class UserDashboard extends Component {
@@ -44,7 +46,12 @@ export class UserDashboard extends Component {
     }
   };
 
+  handleWindowSizeChange = () => {
+    this.setState({ width: window.innerWidth });
+  };
+
   toggleNav = () => {
+    console.log("Toggling nav");
     this.setState({ isOpen: !this.state.isOpen });
   };
 
@@ -84,6 +91,7 @@ export class UserDashboard extends Component {
   };
 
   setSelected = book => {
+    this.setState({ selectedID: book.id });
     let bookHash = book.hash;
     let address =
       "https://ipfs.infura.io/ipfs/" + bookHash + "#toolbar=0&navpanes=0";
@@ -98,18 +106,20 @@ export class UserDashboard extends Component {
       <ShelfRow
         key={bookID}
         book={book}
+        selectedID={this.state.selectedID}
         setSelected={this.setSelected}
         returnBook={this.props.returnBook}
         returning={this.props.returning}
       />
     ));
+    const isMobile = this.state.width <= 500;
     return (
       <div>
         <Navbar className="userDashboard" color="light" light expand="md">
           <NavbarBrand className="orbitronFont">
             <b>{this.props.user.username}</b>
           </NavbarBrand>
-          <NavbarToggler onClick={this.toggle} />
+          <NavbarToggler onClick={this.toggleNav} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="mr-auto" navbar>
               <NavItem className="userDashboardBtn">
@@ -129,13 +139,29 @@ export class UserDashboard extends Component {
               <hr className="my-2" />
               <br />
               {this.state.showSelected ? (
-                <Container style={{ height: "1000px" }}>
-                  {/* TODO: Check if user is approved for token before displaying book */}
-                  <PDFViewer
-                    backend={PDFJSBackend}
-                    src={this.state.selectedBook}
-                  />
-                </Container>
+                <div>
+                  {isMobile === true ? (
+                    <Container style={{ height: "45rem" }}>
+                      {/* TODO: Check if user is approved for token before displaying book */}
+                      <PDFViewer
+                        backend={PDFJSBackend}
+                        src={this.state.selectedBook}
+                        // src={sampleEncrypted}
+                        // password={"password"}
+                      />
+                    </Container>
+                  ) : (
+                    <Container style={{ height: "60rem" }}>
+                      {/* TODO: Check if user is approved for token before displaying book */}
+                      <PDFViewer
+                        backend={PDFJSBackend}
+                        src={this.state.selectedBook}
+                        // src={sampleEncrypted}
+                        // password={"password"}
+                      />
+                    </Container>
+                  )}
+                </div>
               ) : null}
             </div>
           ) : null}
@@ -158,15 +184,19 @@ class ShelfRow extends UserDashboard {
   };
 
   render() {
-    const { book } = this.props;
+    const { book, selectedID } = this.props;
     return (
       <Row className="catalogRow">
         <Col className="catalogCol">{book.title}</Col>
         <Col className="catalogCol">{book.author}</Col>
         <Col className="catalogCol">
-          <Button className="checkoutBtn" onClick={e => this.handleSelect(e)}>
-            Select Book
-          </Button>
+          {selectedID === book.id ? (
+            <b>selected</b>
+          ) : (
+            <Button className="checkoutBtn" onClick={e => this.handleSelect(e)}>
+              Select Book
+            </Button>
+          )}
         </Col>
         <Col className="catalogCol">
           {this.props.returning.returnLoading &&

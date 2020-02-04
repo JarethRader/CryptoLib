@@ -23,24 +23,10 @@
   margin-right: auto;
 }
 
-.slide {
-  padding-top: 15%;
-  padding-bottom: 15%;
-  width: 80%;
-  min-height: 40rem;
-  margin-left: auto;
-  margin-right: auto;
-}
-
 .about {
   padding-top: 15%;
   padding-bottom: 10%;
   text-align: center;
-}
-
-.catalog {
-  padding-top: 15%;
-  padding-bottom: 10%;
 }
 
 .user {
@@ -66,6 +52,12 @@
   cursor: pointer;
 }
 
+.catalog {
+  padding-top: 1.25%;
+  padding-bottom: 2.5%;
+  min-height: 100%;
+}
+
 .catalogRow {
   padding-top: 0.25%;
   padding-bottom: 0.25%;
@@ -78,5 +70,38 @@
 }
 
 .catalogCol {
+  text-align: center;
+}
+
+.catalogHeader {
+  padding-top: 10%;
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+.tableHeader {
+  margin-bottom: 0.5%;
+  margin-left: 10%;
+  margin-right: 10%;
+  border-radius: 10px;
+  border: 1px solid black;
+  background-color: darkgrey;
+}
+
+.searchBar {
+  width: 50%;
+}
+
+.catalogNavBtns {
+  width: 30%;
+}
+
+.catalogBtn {
+  font-size: 30px;
+}
+
+.dailyShelf {
+  margin-top: 7.5rem;
+  margin-bottom: 5%;
   text-align: center;
 }

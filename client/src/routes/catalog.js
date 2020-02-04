@@ -1,6 +1,14 @@
 import React, { Component } from "react";
 import "./route.css";
-import { Button, Row, Col } from "reactstrap";
+import {
+  Button,
+  ButtonGroup,
+  Row,
+  Col,
+  InputGroup,
+  InputGroupAddon,
+  Input
+} from "reactstrap";
 import { connect } from "react-redux";
 import {
   shelveBook,
@@ -11,6 +19,7 @@ import {
 import getBook from "../features/utils/getBook";
 import BeatLoader from "react-spinners/BeatLoader";
 import { override, shelf } from "../features/utils/override";
+import axios from "axios";
 
 export class Catalog extends Component {
   constructor(props) {
@@ -19,74 +28,139 @@ export class Catalog extends Component {
     this.state = {
       catalogData: [],
       startIndex: 0,
-      endIndex: 50,
-      scrolling: false
+      endIndex: 20,
+      shelfList: [],
+      libraryLength: 0,
+      query: null
     };
   }
 
-  async componentWillMount() {
-    await this.loadCatalog();
-    this.setState({ catalogData: this.props.library });
-    // this.scrollListener = window.addEventListener("scroll", e => {
-    //   this.handleScroll(e);
-    // });
+  async componentDidMount() {
+    this.getLibraryLength();
+    await this.updateCatalog();
   }
 
-  // handleScroll = async e => {
-  //   const { scrolling, endIndex } = this.state;
-  //   if (scrolling) return;
-  //   try {
-  //     await getBook(endIndex + 1);
-  //   } catch (err) {
-  //     return;
-  //   }
-  //   const lastLi = document.querySelector("div.catalogRow > div.0");
-  //   const lastLiOffset = lastLi.offsetTop + lastLi.clientHeight;
-  //   const pageOffset = window.pafeYOffset + window.innerHeight;
-  //   var bottomOffset = 20;
-  //   if (pageOffset > lastLiOffset - bottomOffset) {
-  //     this.setState({ endIndex: this.state.endIndex + 1 });
-  //     await this.loadCatalog();
-  //   }
-  // };
-
+  //TODO clear library props data on unmount, and reload on page remount
   async componentWillUnmount() {
     try {
       await this.props.clearShelf();
       this.setState({ catalogData: {} });
     } catch (err) {
-      // console.log(err)
+      // console.log(err);
     }
   }
 
-  loadCatalog = async () => {
-    let i = this.state.startIndex;
-    await getBook(i).then(async book => {
-      try {
-        // while (i < this.state.endIndex) {
-        await this.props.shelveBook(book);
-        while (this.props.book.found === true) {
-          i++;
-          await getBook(i).then(nextBook => {
+  updateCatalog = async () => {
+    try {
+      await this.props.clearShelf();
+    } catch (err) {
+      //console.log(err)
+    }
+    await this.setShelfList()
+      .then(async () => {
+        await this.loadCatalog()
+          .then(async () => {
+            this.setState({ catalogData: this.props.library });
             try {
-              this.props.shelveBook(nextBook);
+              await this.props.libraryLoaded();
             } catch (err) {
-              // console.log(err)
+              return;
             }
+          })
+          .catch(err => {
+            // console.log(err);
           });
+      })
+      .catch(err => {
+        // console.log(err);
+      });
+  };
+
+  getLibraryLength = async () => {
+    let len = (await (await axios.get("/library/lastIndex")).data.data) - 1;
+    this.setState({ libraryLength: len });
+  };
+
+  setShelfList = () => {
+    return new Promise((resolve, reject) => {
+      let tmpList = [];
+      try {
+        for (let i = this.state.startIndex; i <= this.state.endIndex; i++) {
+          tmpList.push(i);
         }
-        // }
-        this.setState({ startIndex: this.state.endIndex + 1 });
+        this.setState({ shelfList: tmpList }, () => {
+          resolve();
+        });
       } catch (err) {
-        // console.log(err)
+        // console.log(err);
+        reject(err);
       }
     });
-    this.setState({ catalogData: this.props.library });
-    try {
-      this.props.libraryLoaded();
-    } catch (err) {
-      // console.log(err)
+  };
+
+  loadCatalog = async () => {
+    return new Promise(async (resolve, reject) => {
+      console.log(this.state.shelfList);
+      for (let i = 0; i <= this.state.shelfList.length - 1; i++) {
+        try {
+          await getBook(this.state.shelfList[i]).then(async book => {
+            await this.props.shelveBook(book);
+          });
+        } catch (err) {
+          console.log(err);
+          reject(err);
+        }
+      }
+      this.setState({ catalogData: this.props.library });
+      resolve();
+    });
+  };
+
+  handleBackClick = async () => {
+    let tmpIndex =
+      this.state.startIndex - 20 < 0 ? 0 : this.state.startIndex - 20;
+    this.setState({ startIndex: tmpIndex });
+    this.setState({ endIndex: tmpIndex + 20 });
+    await this.updateCatalog();
+  };
+
+  handleForwardClick = async () => {
+    let tmpIndex = this.state.endIndex;
+    this.setState({ startIndex: tmpIndex + 1 });
+    tmpIndex =
+      tmpIndex + 20 > this.state.libraryLength
+        ? this.state.libraryLength
+        : tmpIndex + 20;
+    this.setState({ endIndex: tmpIndex });
+    await this.updateCatalog();
+  };
+
+  onChange = e => {
+    e.preventDefault();
+    this.setState({ [e.target.name]: e.target.value });
+  };
+
+  handleQuery = async e => {
+    e.preventDefault();
+    console.log(this.state.query);
+    if (this.state.query === null || this.state.query === "") {
+      return;
     }
+    let queryShelf = await axios.get(
+      `/library/search?search=${this.state.query}`
+    );
+    this.setState({ shelfList: queryShelf.data }, async () => {
+      console.log(this.state.shelfList);
+      this.props.clearShelf();
+      await this.loadCatalog()
+        .then(async () => {
+          this.setState({ catalogData: this.props.library });
+          await this.props.libraryLoaded();
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    });
   };
 
   render() {
@@ -103,8 +177,43 @@ export class Catalog extends Component {
     ));
     return (
       <div className="pageBody">
+        <div className="catalogHeader">
+          <InputGroup className="searchBar">
+            <Button
+              color="secondary"
+              style={{
+                marginRight: "5%",
+                paddingLeft: "5%",
+                paddingRight: "5%"
+              }}
+              onClick={this.updateCatalog}
+            >
+              Latest
+            </Button>
+            <Input
+              style={{ borderRadius: "5px" }}
+              type="search"
+              name="query"
+              onChange={e => this.onChange(e)}
+            />
+            <InputGroupAddon addonType="append">
+              <Button color="secondary" onClick={e => this.handleQuery(e)}>
+                Search
+              </Button>
+            </InputGroupAddon>
+          </InputGroup>
+          <br />
+        </div>
         <div className="catalog">
-          <div className="shelf">{rows}</div>
+          <div>
+            <Row className="tableHeader" style={{ borderRadius: "0px" }}>
+              <Col className="catalogCol">Title</Col>
+              <Col className="catalogCol">Author(s)</Col>
+              <Col className="catalogCol">Availablity</Col>
+              <Col className="catalogCol">Checkout</Col>
+            </Row>
+          </div>
+          <hr className="my-auto" />
           {this.props.isLoading ? (
             <BeatLoader
               css={override}
@@ -113,7 +222,32 @@ export class Catalog extends Component {
               color={"#0a960c"}
               loading={this.props.isLoading}
             />
-          ) : null}
+          ) : (
+            <div>{rows}</div>
+          )}
+        </div>
+        <hr className="my-1" />
+        <div className="mb-2 mt-2">
+          <ButtonGroup className="catalogNavBtns">
+            {this.state.startIndex === 0 ? null : (
+              <Button
+                color="secondary"
+                className="catalogBtn"
+                onClick={this.handleBackClick}
+              >
+                <b>&larr;</b>
+              </Button>
+            )}
+            {this.state.shelfList.length < 20 ? null : (
+              <Button
+                color="secondary"
+                className="catalogBtn"
+                onClick={this.handleForwardClick}
+              >
+                <b>&rarr;</b>
+              </Button>
+            )}
+          </ButtonGroup>
         </div>
       </div>
     );
@@ -138,7 +272,7 @@ class CatalogRow extends Catalog {
   render() {
     const { catalogData } = this.props;
     return (
-      <Row className={`catalogRow ${this.props.bookId}`}>
+      <Row className="catalogRow">
         <Col className="catalogCol">{catalogData.title}</Col>
         <Col className="catalogCol">{catalogData.author}</Col>
 
@@ -165,6 +299,7 @@ class CatalogRow extends Catalog {
               />
             ) : (
               <Button
+                color="secondary"
                 className="checkoutBtn"
                 onClick={e => this.handleOnClick(e)}
               >

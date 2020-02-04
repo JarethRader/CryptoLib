@@ -67,7 +67,10 @@ class LoginModal extends Component {
       };
       try {
         await this.props.register(user);
-      } catch (err) {}
+      } catch (err) {
+        // console.log(err)
+      }
+
     } else {
       alert("Email invalid");
     }

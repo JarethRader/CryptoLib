@@ -20,7 +20,6 @@ import PDFViewer from "../features/PDFViewer";
 import PDFJSBackend from "../features/pdfBackend/pdfjs";
 import BeatLoader from "react-spinners/BeatLoader";
 import { shelf } from "../features/utils/override";
-// import sampleEncrypted from "../features/resources/sampleEncrypted.pdf";
 
 const initialState = {
   isOpen: false,
@@ -96,6 +95,7 @@ export class UserDashboard extends Component {
     let bookHash = book.hash;
     let address =
       "https://ipfs.infura.io/ipfs/" + bookHash + "#toolbar=0&navpanes=0";
+    console.log(address);
     this.setState({ selectedBook: address }, () => {
       this.setState({ showSelected: true });
     });

@@ -130,11 +130,10 @@ router.get("/auth", auth, (req, res) => {
     });
 });
 
-//@route /user
+//@route GET /user
 //@desc check if user exists
 //@access public
 router.get("/", (req, res) => {
-  // console.log(req.query.address);
   User.find({ address: req.query.address })
     .then(user => {
       if (user[0].address === req.query.address) {

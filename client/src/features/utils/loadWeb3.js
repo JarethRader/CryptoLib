@@ -28,9 +28,9 @@ const loadWeb3 = () => {
         // console.log(error);
       });
   } else {
-    alert(
-      "Non-Ethereum browser detected. You should consider trying MetaMask!"
-    );
+    // alert(
+    //   "Non-Ethereum browser detected. You should consider trying MetaMask!"
+    // );
   }
 
   if (

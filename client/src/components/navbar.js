@@ -65,14 +65,14 @@ class NavBar extends Component {
                   <DropdownToggle nav caret className="navBtn orbitronFont">
                     Catalog
                   </DropdownToggle>
-                  <DropdownMenu left>
+                  <DropdownMenu>
                     <DropdownItem>
-                      <Link to="/catalog" className="orbitronFont">
+                      <Link to="/catalog" className="dropBtn orbitronFont">
                         Catalog
                       </Link>
                     </DropdownItem>
                     <DropdownItem>
-                      <Link to="/catalog" className="orbitronFont">
+                      <Link to="/dailyShelf" className="dropBtn orbitronFont">
                         Daily Shelf
                       </Link>
                     </DropdownItem>

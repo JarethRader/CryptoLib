@@ -18,19 +18,10 @@
 .navbar-toggler {
   color: rgba(255, 255, 255, 1);
   border-color: rgb(255, 255, 255);
-}
-
-.navbar-toggler-icon {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.5)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-  display: inline-block;
-  width: 1.5em;
-  height: 1.5em;
-  vertical-align: middle;
-  content: "";
-  background: no-repeat center center;
-  background-image: none;
-  background-size: auto;
-  background-size: 100% 100%;
+  background-image: url("./features/resources/open-menu.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 2rem;
 }
 
 .navBtn {
@@ -42,22 +33,12 @@
 .navBtn:focus {
   outline: 0;
   border: none;
-  -moz-outline-style: none;
+  outline-style: none;
 }
 
 .navBtn:hover {
   color: white;
-  background-color: #077a09;
-  border-radius: 0.5rem;
-}
-
-.navBtn:active {
-  text-decoration: none;
-  color: white;
-  padding-left: 1.2em;
-  padding-right: 1.2em;
-  font-size: 14pt;
-  cursor: pointer;
+  text-shadow: 3px 3px rgb(73, 69, 69);
 }
 
 .navDropdown {
@@ -68,8 +49,20 @@
   font-size: 14pt;
 }
 
-.dropdownBtn {
+.dropBtn {
   color: black;
+}
+
+.dropBtn:hover {
+  text-decoration: none;
+  color: black;
+}
+
+.dropBtn:active,
+.dropBtn:focus {
+  outline: 0;
+  border: none;
+  outline-style: none;
 }
 
 .userDashboard {

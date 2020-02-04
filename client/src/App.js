@@ -15,6 +15,7 @@ import Home from "./routes/home";
 import About from "./routes/about";
 import Catalog from "./routes/catalog";
 import User from "./routes/user";
+import DailyShelf from "./routes/dailyShelf";
 
 class App extends Component {
   constructor(props) {
@@ -47,6 +48,9 @@ class App extends Component {
               </Route>
               <Route path="/catalog">
                 <Catalog />
+              </Route>
+              <Route path="/dailyShelf">
+                <DailyShelf />
               </Route>
               <Route path="/about">
                 <About />

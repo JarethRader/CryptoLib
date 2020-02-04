@@ -12,7 +12,9 @@ export class DailyShelf extends Component {
     shelf: [],
     shelfPopulated: false,
     selectedBook: null,
-    showSelected: false
+    selectedID: null,
+    showSelected: false,
+    width: window.innerWidth
   };
 
   async componentDidMount() {
@@ -29,6 +31,10 @@ export class DailyShelf extends Component {
         });
     }
   }
+
+  handleWindowSizeChange = () => {
+    this.setState({ width: window.innerWidth });
+  };
 
   getDailyShelf = async () => {
     return new Promise(async (resolve, reject) => {
@@ -51,6 +57,7 @@ export class DailyShelf extends Component {
   };
 
   setSelected = book => {
+    this.setState({ selectedID: book.id });
     let bookHash = book.hash;
     let address =
       "https://ipfs.infura.io/ipfs/" + bookHash + "#toolbar=0&navpanes=0";
@@ -62,12 +69,16 @@ export class DailyShelf extends Component {
 
   render() {
     let rows = this.state.shelf.map((book, bookID) => (
-      <ShelfRow key={bookID} book={book} setSelected={this.setSelected} />
+      <ShelfRow
+        key={bookID}
+        book={book}
+        selectedID={this.state.selectedID}
+        setSelected={this.setSelected}
+      />
     ));
+    const isMobile = this.state.width <= 500;
     return (
-      <div
-        style={{ marginTop: "10%", marginBottom: "5%", textAlign: "center" }}
-      >
+      <div className="dailyShelf">
         <Container>
           <h1>Today's Shelf</h1>
           {this.state.shelfPopulated ? (
@@ -85,15 +96,23 @@ export class DailyShelf extends Component {
         <hr className="my-2" />
         <div>
           {this.state.showSelected ? (
-            <Container style={{ height: "1000px" }}>
-              {/* TODO: Check if user is approved for token before displaying book */}
-              <PDFViewer
-                backend={PDFJSBackend}
-                src={this.state.selectedBook}
-                // src={sampleEncrypted}
-                // password={"password"}
-              />
-            </Container>
+            <div>
+              {isMobile === true ? (
+                <Container style={{ height: "45rem" }}>
+                  <PDFViewer
+                    backend={PDFJSBackend}
+                    src={this.state.selectedBook}
+                  />
+                </Container>
+              ) : (
+                <Container style={{ height: "60rem" }}>
+                  <PDFViewer
+                    backend={PDFJSBackend}
+                    src={this.state.selectedBook}
+                  />
+                </Container>
+              )}
+            </div>
           ) : null}
         </div>
       </div>
@@ -108,15 +127,19 @@ class ShelfRow extends DailyShelf {
   };
 
   render() {
-    const { book } = this.props;
+    const { book, selectedID } = this.props;
     return (
       <Row className="catalogRow">
         <Col className="catalogCol">{book.title}</Col>
         <Col className="catalogCol">{book.author}</Col>
         <Col className="catalogCol">
-          <Button className="checkoutBtn" onClick={e => this.handleSelect(e)}>
-            Select Book
-          </Button>
+          {selectedID === book.id ? (
+            <b>Selected</b>
+          ) : (
+            <Button className="checkoutBtn" onClick={e => this.handleSelect(e)}>
+              Select Book
+            </Button>
+          )}
         </Col>
       </Row>
     );

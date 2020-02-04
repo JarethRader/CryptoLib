@@ -23,15 +23,6 @@
   margin-right: auto;
 }
 
-.slide {
-  padding-top: 15%;
-  padding-bottom: 15%;
-  width: 80%;
-  min-height: 40rem;
-  margin-left: auto;
-  margin-right: auto;
-}
-
 .about {
   padding-top: 15%;
   padding-bottom: 10%;
@@ -64,6 +55,7 @@
 .catalog {
   padding-top: 1.25%;
   padding-bottom: 2.5%;
+  min-height: 100%;
 }
 
 .catalogRow {
@@ -106,4 +98,10 @@
 
 .catalogBtn {
   font-size: 30px;
+}
+
+.dailyShelf {
+  margin-top: 7.5rem;
+  margin-bottom: 5%;
+  text-align: center;
 }

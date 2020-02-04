@@ -42,23 +42,25 @@ class App extends Component {
         <BrowserRouter>
           <div className="app">
             <NavBar />
-            <Switch>
-              <Route path="/user">
-                <User />
-              </Route>
-              <Route path="/catalog">
-                <Catalog />
-              </Route>
-              <Route path="/dailyShelf">
-                <DailyShelf />
-              </Route>
-              <Route path="/about">
-                <About />
-              </Route>
-              <Route path="/">
-                <Home />
-              </Route>
-            </Switch>
+            <div className="body">
+              <Switch>
+                <Route path="/user">
+                  <User />
+                </Route>
+                <Route path="/catalog">
+                  <Catalog />
+                </Route>
+                <Route path="/dailyShelf">
+                  <DailyShelf />
+                </Route>
+                <Route path="/about">
+                  <About />
+                </Route>
+                <Route path="/">
+                  <Home />
+                </Route>
+              </Switch>
+            </div>
             <Footer />
           </div>
         </BrowserRouter>

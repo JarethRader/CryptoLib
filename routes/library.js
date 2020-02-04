@@ -21,6 +21,7 @@ const library = new web3.eth.Contract(
 );
 
 const Book = require("../models/Book");
+const DailyShelf = require("../models/DailyShelf");
 
 // @route post to /library/mint
 // @desc adds new book to smart contract
@@ -30,12 +31,14 @@ router.post("/mint", async (req, res) => {
   let bytesTitle = web3.utils.hexToBytes(web3.utils.utf8ToHex(title));
   let bytesAuthor = web3.utils.hexToBytes(web3.utils.utf8ToHex(author));
   let bytesHash = web3.utils.hexToBytes(web3.utils.utf8ToHex(hash));
+  let bookID = await Book.countDocuments({}).exec();
 
   let newBook = new Book({
+    bookID,
     title,
-    hash,
-    password: null,
-    owner: process.env.CEO_ADDRESS
+    author,
+    catagory: "",
+    hash
   });
 
   const data = await library.methods
@@ -290,6 +293,9 @@ router.post("/return", async (req, res) => {
 //TODO add support for searching different catagories
 router.get("/search", async (req, res) => {
   const { search, field } = req.query;
+  if (!search) {
+    return res.status(400).json({ msg: "Query is empty" });
+  }
   let query = new RegExp(search, "i");
 
   let idList = [];
@@ -326,6 +332,17 @@ router.get("/lastIndex", async (req, res) => {
   } catch (err) {
     res.status(400);
   }
+});
+
+router.get("/dailyShelf", (req, res) => {
+  DailyShelf.findById("5e38bf40ca45d527d6f574cf")
+    .then(shelf => {
+      return res.status(200).json({ shelf: shelf });
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(400);
+    });
 });
 
 module.exports = router;

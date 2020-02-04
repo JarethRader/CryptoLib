@@ -7,6 +7,11 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
+  NavLink,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
   Container
 } from "reactstrap";
 import { Link } from "react-router-dom";
@@ -24,9 +29,13 @@ class NavBar extends Component {
   render() {
     return (
       <div>
-        <Navbar dark expand="sm" className="navBar" fixed="top">
+        <Navbar expand="sm" className="navBar" fixed="top">
           <Container>
-            <NavbarBrand href="/" className="orbitronFont">
+            <NavbarBrand
+              style={{ color: "white" }}
+              href="/"
+              className="orbitronFont"
+            >
               <img
                 src={Cryptolib_Icon}
                 alt="#"
@@ -43,24 +52,36 @@ class NavBar extends Component {
             <Collapse isOpen={this.state.isOpen} navbar>
               <Nav className="ml-auto" navbar>
                 <NavItem>
-                  <Link to="/" className="navBtn orbitronFont">
+                  <NavLink href="/" className="navBtn orbitronFont">
                     Home
-                  </Link>
+                  </NavLink>
                 </NavItem>
                 <NavItem>
-                  <Link to="/about" className="navBtn orbitronFont">
+                  <NavLink href="/about" className="navBtn orbitronFont">
                     About
-                  </Link>
+                  </NavLink>
                 </NavItem>
-                <NavItem>
-                  <Link to="/catalog" className="navBtn orbitronFont">
+                <UncontrolledDropdown nav inNavbar>
+                  <DropdownToggle nav caret className="navBtn orbitronFont">
                     Catalog
-                  </Link>
-                </NavItem>
+                  </DropdownToggle>
+                  <DropdownMenu left>
+                    <DropdownItem>
+                      <Link to="/catalog" className="orbitronFont">
+                        Catalog
+                      </Link>
+                    </DropdownItem>
+                    <DropdownItem>
+                      <Link to="/catalog" className="orbitronFont">
+                        Daily Shelf
+                      </Link>
+                    </DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
                 <NavItem>
-                  <Link to="/user" className="navBtn orbitronFont">
+                  <NavLink href="/user" className="navBtn orbitronFont">
                     User
-                  </Link>
+                  </NavLink>
                 </NavItem>
               </Nav>
             </Collapse>

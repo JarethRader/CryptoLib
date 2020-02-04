@@ -143,6 +143,9 @@ export class Catalog extends Component {
   handleQuery = async e => {
     e.preventDefault();
     console.log(this.state.query);
+    if (this.state.query === null || this.state.query === "") {
+      return;
+    }
     let queryShelf = await axios.get(
       `/library/search?search=${this.state.query}`
     );
@@ -203,7 +206,7 @@ export class Catalog extends Component {
         </div>
         <div className="catalog">
           <div>
-            <Row className="tableHeader">
+            <Row className="tableHeader" style={{ borderRadius: "0px" }}>
               <Col className="catalogCol">Title</Col>
               <Col className="catalogCol">Author(s)</Col>
               <Col className="catalogCol">Availablity</Col>

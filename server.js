@@ -4,6 +4,8 @@ const cors = require("cors");
 const path = require("path");
 const bodyParser = require("body-parser");
 
+const Task = require("./tasks/updateDailyShelf");
+
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -35,6 +37,8 @@ app.use(cors());
 //use routes
 app.use("/library", require("./routes/library"));
 app.use("/user", require("./routes/users"));
+
+Task.updateDailyShelf();
 
 if (process.env.NODE_ENV == "production") {
   // Set a static folder

@@ -5712,7 +5712,6 @@ var PasswordPrompt =
 function () {
   function PasswordPrompt(options, overlayManager) {
     var _this = this;
-
     var l10n = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _ui_utils.NullL10n;
 
     _classCallCheck(this, PasswordPrompt);
@@ -5741,7 +5740,7 @@ function () {
     key: "open",
     value: function open() {
       var _this2 = this;
-
+      
       this.overlayManager.open(this.overlayName).then(function () {
         _this2.input.focus();
 
@@ -5865,6 +5864,7 @@ function () {
         var viewerUrl;
         viewerUrl = '?file=' + encodeURIComponent(blobUrl + '#' + filename);
         window.open(viewerUrl);
+
         return false;
       };
     }
@@ -5906,6 +5906,7 @@ function () {
 
       for (var i = 0; i < attachmentsCount; i++) {
         var item = attachments[names[i]];
+        console.log(item)
         var filename = (0, _pdfjsLib.removeNullCharacters)((0, _pdfjsLib.getFilenameFromUrl)(item.filename));
         var div = document.createElement('div');
         div.className = 'attachmentsItem';

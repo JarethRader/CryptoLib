@@ -4,6 +4,10 @@
   z-index: 100;
 }
 
+.body {
+  min-height: 37rem;
+}
+
 .orbitronFont {
   font-family: "Orbitron", sans-serif;
 }
@@ -15,10 +19,17 @@
   box-shadow: 0 8px 6px -6px rgb(73, 69, 69);
 }
 
+.navbar-toggler {
+  color: rgba(255, 255, 255, 1);
+  border-color: rgb(255, 255, 255);
+  background-image: url("./features/resources/open-menu.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 2rem;
+}
+
 .navBtn {
   color: white;
-  padding-left: 1.2em;
-  padding-right: 1.2em;
   font-size: 14pt;
 }
 
@@ -26,41 +37,36 @@
 .navBtn:focus {
   outline: 0;
   border: none;
-  -moz-outline-style: none;
+  outline-style: none;
 }
 
-@media only screen and (min-width: 501px) {
-  .navBtn:hover {
-    text-decoration: none;
-    color: white;
-    padding-left: 1.2em;
-    padding-right: 1.2em;
-    padding-bottom: 0.9rem;
-    font-size: 14pt;
-    cursor: pointer;
-    border-bottom: 3px solid white;
-  }
+.navBtn:hover {
+  color: white;
+  text-shadow: 3px 3px rgb(73, 69, 69);
 }
 
-@media only screen and (max-width: 500px) {
-  .navBtn:hover {
-    text-decoration: none;
-    color: white;
-    padding-left: 1.2em;
-    padding-right: 1.2em;
-    font-size: 14pt;
-    cursor: pointer;
-    border-right: 2px solid white;
-  }
-}
-
-.navBtn:active {
-  text-decoration: none;
-  color: darkblue;
+.navDropdown {
+  top: -4;
+  color: white;
   padding-left: 1.2em;
   padding-right: 1.2em;
   font-size: 14pt;
-  cursor: pointer;
+}
+
+.dropBtn {
+  color: black;
+}
+
+.dropBtn:hover {
+  text-decoration: none;
+  color: black;
+}
+
+.dropBtn:active,
+.dropBtn:focus {
+  outline: 0;
+  border: none;
+  outline-style: none;
 }
 
 .userDashboard {
@@ -74,7 +80,6 @@
 }
 
 .footer {
-  margin: 0;
   max-width: 100%;
   background-color: black;
   color: white;

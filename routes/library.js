@@ -20,6 +20,9 @@ const library = new web3.eth.Contract(
   libraryContract.address
 );
 
+const Book = require("../models/Book");
+const DailyShelf = require("../models/DailyShelf");
+
 // @route post to /library/mint
 // @desc adds new book to smart contract
 // @access public - change to private later
@@ -28,6 +31,15 @@ router.post("/mint", async (req, res) => {
   let bytesTitle = web3.utils.hexToBytes(web3.utils.utf8ToHex(title));
   let bytesAuthor = web3.utils.hexToBytes(web3.utils.utf8ToHex(author));
   let bytesHash = web3.utils.hexToBytes(web3.utils.utf8ToHex(hash));
+  let bookID = await Book.countDocuments({}).exec();
+
+  let newBook = new Book({
+    bookID,
+    title,
+    author,
+    catagory: "",
+    hash
+  });
 
   const data = await library.methods
     .mint(bytesTitle, bytesAuthor, bytesHash)
@@ -39,6 +51,7 @@ router.post("/mint", async (req, res) => {
     .then(async gasAmount => {
       await sendTransaction(gasAmount, data)
         .then(receipt => {
+          newBook.save();
           res.status(200).json({ transactionReceipt: receipt });
         })
         .catch(err => {
@@ -275,6 +288,61 @@ router.post("/return", async (req, res) => {
     console.log(err);
     res.status(400).json({ err: err });
   }
+});
+
+//TODO add support for searching different catagories
+router.get("/search", async (req, res) => {
+  const { search, field } = req.query;
+  if (!search) {
+    return res.status(400).json({ msg: "Query is empty" });
+  }
+  let query = new RegExp(search, "i");
+
+  let idList = [];
+
+  await Book.find({ title: query }, "bookID")
+    .then(async res => {
+      await res.forEach(element => {
+        idList.push(element.bookID);
+      });
+    })
+    .catch(err => {
+      return res.status(400).json({ msg: "Invalid query" });
+    });
+
+  await Book.find({ author: query }, "bookID")
+    .then(async res => {
+      await res.forEach(async element => {
+        if (!idList.includes(element.bookID)) {
+          idList.push(element.bookID);
+        }
+      });
+    })
+    .catch(err => {
+      return res.status(400).json({ msg: "Invalid query" });
+    });
+
+  return res.status(200).json(idList);
+});
+
+router.get("/lastIndex", async (req, res) => {
+  try {
+    let len = await Book.countDocuments({}).exec();
+    return res.status(200).json({ data: len });
+  } catch (err) {
+    res.status(400);
+  }
+});
+
+router.get("/dailyShelf", (req, res) => {
+  DailyShelf.findById("5e38bf40ca45d527d6f574cf")
+    .then(shelf => {
+      return res.status(200).json({ shelf: shelf });
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(400);
+    });
 });
 
 module.exports = router;

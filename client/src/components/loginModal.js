@@ -46,11 +46,11 @@ class LoginModal extends Component {
       password: enteredPassword,
       address: this.props.userAddress
     };
-
     try {
       await this.props.login(user);
     } catch (err) {
-      // alert(err);
+      console.log(err);
+      alert(err);
     }
   }
 

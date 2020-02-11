@@ -2,7 +2,6 @@
 import React, { Component } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import { Provider } from "react-redux";
 import store from "./store";
 import { getMetamaskAddress, loadUser } from "./actions/userAction";
 // import loadUserAddress from "./features/utils/loadUserAddress.js";
@@ -26,7 +25,6 @@ class App extends Component {
         // Time to reload your interface with accounts[0]!
         store.dispatch(getMetamaskAddress(accounts[0]));
       });
-      store.dispatch(loadUser());
     } catch (err) {
       //console.log(err)
     }
@@ -34,33 +32,31 @@ class App extends Component {
 
   render() {
     return (
-      <Provider store={store}>
-        <BrowserRouter>
-          <div className="app">
-            <NavBar />
-            <div className="body">
-              <Switch>
-                <Route path="/user">
-                  <User />
-                </Route>
-                <Route path="/catalog">
-                  <Catalog />
-                </Route>
-                <Route path="/dailyShelf">
-                  <DailyShelf />
-                </Route>
-                <Route path="/about">
-                  <About />
-                </Route>
-                <Route path="/">
-                  <Home />
-                </Route>
-              </Switch>
-            </div>
-            <Footer />
+      <BrowserRouter>
+        <div className="app">
+          <NavBar />
+          <div className="body">
+            <Switch>
+              <Route path="/user">
+                <User />
+              </Route>
+              <Route path="/catalog">
+                <Catalog />
+              </Route>
+              <Route path="/dailyShelf">
+                <DailyShelf />
+              </Route>
+              <Route path="/about">
+                <About />
+              </Route>
+              <Route path="/">
+                <Home />
+              </Route>
+            </Switch>
           </div>
-        </BrowserRouter>
-      </Provider>
+          <Footer />
+        </div>
+      </BrowserRouter>
     );
   }
 }

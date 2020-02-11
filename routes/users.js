@@ -44,34 +44,38 @@ router.post("/signup", (req, res) => {
     });
 
     // Create salt and hash
-    bcrypt.genSalt(10, (err, salt) => {
-      bcrypt.hash(newUser.password, salt, (err, hash) => {
-        if (err) throw err;
-        newUser.password = hash;
-        newUser.save().then(user => {
-          jwt.sign(
-            { id: user.id },
-            process.env.JWT_SECRET,
-            { expiresIn: 3600 },
-            (err, token) => {
-              if (err) {
-                console.log(err);
-                throw err;
-              }
-              res.json({
-                token,
-                user: {
-                  id: user.id,
-                  address: newUser.address,
-                  username: newUser.username,
-                  email: newUser.email
+    try {
+      bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newUser.password, salt, (err, hash) => {
+          if (err) throw err;
+          newUser.password = hash;
+          newUser.save().then(user => {
+            jwt.sign(
+              { id: user.id },
+              process.env.JWT_SECRET,
+              { expiresIn: 3600 },
+              (err, token) => {
+                if (err) {
+                  console.log(err);
+                  throw err;
                 }
-              });
-            }
-          );
+                res.json({
+                  token,
+                  user: {
+                    id: user.id,
+                    address: newUser.address,
+                    username: newUser.username,
+                    email: newUser.email
+                  }
+                });
+              }
+            );
+          });
         });
       });
-    });
+    } catch (err) {
+      res.status(500).json({ msg: "Failed to create new user", err: err });
+    }
   });
 });
 
@@ -122,10 +126,16 @@ router.post("/login", (req, res) => {
 router.get("/auth", auth, (req, res) => {
   User.findById(req.user.id)
     .then(user => {
-      res.status(200).json({ user });
+      res.status(200).json({
+        user: {
+          id: user.id,
+          address: user.address,
+          username: user.username,
+          email: user.email
+        }
+      });
     })
     .catch(err => {
-      console.log(err);
       return res.status(400).json({ msg: "User not found" });
     });
 });
@@ -139,12 +149,11 @@ router.get("/", (req, res) => {
       if (user[0].address === req.query.address) {
         res.status(200).json({ success: true });
       } else {
-        res.status(400).json({ success: false });
+        throw new Error({ msg: "User doesn not exist", success: false });
       }
     })
     .catch(err => {
-      console.log(err);
-      res.status(400).json({ success: false });
+      res.status(400).json({ success: false, err: err });
     });
 });
 

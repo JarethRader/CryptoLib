@@ -36,9 +36,9 @@ export const getMetamaskAddress = account => dispatch => {
 export const loadUser = () => (dispatch, getState) => {
   //user loading
   dispatch(setUserLoading());
-  if (!getState().user.token === null) {
+  if (getState().user.token !== null) {
     axios
-      .get("users/auth", tokenConfig(getState))
+      .get("user/auth", tokenConfig(getState))
       .then(res => {
         dispatch({
           type: USER_LOADED,
@@ -52,7 +52,7 @@ export const loadUser = () => (dispatch, getState) => {
         });
       });
   } else {
-    dispatch({ type: REGISTER_FAIL });
+    dispatch({ type: AUTH_ERROR });
   }
 };
 

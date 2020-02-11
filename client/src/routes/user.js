@@ -36,7 +36,7 @@ export class User extends Component {
 
   checkExists = async () => {
     if (!this.props.isAuthenticated) {
-      try{
+      try {
         await checkUserExists(this.props.userAddress)
           .then(async exists => {
             if (this.props.isAuthenticated && exists) {
@@ -50,7 +50,7 @@ export class User extends Component {
             //console.log(err)
             this.setState({ userExists: false });
           });
-      } catch(err) {
+      } catch (err) {
         // console.log(err)
       }
     }
@@ -107,7 +107,8 @@ const mapStateToProps = state => ({
   isAuthenticated: state.user.isAuthenticated,
   user: state.user.user,
   userAddress: state.user.userAddress,
-  ownShelf: state.library.ownShelf
+  ownShelf: state.library.ownShelf,
+  token: state.user.token
 });
 
 export default connect(mapStateToProps, {

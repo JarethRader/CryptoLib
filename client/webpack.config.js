@@ -8,6 +8,9 @@ module.exports = {
     filename: "build.js",
     publicPath: "/"
   },
+  devServer: {
+    historyApiFallback: true
+  },
   plugins: [
     new CopyWebpackPlugin([
       {

@@ -13,7 +13,9 @@ import {
   GET_OWN_SUCCESS,
   GET_OWN_FAIL,
   RETURN_SUCCESS,
-  RETURN_FAIL
+  RETURN_FAIL,
+  GET_ERRORS,
+  CLEAR_ERRORS
 } from "./types";
 import axios from "axios";
 import { returnErrors } from "./errorActions";
@@ -40,6 +42,13 @@ export const mintNewBook = (userAddress, title, author, hash) => dispatch => {
     .catch(err => {
       dispatch({
         type: MINT_NEW_FAIL
+      });
+      dispatch({
+        type: GET_ERRORS,
+        payload: {
+          msg: err.msg,
+          status: err.status
+        }
       });
     });
 };

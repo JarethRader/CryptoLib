@@ -55,13 +55,11 @@ router.post("/mint", async (req, res) => {
           res.status(200).json({ transactionReceipt: receipt });
         })
         .catch(err => {
-          console.log(err);
-          res.status(400).json({ err: err });
+          res.status(500).json({ msg: "Failed to send transaction", err: err });
         });
     })
     .catch(err => {
-      console.log(err);
-      res.status(400).json({ error: err });
+      res.status(500).json({ msg: "Failed to create transaction", error: err });
     });
 });
 
@@ -87,7 +85,7 @@ router.get("/", async (req, res) => {
             book.indexOf("Qm")
           );
         } else {
-          return res.status(400).json({ msg: "No book found" });
+          res.status(500).json({ msg: "No book found" });
         }
         await web3.eth
           .call({
@@ -122,22 +120,27 @@ router.get("/", async (req, res) => {
                 }
               })
               .catch(err => {
-                console.log(err);
-                res.status(400).json({ err });
+                res
+                  .status(500)
+                  .json({ msg: "Failed to get owner of book token", err });
               });
           })
           .catch(err => {
-            console.log(err);
-            res.status(400).json({ err });
+            res.status(500).json({
+              msg: "Failed to get COO address from Smart Contract",
+              err: err
+            });
           });
       })
       .catch(err => {
-        console.log(err);
-        res.status(204).json({ err: err, found: false });
+        res
+          .status(204)
+          .json({ msg: "Failed to find book", err: err, found: false });
       });
   } catch (err) {
-    console.log(err);
-    res.status(400).json({ error: err.data });
+    res
+      .status(500)
+      .json({ msg: `Failed to get book with id ${id} `, err: err });
   }
 });
 
@@ -175,23 +178,27 @@ router.post("/checkout", async (req, res) => {
                   res.status(200).json({ transactionReceipt: receipt });
                 })
                 .catch(err => {
-                  console.log(err);
-                  res.status(400).json({ err: err });
+                  res
+                    .status(500)
+                    .json({ msg: "Failed to send transaction", err: err });
                 });
             })
             .catch(err => {
-              console.log(err);
-              res.status(400).json({ error: err });
+              res
+                .status(500)
+                .json({ msg: "Failed to create transaction", error: err });
             });
         }
       })
       .catch(err => {
-        console.log(err);
-        res.status(400).json({ err: err });
+        res
+          .status(500)
+          .json({ msg: "Failed to get token balance of user", err: err });
       });
   } catch (err) {
-    console.log(err);
-    res.status(400).json({ err: err });
+    res
+      .status(500)
+      .json({ msg: `Failed to checkout book of id ${bookID}`, err: err });
   }
 });
 
@@ -219,12 +226,15 @@ router.post("/getOwn", async (req, res) => {
         res.status(200).json({ booksOfOwner });
       })
       .catch(err => {
-        console.log(err);
-        res.status(400).json({ err: err });
+        throw new Error({
+          msg: "Failed to get tokens owned by user",
+          err: err
+        });
       });
   } catch (err) {
-    console.log(err);
-    res.status(400).json({ err: err });
+    res
+      .status(500)
+      .json({ msg: "Failed to get tokens owned by user", err: err });
   }
 });
 
@@ -270,23 +280,30 @@ router.post("/return", async (req, res) => {
                     res.status(200).json({ transactionReceipt: receipt });
                   })
                   .catch(err => {
-                    console.log(err);
-                    res.status(400).json({ err: err });
+                    res
+                      .status(500)
+                      .json({ msg: "Failed to send transaction", err: err });
                   });
               })
               .catch(err => {
-                console.log(err);
-                res.status(400).json({ err: err });
+                res
+                  .status(500)
+                  .json({ msg: "Failed to create transaction", err: err });
               });
           });
       })
       .catch(err => {
-        console.log(err);
-        res.status(400).json({ err: err });
+        res
+          .status(500)
+          .json({
+            msg: "Failed to get COO address from smart contract",
+            err: err
+          });
       });
   } catch (err) {
-    console.log(err);
-    res.status(400).json({ err: err });
+    res
+      .status(500)
+      .json({ msg: `Failed to return book of id ${bookID}`, err: err });
   }
 });
 
@@ -330,7 +347,7 @@ router.get("/lastIndex", async (req, res) => {
     let len = await Book.countDocuments({}).exec();
     return res.status(200).json({ data: len });
   } catch (err) {
-    res.status(400);
+    res.status(500);
   }
 });
 
@@ -340,8 +357,9 @@ router.get("/dailyShelf", (req, res) => {
       return res.status(200).json({ shelf: shelf });
     })
     .catch(err => {
-      console.log(err);
-      return res.status(400);
+      return res
+        .status(500)
+        .json({ msg: "Failed to get daily shelf", err: err });
     });
 });
 

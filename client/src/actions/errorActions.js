@@ -1,4 +1,4 @@
-import { GET_ERRORS, CLEAR_ERRORS } from "./types";
+import { GET_ERRORS, CLEAR_ERRORS, SHOW_ERROR, HIDE_ERROR } from "./types";
 
 // return errors
 export const returnErrors = (msg, status, id = null) => {
@@ -15,5 +15,17 @@ export const returnErrors = (msg, status, id = null) => {
 export const clearErrors = () => {
   return {
     type: CLEAR_ERRORS
+  };
+};
+
+export const showErrorModal = () => {
+  return {
+    type: SHOW_ERROR
+  };
+};
+
+export const hideErrorModal = () => {
+  return {
+    type: HIDE_ERROR
   };
 };

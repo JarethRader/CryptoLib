@@ -100,14 +100,13 @@ export class Catalog extends Component {
 
   loadCatalog = async () => {
     return new Promise(async (resolve, reject) => {
-      console.log(this.state.shelfList);
       for (let i = 0; i <= this.state.shelfList.length - 1; i++) {
         try {
           await getBook(this.state.shelfList[i]).then(async book => {
             await this.props.shelveBook(book);
           });
         } catch (err) {
-          console.log(err);
+          // console.log(err);
           reject(err);
         }
       }
@@ -142,7 +141,6 @@ export class Catalog extends Component {
 
   handleQuery = async e => {
     e.preventDefault();
-    console.log(this.state.query);
     if (this.state.query === null || this.state.query === "") {
       return;
     }
@@ -150,7 +148,6 @@ export class Catalog extends Component {
       `/library/search?search=${this.state.query}`
     );
     this.setState({ shelfList: queryShelf.data }, async () => {
-      console.log(this.state.shelfList);
       this.props.clearShelf();
       await this.loadCatalog()
         .then(async () => {
@@ -158,7 +155,7 @@ export class Catalog extends Component {
           await this.props.libraryLoaded();
         })
         .catch(err => {
-          console.log(err);
+          // console.log(err);
         });
     });
   };

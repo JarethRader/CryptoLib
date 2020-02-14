@@ -143,18 +143,18 @@ router.get("/auth", auth, (req, res) => {
 //@route GET /user
 //@desc check if user exists
 //@access public
-router.get("/", (req, res) => {
-  User.find({ address: req.query.address })
-    .then(user => {
-      if (user[0].address === req.query.address) {
-        res.status(200).json({ success: true });
-      } else {
-        throw new Error({ msg: "User doesn not exist", success: false });
-      }
-    })
-    .catch(err => {
-      res.status(400).json({ success: false, err: err });
-    });
-});
+// router.get("/", (req, res) => {
+//   User.find({ address: req.query.address })
+//     .then(user => {
+//       if (user[0].address === req.query.address) {
+//         res.status(200).json({ success: true });
+//       } else {
+//         throw new Error({ msg: "User doesn not exist", success: false });
+//       }
+//     })
+//     .catch(err => {
+//       res.status(400).json({ success: false, err: err });
+//     });
+// });
 
 module.exports = router;

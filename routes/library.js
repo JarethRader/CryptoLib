@@ -26,7 +26,7 @@ const DailyShelf = require("../models/DailyShelf");
 // @route post to /library/mint
 // @desc adds new book to smart contract
 // @access public - change to private later
-router.post("/mint", async (req, res) => {
+router.post("/mint", auth, async (req, res) => {
   const { title, author, hash } = req.body;
   let bytesTitle = web3.utils.hexToBytes(web3.utils.utf8ToHex(title));
   let bytesAuthor = web3.utils.hexToBytes(web3.utils.utf8ToHex(author));
@@ -147,7 +147,7 @@ router.get("/", async (req, res) => {
 //@route POST /library/checkout
 //@desc checkout a book
 //@access public - change to private later
-router.post("/checkout", async (req, res) => {
+router.post("/checkout", auth, async (req, res) => {
   const { bookID, userAddress } = req.body;
 
   if (!bookID || !userAddress) {
@@ -293,12 +293,10 @@ router.post("/return", async (req, res) => {
           });
       })
       .catch(err => {
-        res
-          .status(500)
-          .json({
-            msg: "Failed to get COO address from smart contract",
-            err: err
-          });
+        res.status(500).json({
+          msg: "Failed to get COO address from smart contract",
+          err: err
+        });
       });
   } catch (err) {
     res

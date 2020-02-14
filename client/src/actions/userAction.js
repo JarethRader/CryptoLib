@@ -13,13 +13,7 @@ import {
 import { tokenConfig } from "./actionUtils/tokenConfig";
 import { returnErrors } from "./errorActions";
 import axios from "axios";
-
-//Headers
-const config = {
-  headers: {
-    "Content-Type": "application/json"
-  }
-};
+import config from "./actionUtils/userConfig";
 
 export const getMetamaskAddress = account => dispatch => {
   dispatch(setUserLoading());
@@ -29,6 +23,12 @@ export const getMetamaskAddress = account => dispatch => {
       payload: account
     });
   } else {
+    dispatch(
+      returnErrors(
+        "Unable to get you Metamask account address. Are you logged in?",
+        400
+      )
+    );
     dispatch({ type: GET_ADDRESS_FAIL });
   }
 };
@@ -38,7 +38,7 @@ export const loadUser = () => (dispatch, getState) => {
   dispatch(setUserLoading());
   if (getState().user.token !== null) {
     axios
-      .get("user/auth", tokenConfig(getState))
+      .get("/user/auth", tokenConfig(getState, config))
       .then(res => {
         dispatch({
           type: USER_LOADED,
@@ -46,7 +46,8 @@ export const loadUser = () => (dispatch, getState) => {
         });
       })
       .catch(err => {
-        dispatch(returnErrors(err.data, err.status));
+        console.log(err.data);
+        dispatch(returnErrors(err.data.msg, err.data.status));
         dispatch({
           type: AUTH_ERROR
         });
@@ -83,7 +84,7 @@ export const register = ({
       });
     })
     .catch(err => {
-      dispatch(returnErrors(err.msg, err.status));
+      dispatch(returnErrors(err.data.msg, err.data.status));
       dispatch({ type: REGISTER_FAIL });
     });
 };
@@ -108,7 +109,7 @@ export const login = ({ password, address }) => dispatch => {
       });
     })
     .catch(err => {
-      dispatch(returnErrors(err.msg, err.status));
+      dispatch(returnErrors(err.data.msg, err.data.status));
       dispatch({ type: LOGIN_FAIL });
     });
 };

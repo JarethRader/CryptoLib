@@ -20,7 +20,7 @@ class About extends Component {
         <div className="slide">
           <h1 className="orbitronFont">The Vision of CryptoLib</h1>
           <p>
-            My end goal for what I want Crpyotlib to be is to serve as the
+            My end goal for what I want Cryptolib to be is to serve as the
             mainstream choice for online textbooks. I was motivated because I'm
             a poor college student and I'm always trying to save my money where
             I can, which usually always happens with my class textbooks. The

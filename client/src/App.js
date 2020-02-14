@@ -15,6 +15,7 @@ import About from "./routes/about";
 import Catalog from "./routes/catalog";
 import User from "./routes/user";
 import DailyShelf from "./routes/dailyShelf";
+import ErrorModal from "./components/errorModal";
 
 class App extends Component {
   constructor(props) {
@@ -25,6 +26,7 @@ class App extends Component {
         // Time to reload your interface with accounts[0]!
         store.dispatch(getMetamaskAddress(accounts[0]));
       });
+      store.dispatch(loadUser());
     } catch (err) {
       //console.log(err)
     }
@@ -36,6 +38,7 @@ class App extends Component {
         <div className="app">
           <NavBar />
           <div className="body">
+            <ErrorModal />
             <Switch>
               <Route path="/user">
                 <User />

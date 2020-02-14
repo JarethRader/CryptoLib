@@ -88,13 +88,17 @@ export const checkout = (bookID, userAddress) => (dispatch, getState) => {
           });
         })
         .catch(err => {
-          throw new Error(err.data.msg);
+          if (err.response) {
+            throw err.response;
+          } else {
+            throw err.request;
+          }
         });
     } else {
-      throw new Error("Not logged in");
+      throw new Error({ message: "Not logged in", status: 400 });
     }
   } catch (err) {
-    dispatch(returnErrors(err.message, 401));
+    dispatch(returnErrors(err.message, err.status));
     dispatch({
       type: CHECKOUT_FAIL
     });
@@ -118,7 +122,7 @@ export const returnBook = bookID => dispatch => {
       });
     })
     .catch(err => {
-      dispatch(returnErrors(err.data.msg, err.data.status));
+      dispatch(returnErrors(err.response.msg, err.response.status));
       dispatch({
         type: RETURN_FAIL
       });
@@ -142,7 +146,7 @@ export const getOwn = address => dispatch => {
       });
     })
     .catch(err => {
-      dispatch(returnErrors(err.data.msg, err.data.status));
+      dispatch(returnErrors(err.msg, err.status));
       dispatch({
         type: GET_OWN_FAIL
       });

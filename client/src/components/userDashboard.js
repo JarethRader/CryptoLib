@@ -15,6 +15,7 @@ import {
 } from "reactstrap";
 import { connect } from "react-redux";
 import { getOwn, returnBook } from "../actions/libraryActions";
+import { returnErrors } from "../actions/errorActions";
 import getBook from "../features/utils/getBook";
 import PDFViewer from "../features/PDFViewer";
 import PDFJSBackend from "../features/pdfBackend/pdfjs";
@@ -39,10 +40,12 @@ export class UserDashboard extends Component {
   }
 
   componentDidMount = async () => {
-    try {
-      await this.props.getOwn(this.props.userAddress);
-    } catch (err) {
-      // console.log(err)
+    if (this.props.isAuthenticated) {
+      try {
+        await this.props.getOwn(this.props.userAddress);
+      } catch (err) {
+        this.props.returnErrors(err.message, 500);
+      }
     }
   };
 
@@ -51,7 +54,6 @@ export class UserDashboard extends Component {
   };
 
   toggleNav = () => {
-    console.log("Toggling nav");
     this.setState({ isOpen: !this.state.isOpen });
   };
 
@@ -77,16 +79,16 @@ export class UserDashboard extends Component {
                 this.setState({ ownBooks: [nextBook, ...this.state.ownBooks] });
               })
               .catch(err => {
-                // console.log(err)
+                throw err;
               });
             i++;
           }
         })
         .catch(err => {
-          // console.log(err)
+          throw err;
         });
     } catch (err) {
-      // console.log(err)
+      this.props.returnErrors(err.message, 500);
     }
   };
 
@@ -95,7 +97,6 @@ export class UserDashboard extends Component {
     let bookHash = book.hash;
     let address =
       "https://ipfs.infura.io/ipfs/" + bookHash + "#toolbar=0&navpanes=0";
-    console.log(address);
     this.setState({ selectedBook: address }, () => {
       this.setState({ showSelected: true });
     });
@@ -179,7 +180,6 @@ class ShelfRow extends UserDashboard {
 
   handleReturn = async e => {
     e.preventDefault();
-    console.log("returning");
     await this.props.returnBook(this.props.book.id);
   };
 
@@ -227,4 +227,6 @@ const mapPropsToState = state => ({
   returning: state.library.returning
 });
 
-export default connect(mapPropsToState, { getOwn, returnBook })(UserDashboard);
+export default connect(mapPropsToState, { getOwn, returnBook, returnErrors })(
+  UserDashboard
+);

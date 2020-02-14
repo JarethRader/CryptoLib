@@ -21,15 +21,11 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    try {
-      window.ethereum.on("accountsChanged", function(accounts) {
-        // Time to reload your interface with accounts[0]!
-        store.dispatch(getMetamaskAddress(accounts[0]));
-      });
-      store.dispatch(loadUser());
-    } catch (err) {
-      //console.log(err)
-    }
+    window.ethereum.on("accountsChanged", function(accounts) {
+      // Time to reload your interface with accounts[0]!
+      store.dispatch(getMetamaskAddress(accounts[0]));
+    });
+    store.dispatch(loadUser());
   }
 
   render() {

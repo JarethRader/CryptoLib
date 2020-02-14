@@ -18,17 +18,13 @@ export class User extends Component {
   }
 
   async componentDidMount() {
-    try {
-      if (window.web3) {
-        if (!this.props.userAddress) {
-          await loadUserAddress().then(async account => {
-            await this.props.getMetamaskAddress(account);
-            await this.props.loadUser();
-          });
-        }
+    if (window.web3) {
+      if (!this.props.userAddress) {
+        await loadUserAddress().then(async account => {
+          await this.props.getMetamaskAddress(account);
+          await this.props.loadUser();
+        });
       }
-    } catch (err) {
-      // console.log(err)
     }
   }
 

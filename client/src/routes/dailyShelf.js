@@ -27,7 +27,7 @@ export class DailyShelf extends Component {
           return;
         })
         .catch(err => {
-          console.log(err);
+          // console.log(err);
         });
     }
   }
@@ -50,7 +50,6 @@ export class DailyShelf extends Component {
           resolve(bookList);
         })
         .catch(err => {
-          console.log(err);
           reject(err);
         });
     });
@@ -61,7 +60,6 @@ export class DailyShelf extends Component {
     let bookHash = book.hash;
     let address =
       "https://ipfs.infura.io/ipfs/" + bookHash + "#toolbar=0&navpanes=0";
-    console.log(address);
     this.setState({ selectedBook: address }, () => {
       this.setState({ showSelected: true });
     });

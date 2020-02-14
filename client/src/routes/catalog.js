@@ -16,6 +16,7 @@ import {
   clearShelf,
   checkout
 } from "../actions/libraryActions";
+import { returnErrors } from "../actions/errorActions";
 import getBook from "../features/utils/getBook";
 import BeatLoader from "react-spinners/BeatLoader";
 import { override, shelf } from "../features/utils/override";
@@ -42,19 +43,15 @@ export class Catalog extends Component {
 
   //TODO clear library props data on unmount, and reload on page remount
   async componentWillUnmount() {
-    try {
-      await this.props.clearShelf();
+    if (this.props.library) {
+      this.props.clearShelf();
       this.setState({ catalogData: {} });
-    } catch (err) {
-      // console.log(err);
     }
   }
 
   updateCatalog = async () => {
-    try {
+    if (this.props.library) {
       await this.props.clearShelf();
-    } catch (err) {
-      //console.log(err)
     }
     await this.setShelfList()
       .then(async () => {
@@ -64,20 +61,20 @@ export class Catalog extends Component {
             try {
               await this.props.libraryLoaded();
             } catch (err) {
-              return;
+              throw err;
             }
           })
           .catch(err => {
-            // console.log(err);
+            throw err;
           });
       })
       .catch(err => {
-        // console.log(err);
+        // this.props.returnErrors(err.message, 500);
       });
   };
 
   getLibraryLength = async () => {
-    let len = (await (await axios.get("/library/lastIndex")).data.data) - 1;
+    let len = (await axios.get("/library/lastIndex")).data.data - 1;
     this.setState({ libraryLength: len });
   };
 
@@ -92,7 +89,6 @@ export class Catalog extends Component {
           resolve();
         });
       } catch (err) {
-        // console.log(err);
         reject(err);
       }
     });
@@ -106,7 +102,6 @@ export class Catalog extends Component {
             await this.props.shelveBook(book);
           });
         } catch (err) {
-          // console.log(err);
           reject(err);
         }
       }
@@ -155,7 +150,7 @@ export class Catalog extends Component {
           await this.props.libraryLoaded();
         })
         .catch(err => {
-          // console.log(err);
+          this.props.returnErrors(err.message, 500);
         });
     });
   };
@@ -170,6 +165,8 @@ export class Catalog extends Component {
         bookId={book.id}
         userAddress={this.props.userAddress}
         checkingOut={this.props.checkingOut}
+        updateCatalog={this.updateCatalog}
+        clearShelf={this.props.clearShelf}
       />
     ));
     return (
@@ -255,15 +252,13 @@ class CatalogRow extends Catalog {
   state = {
     checkedOut: false
   };
+
   handleOnClick = async e => {
     // TODO: add payment from user to contract owner before initiating book transfer
     // -> https://davekiss.com/ethereum-web3-node-tutorial/
-    try {
-      await this.props.checkout(this.props.bookId, this.props.userAddress);
-      this.setState({ checkedOut: true });
-    } catch (err) {
-      // console.log(err);
-    }
+    await this.props.checkout(this.props.bookId, this.props.userAddress);
+    // await this.props.updateCatalog();
+    this.setState({ checkedOut: true });
   };
 
   render() {
@@ -323,5 +318,6 @@ export default connect(mapStateToProps, {
   shelveBook,
   libraryLoaded,
   clearShelf,
-  checkout
+  checkout,
+  returnErrors
 })(Catalog);

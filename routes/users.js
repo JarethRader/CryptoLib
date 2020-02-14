@@ -56,7 +56,6 @@ router.post("/signup", (req, res) => {
               { expiresIn: 3600 },
               (err, token) => {
                 if (err) {
-                  console.log(err);
                   throw err;
                 }
                 res.json({
@@ -102,8 +101,7 @@ router.post("/login", (req, res) => {
         { expiresIn: 3600 },
         (err, token) => {
           if (err) {
-            console.log(err);
-            res.status(400).json({ err: err });
+            res.status(err.response.status).json({ err: err.response.data });
           }
           res.json({
             token,

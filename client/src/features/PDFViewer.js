@@ -9,7 +9,6 @@ export default class PDFViewer extends React.Component {
 
   componentDidMount() {
     const { src, password } = this.props;
-    console.log(src);
     const element = this.viewerRef.current;
 
     this.backend.init(src, password, element);

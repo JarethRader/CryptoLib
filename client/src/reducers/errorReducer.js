@@ -15,7 +15,6 @@ const initialState = {
 export default function(state = initialState, action) {
   switch (action.type) {
     case GET_ERRORS:
-      console.log(action.payload.status);
       if (action.payload.status >= 400 && action.payload.status < 500) {
         return {
           msg: action.payload.msg,

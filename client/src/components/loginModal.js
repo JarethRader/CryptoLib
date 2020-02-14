@@ -49,7 +49,6 @@ class LoginModal extends Component {
     try {
       await this.props.login(user);
     } catch (err) {
-      console.log(err);
       alert(err);
     }
   }
@@ -65,12 +64,7 @@ class LoginModal extends Component {
         email: enteredEmail,
         address: this.props.userAddress
       };
-      try {
-        await this.props.register(user);
-      } catch (err) {
-        // console.log(err)
-      }
-
+      await this.props.register(user);
     } else {
       alert("Email invalid");
     }

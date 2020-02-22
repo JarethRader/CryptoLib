@@ -67,87 +67,6 @@ router.post("/mint", exec, async (req, res) => {
 // @route GET /library
 // @desc Get book by ID
 // @access public
-// router.get("/", async (req, res) => {
-//   const { id } = req.query;
-//   try {
-//     await web3.eth
-//       .call({
-//         to: libraryContract.address,
-//         data: await library.methods.getBook(id).encodeABI()
-//       })
-//       .then(async book => {
-//         if (book !== null) {
-//           book = web3.utils.toAscii(book);
-//           book = book.replace(/\0[^0-9a-zA-Z]+/g, "");
-//           hash = book.substring(book.indexOf("Qm"), book.length);
-//           title = book.substring(0, book.match(/([a-z][A-Z][.a-z])/).index + 1);
-//           author = book.substring(
-//             book.match(/([a-z][A-Z][.a-z])/).index + 1,
-//             book.indexOf("Qm")
-//           );
-//         } else {
-//           res.status(500).json({ msg: "No book found" });
-//         }
-//         await web3.eth
-//           .call({
-//             to: libraryContract.address,
-//             data: await library.methods.cooAddress().encodeABI()
-//           })
-//           .then(async coo => {
-//             await web3.eth
-//               .call({
-//                 to: libraryContract.address,
-//                 data: await library.methods.ownerOf(id).encodeABI()
-//               })
-//               .then(owner => {
-//                 if (coo === owner) {
-//                   res.status(200).json({
-//                     id,
-//                     title,
-//                     author,
-//                     hash,
-//                     available: true,
-//                     found: true
-//                   });
-//                 } else {
-//                   res.status(200).json({
-//                     id,
-//                     title,
-//                     author,
-//                     hash,
-//                     available: false,
-//                     found: true
-//                   });
-//                 }
-//               })
-//               .catch(err => {
-//                 res
-//                   .status(500)
-//                   .json({ msg: "Failed to get owner of book token", err });
-//               });
-//           })
-//           .catch(err => {
-//             res.status(500).json({
-//               msg: "Failed to get COO address from Smart Contract",
-//               err: err
-//             });
-//           });
-//       })
-//       .catch(err => {
-//         res
-//           .status(204)
-//           .json({ msg: "Failed to find book", err: err, found: false });
-//       });
-//   } catch (err) {
-//     res
-//       .status(500)
-//       .json({ msg: `Failed to get book with id ${id} `, err: err });
-//   }
-// });
-
-// @route GET /library
-// @desc Get book by ID
-// @access public
 router.get("/", (req, res) => {
   Book.findOne({ bookID: req.query.id })
     .then(book => {
@@ -420,18 +339,18 @@ router.get("/lastIndex", async (req, res) => {
     let len = await Book.countDocuments({}).exec();
     return res.status(200).json({ data: len });
   } catch (err) {
-    res.status(400);
+    res.status(500);
   }
 });
-
 router.get("/dailyShelf", (req, res) => {
   DailyShelf.findById("5e38bf40ca45d527d6f574cf")
     .then(shelf => {
       return res.status(200).json({ shelf: shelf });
     })
-    .catch(err => {
-      console.log(err);
-      return res.status(400);
+    .catch(err => { 
+      return res
+        .status(500)
+        .json({ msg: "Failed to get daily shelf", err: err });
     });
 });
 

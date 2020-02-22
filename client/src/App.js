@@ -2,10 +2,9 @@
 import React, { Component } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import { Provider } from "react-redux";
 import store from "./store";
 import { getMetamaskAddress, loadUser } from "./actions/userAction";
-// import loadUserAddress from "./features/utils/loadUserAddress.js";
+import { Helmet } from "react-helmet";
 
 //Page Routes and components/modals
 import NavBar from "./components/navbar";
@@ -16,29 +15,34 @@ import About from "./routes/about";
 import Catalog from "./routes/catalog";
 import User from "./routes/user";
 import DailyShelf from "./routes/dailyShelf";
+import ErrorModal from "./components/errorModal";
 
 class App extends Component {
   constructor(props) {
     super(props);
 
-    try {
-      window.ethereum.on("accountsChanged", function(accounts) {
-        // Time to reload your interface with accounts[0]!
-        store.dispatch(getMetamaskAddress(accounts[0]));
-      });
-      store.dispatch(loadUser());
-    } catch (err) {
-      //console.log(err)
-    }
+    window.ethereum.autoRefreshOnNetworkChange = false;
+    window.ethereum.on("accountsChanged", function(accounts) {
+      // Time to reload your interface with accounts[0]!
+      store.dispatch(getMetamaskAddress(accounts[0]));
+    });
+    store.dispatch(loadUser());
   }
 
   render() {
     return (
-      <Provider store={store}>
+      <div>
+        <Helmet>
+          <meta charSet="utf-8" />
+          <meta name="Application" content="Cryptolibs" />
+          <title>CryptoLib</title>
+          <link rel="canonical" href="https://cryptolib.co" />
+        </Helmet>
         <BrowserRouter>
           <div className="app">
             <NavBar />
             <div className="body">
+              <ErrorModal />
               <Switch>
                 <Route path="/user">
                   <User />
@@ -60,7 +64,7 @@ class App extends Component {
             <Footer />
           </div>
         </BrowserRouter>
-      </Provider>
+      </div>
     );
   }
 }

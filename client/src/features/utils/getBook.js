@@ -9,14 +9,9 @@ const getBook = async id => {
   };
   return new Promise(async (resolve, reject) => {
     try {
-      // await loadWeb3();
-
       await axios
         .get(`/library?id=${id}`, config)
         .then(res => {
-          if (res.data.found === false) {
-            reject("No book found");
-          }
           resolve(res.data);
         })
         .catch(err => {

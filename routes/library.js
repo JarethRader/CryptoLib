@@ -4,6 +4,7 @@ const router = express.Router();
 
 //authorization dependencies
 const auth = require("../middleware/auth");
+const exec = require("../middleware/exec");
 const sendTransaction = require("../components/sendTransaction");
 
 //Web3 and smart contract dependencies
@@ -26,7 +27,7 @@ const DailyShelf = require("../models/DailyShelf");
 // @route post to /library/mint
 // @desc adds new book to smart contract
 // @access public - change to private later
-router.post("/mint", async (req, res) => {
+router.post("/mint", exec, async (req, res) => {
   const { title, author, hash } = req.body;
   let bytesTitle = web3.utils.hexToBytes(web3.utils.utf8ToHex(title));
   let bytesAuthor = web3.utils.hexToBytes(web3.utils.utf8ToHex(author));
@@ -55,96 +56,118 @@ router.post("/mint", async (req, res) => {
           res.status(200).json({ transactionReceipt: receipt });
         })
         .catch(err => {
-          console.log(err);
-          res.status(400).json({ err: err });
+          res.status(500).json({ msg: "Failed to send transaction", err: err });
         });
     })
     .catch(err => {
-      console.log(err);
-      res.status(400).json({ error: err });
+      res.status(500).json({ msg: "Failed to create transaction", error: err });
     });
 });
 
 // @route GET /library
 // @desc Get book by ID
 // @access public
-router.get("/", async (req, res) => {
-  const { id } = req.query;
-  try {
-    await web3.eth
-      .call({
-        to: libraryContract.address,
-        data: await library.methods.getBook(id).encodeABI()
-      })
-      .then(async book => {
-        if (book !== null) {
-          book = web3.utils.toAscii(book);
-          book = book.replace(/\0[^0-9a-zA-Z]+/g, "");
-          hash = book.substring(book.indexOf("Qm"), book.length);
-          title = book.substring(0, book.match(/([a-z][A-Z][.a-z])/).index + 1);
-          author = book.substring(
-            book.match(/([a-z][A-Z][.a-z])/).index + 1,
-            book.indexOf("Qm")
-          );
-        } else {
-          return res.status(400).json({ msg: "No book found" });
-        }
-        await web3.eth
-          .call({
-            to: libraryContract.address,
-            data: await library.methods.cooAddress().encodeABI()
-          })
-          .then(async coo => {
-            await web3.eth
-              .call({
-                to: libraryContract.address,
-                data: await library.methods.ownerOf(id).encodeABI()
-              })
-              .then(owner => {
-                if (coo === owner) {
-                  res.status(200).json({
-                    id,
-                    title,
-                    author,
-                    hash,
-                    available: true,
-                    found: true
-                  });
-                } else {
-                  res.status(200).json({
-                    id,
-                    title,
-                    author,
-                    hash,
-                    available: false,
-                    found: true
-                  });
-                }
-              })
-              .catch(err => {
-                console.log(err);
-                res.status(400).json({ err });
-              });
-          })
-          .catch(err => {
-            console.log(err);
-            res.status(400).json({ err });
-          });
-      })
-      .catch(err => {
-        console.log(err);
-        res.status(204).json({ err: err, found: false });
+// router.get("/", async (req, res) => {
+//   const { id } = req.query;
+//   try {
+//     await web3.eth
+//       .call({
+//         to: libraryContract.address,
+//         data: await library.methods.getBook(id).encodeABI()
+//       })
+//       .then(async book => {
+//         if (book !== null) {
+//           book = web3.utils.toAscii(book);
+//           book = book.replace(/\0[^0-9a-zA-Z]+/g, "");
+//           hash = book.substring(book.indexOf("Qm"), book.length);
+//           title = book.substring(0, book.match(/([a-z][A-Z][.a-z])/).index + 1);
+//           author = book.substring(
+//             book.match(/([a-z][A-Z][.a-z])/).index + 1,
+//             book.indexOf("Qm")
+//           );
+//         } else {
+//           res.status(500).json({ msg: "No book found" });
+//         }
+//         await web3.eth
+//           .call({
+//             to: libraryContract.address,
+//             data: await library.methods.cooAddress().encodeABI()
+//           })
+//           .then(async coo => {
+//             await web3.eth
+//               .call({
+//                 to: libraryContract.address,
+//                 data: await library.methods.ownerOf(id).encodeABI()
+//               })
+//               .then(owner => {
+//                 if (coo === owner) {
+//                   res.status(200).json({
+//                     id,
+//                     title,
+//                     author,
+//                     hash,
+//                     available: true,
+//                     found: true
+//                   });
+//                 } else {
+//                   res.status(200).json({
+//                     id,
+//                     title,
+//                     author,
+//                     hash,
+//                     available: false,
+//                     found: true
+//                   });
+//                 }
+//               })
+//               .catch(err => {
+//                 res
+//                   .status(500)
+//                   .json({ msg: "Failed to get owner of book token", err });
+//               });
+//           })
+//           .catch(err => {
+//             res.status(500).json({
+//               msg: "Failed to get COO address from Smart Contract",
+//               err: err
+//             });
+//           });
+//       })
+//       .catch(err => {
+//         res
+//           .status(204)
+//           .json({ msg: "Failed to find book", err: err, found: false });
+//       });
+//   } catch (err) {
+//     res
+//       .status(500)
+//       .json({ msg: `Failed to get book with id ${id} `, err: err });
+//   }
+// });
+
+// @route GET /library
+// @desc Get book by ID
+// @access public
+router.get("/", (req, res) => {
+  Book.findOne({ bookID: req.query.id })
+    .then(book => {
+      res.status(200).json({
+        id: book.bookID,
+        title: book.title,
+        author: book.author,
+        hash: book.hash,
+        available: book.available
       });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({ error: err.data });
-  }
+    })
+    .catch(err => {
+      res.status(504).json({ msg: "Book not found" });
+    });
 });
 
 //@route POST /library/checkout
 //@desc checkout a book
 //@access public - change to private later
-router.post("/checkout", async (req, res) => {
+router.post("/checkout", auth, async (req, res) => {
   const { bookID, userAddress } = req.body;
 
   if (!bookID || !userAddress) {
@@ -175,23 +198,27 @@ router.post("/checkout", async (req, res) => {
                   res.status(200).json({ transactionReceipt: receipt });
                 })
                 .catch(err => {
-                  console.log(err);
-                  res.status(400).json({ err: err });
+                  res
+                    .status(500)
+                    .json({ msg: "Failed to send transaction", err: err });
                 });
             })
             .catch(err => {
-              console.log(err);
-              res.status(400).json({ error: err });
+              res
+                .status(500)
+                .json({ msg: "Failed to create transaction", error: err });
             });
         }
       })
       .catch(err => {
-        console.log(err);
-        res.status(400).json({ err: err });
+        res
+          .status(500)
+          .json({ msg: "Failed to get token balance of user", err: err });
       });
   } catch (err) {
-    console.log(err);
-    res.status(400).json({ err: err });
+    res
+      .status(500)
+      .json({ msg: `Failed to checkout book of id ${bookID}`, err: err });
   }
 });
 
@@ -219,12 +246,15 @@ router.post("/getOwn", async (req, res) => {
         res.status(200).json({ booksOfOwner });
       })
       .catch(err => {
-        console.log(err);
-        res.status(400).json({ err: err });
+        throw new Error({
+          msg: "Failed to get tokens owned by user",
+          err: err
+        });
       });
   } catch (err) {
-    console.log(err);
-    res.status(400).json({ err: err });
+    res
+      .status(500)
+      .json({ msg: "Failed to get tokens owned by user", err: err });
   }
 });
 
@@ -270,24 +300,84 @@ router.post("/return", async (req, res) => {
                     res.status(200).json({ transactionReceipt: receipt });
                   })
                   .catch(err => {
-                    console.log(err);
-                    res.status(400).json({ err: err });
+                    res
+                      .status(500)
+                      .json({ msg: "Failed to send transaction", err: err });
                   });
               })
               .catch(err => {
-                console.log(err);
-                res.status(400).json({ err: err });
+                res
+                  .status(500)
+                  .json({ msg: "Failed to create transaction", err: err });
               });
           });
       })
       .catch(err => {
-        console.log(err);
-        res.status(400).json({ err: err });
+        res.status(500).json({
+          msg: "Failed to get COO address from smart contract",
+          err: err
+        });
       });
   } catch (err) {
-    console.log(err);
-    res.status(400).json({ err: err });
+    res
+      .status(500)
+      .json({ msg: `Failed to return book of id ${bookID}`, err: err });
   }
+});
+
+//TODO add support for searching different catagories
+router.get("/search", async (req, res) => {
+  const { search, field } = req.query;
+  if (!search) {
+    return res.status(400).json({ msg: "Query is empty" });
+  }
+  let query = new RegExp(search, "i");
+
+  let idList = [];
+
+  await Book.find({ title: query }, "bookID")
+    .then(async res => {
+      await res.forEach(element => {
+        idList.push(element.bookID);
+      });
+    })
+    .catch(err => {
+      return res.status(400).json({ msg: "Invalid query" });
+    });
+
+  await Book.find({ author: query }, "bookID")
+    .then(async res => {
+      await res.forEach(async element => {
+        if (!idList.includes(element.bookID)) {
+          idList.push(element.bookID);
+        }
+      });
+    })
+    .catch(err => {
+      return res.status(400).json({ msg: "Invalid query" });
+    });
+
+  return res.status(200).json(idList);
+});
+
+router.get("/lastIndex", async (req, res) => {
+  try {
+    let len = await Book.countDocuments({}).exec();
+    return res.status(200).json({ data: len });
+  } catch (err) {
+    res.status(500);
+  }
+});
+router.get("/dailyShelf", (req, res) => {
+  DailyShelf.findById("5e38bf40ca45d527d6f574cf")
+    .then(shelf => {
+      return res.status(200).json({ shelf: shelf });
+    })
+    .catch(err => { 
+      return res
+        .status(500)
+        .json({ msg: "Failed to get daily shelf", err: err });
+    });
 });
 
 //TODO add support for searching different catagories

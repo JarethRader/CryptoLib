@@ -380,4 +380,59 @@ router.get("/dailyShelf", (req, res) => {
     });
 });
 
+//TODO add support for searching different catagories
+router.get("/search", async (req, res) => {
+  const { search, field } = req.query;
+  if (!search) {
+    return res.status(400).json({ msg: "Query is empty" });
+  }
+  let query = new RegExp(search, "i");
+
+  let idList = [];
+
+  await Book.find({ title: query }, "bookID")
+    .then(async res => {
+      await res.forEach(element => {
+        idList.push(element.bookID);
+      });
+    })
+    .catch(err => {
+      return res.status(400).json({ msg: "Invalid query" });
+    });
+
+  await Book.find({ author: query }, "bookID")
+    .then(async res => {
+      await res.forEach(async element => {
+        if (!idList.includes(element.bookID)) {
+          idList.push(element.bookID);
+        }
+      });
+    })
+    .catch(err => {
+      return res.status(400).json({ msg: "Invalid query" });
+    });
+
+  return res.status(200).json(idList);
+});
+
+router.get("/lastIndex", async (req, res) => {
+  try {
+    let len = await Book.countDocuments({}).exec();
+    return res.status(200).json({ data: len });
+  } catch (err) {
+    res.status(400);
+  }
+});
+
+router.get("/dailyShelf", (req, res) => {
+  DailyShelf.findById("5e38bf40ca45d527d6f574cf")
+    .then(shelf => {
+      return res.status(200).json({ shelf: shelf });
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(400);
+    });
+});
+
 module.exports = router;

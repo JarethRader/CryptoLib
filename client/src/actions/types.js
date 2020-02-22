@@ -33,3 +33,5 @@ export const GET_OWN_FAIL = "GET_OWN_FAIL";
 export const GET_ERRORS = "GET_ERRORS";
 export const CLEAR_ERRORS = "CLEAR_ERRORS";
 export const AUTH_ERROR = "AUTH_ERROR";
+export const SHOW_ERROR = "SHOW_ERROR";
+export const HIDE_ERROR = "HIDE_ERROR";

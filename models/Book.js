@@ -22,6 +22,10 @@ const BookSchema = new Schema({
   hash: {
     type: String,
     require: true
+  },
+  available: {
+    type: Boolean,
+    require: true
   }
 });
 

@@ -16,6 +16,7 @@ import {
   RETURN_FAIL
 } from "./types";
 import axios from "axios";
+import { tokenConfig } from "./actionUtils/tokenConfig";
 import { returnErrors } from "./errorActions";
 import config from "./actionUtils/libraryConfig";
 
@@ -38,6 +39,7 @@ export const mintNewBook = (userAddress, title, author, hash) => dispatch => {
       });
     })
     .catch(err => {
+      dispatch(returnErrors(err.response.data.msg, err.response.status));
       dispatch({
         type: MINT_NEW_FAIL
       });
@@ -68,26 +70,44 @@ export const clearShelf = () => {
   };
 };
 
-export const checkout = (bookID, userAddress) => dispatch => {
+export const checkout = (bookID, userAddress) => (dispatch, getState) => {
   dispatch(setCheckoutLoading(bookID));
 
   const body = {
     bookID,
     userAddress
   };
-
-  axios
-    .post("library/checkout", body, config)
-    .then(res => {
-      dispatch({
-        type: CHECKOUT_SUCCESS,
-        payload: res.data
-      });
-    })
-    .catch(err => {
-      dispatch(returnErrors(err.err, err.status));
-      dispatch({ type: CHECKOUT_FAIL });
+  try {
+    if (getState().user.token !== null) {
+      axios
+        .post("library/checkout", body, tokenConfig(getState, config))
+        .then(res => {
+          dispatch({
+            type: CHECKOUT_SUCCESS,
+            payload: res.data
+          });
+        })
+        .catch(err => {
+          if (err.response) {
+            throw err.response.data;
+          } else {
+            throw err.request.data;
+          }
+        });
+    } else {
+      throw new Error("Not logged in");
+    }
+  } catch (err) {
+    dispatch(
+      returnErrors(
+        err.message ? err.message : err.msg,
+        err.status ? err.status : 400
+      )
+    );
+    dispatch({
+      type: CHECKOUT_FAIL
     });
+  }
 };
 
 export const returnBook = bookID => dispatch => {
@@ -107,7 +127,7 @@ export const returnBook = bookID => dispatch => {
       });
     })
     .catch(err => {
-      dispatch(returnErrors(err.err, err.status));
+      dispatch(returnErrors(err.response.data.msg, err.response.status));
       dispatch({
         type: RETURN_FAIL
       });
@@ -131,7 +151,7 @@ export const getOwn = address => dispatch => {
       });
     })
     .catch(err => {
-      dispatch(returnErrors(err.err, err.status));
+      dispatch(returnErrors(err.response.data.msg, err.response.status));
       dispatch({
         type: GET_OWN_FAIL
       });

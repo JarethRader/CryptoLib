@@ -25,7 +25,7 @@ export const getMetamaskAddress = account => dispatch => {
   } else {
     dispatch(
       returnErrors(
-        "Unable to get you Metamask account address. Are you logged in?",
+        "Unable to get your Metamask account address. Are you logged in?",
         400
       )
     );

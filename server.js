@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
 const bodyParser = require("body-parser");
+const sslRedirect = require("heroku-ssl-redirect");
 
 const Task = require("./tasks/updateDailyShelf");
 
@@ -33,6 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors());
+app.use(sslRedirect());
 
 //use routes
 app.use("/library", require("./routes/library"));
@@ -42,7 +44,6 @@ Task.updateDailyShelf();
 
 if (process.env.NODE_ENV == "production") {
   // Set a static folder
-  require("newrelic");
 
   app.use(express.static("client/build"));
 

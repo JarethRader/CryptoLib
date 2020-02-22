@@ -49,7 +49,7 @@ class LoginModal extends Component {
     try {
       await this.props.login(user);
     } catch (err) {
-      alert(err);
+      // alert(err);
     }
   }
 
@@ -66,7 +66,7 @@ class LoginModal extends Component {
       };
       await this.props.register(user);
     } else {
-      alert("Email invalid");
+      // alert("Email invalid");
     }
   };
 

@@ -1,10 +1,17 @@
 import React, { Component } from "react";
 import "./route.css";
+import { Helmet } from "react-helmet";
 
 class About extends Component {
   render() {
     return (
       <div className="pageBody about">
+        <Helmet>
+          <meta charSet="utf-8" />
+          <meta name="about" content="About page for Cryptolib" />
+          <title>CryptoLib - About</title>
+          <link rel="canonical" href="https://cryptolib.co/about" />
+        </Helmet>
         <div className="slide">
           <h1 className="orbitronFont"> About CryptoLib </h1>
           <br />

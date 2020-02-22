@@ -34,7 +34,13 @@ router.post("/signup", (req, res) => {
   }
 
   User.findOne({ address }).then(user => {
-    if (user) return res.status(400).json({ msg: "User already exists" });
+    if (user)
+      return res.status(400).json({ msg: "Address is already registered" });
+
+    User.findOne({ email }).then(user => {
+      if (user)
+        return res.status(400).json({ msg: "Email is already registered " });
+    });
 
     const newUser = new User({
       username,
@@ -94,7 +100,7 @@ router.post("/login", (req, res) => {
     }
     //Compare hash with
     bcrypt.compare(req.body.password, user.password).then(isMatch => {
-      if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
+      if (!isMatch) return res.status(400).json({ msg: "Invalid password" });
       jwt.sign(
         { id: user.id },
         process.env.JWT_SECRET,

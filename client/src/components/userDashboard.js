@@ -15,6 +15,7 @@ import {
 } from "reactstrap";
 import { connect } from "react-redux";
 import { getOwn, returnBook } from "../actions/libraryActions";
+import { logout } from "../actions/userAction";
 import { returnErrors } from "../actions/errorActions";
 import getBook from "../features/utils/getBook";
 import PDFViewer from "../features/PDFViewer";
@@ -59,10 +60,16 @@ export class UserDashboard extends Component {
 
   handleDashClick = id => {
     switch (id) {
-      default:
+      case 1:
         this.setState({ ownBooks: [] });
         this.setState({ dashboardPage: "shelf" });
         this.getOwnShelf();
+        return;
+      case 2:
+        this.props.logout();
+        this.setState(initialState);
+        return;
+      default:
         return;
     }
   };
@@ -116,7 +123,7 @@ export class UserDashboard extends Component {
     const isMobile = this.state.width <= 500;
     return (
       <div>
-        <Navbar className="userDashboard" color="light" light expand="md">
+        <Navbar className="userDashboard" light expand="md">
           <NavbarBrand className="orbitronFont">
             <b>{this.props.user.username}</b>
           </NavbarBrand>
@@ -129,41 +136,50 @@ export class UserDashboard extends Component {
                 </NavLink>
               </NavItem>
             </Nav>
+            <NavItem className="logoutBtn">
+              <NavLink onClick={() => this.handleDashClick(2)}>Logout</NavLink>
+            </NavItem>
           </Collapse>
         </Navbar>
         <Container>
           {this.state.dashboardPage === "shelf" ? (
             <div>
               <h1>Shelf</h1>
-              {rows}
-              <br />
-              <hr className="my-2" />
-              <br />
-              {this.state.showSelected ? (
+              {this.props.ownShelf.length > 0 ? (
                 <div>
-                  {isMobile === true ? (
-                    <Container style={{ height: "45rem" }}>
-                      {/* TODO: Check if user is approved for token before displaying book */}
-                      <PDFViewer
-                        backend={PDFJSBackend}
-                        src={this.state.selectedBook}
-                        // src={sampleEncrypted}
-                        // password={"password"}
-                      />
-                    </Container>
-                  ) : (
-                    <Container style={{ height: "60rem" }}>
-                      {/* TODO: Check if user is approved for token before displaying book */}
-                      <PDFViewer
-                        backend={PDFJSBackend}
-                        src={this.state.selectedBook}
-                        // src={sampleEncrypted}
-                        // password={"password"}
-                      />
-                    </Container>
-                  )}
+                  {rows}
+                  <br />
+                  <hr className="my-2" />
+                  <br />
+                  {this.state.showSelected ? (
+                    <div>
+                      {isMobile === true ? (
+                        <Container style={{ height: "45rem" }}>
+                          {/* TODO: Check if user is approved for token before displaying book */}
+                          <PDFViewer
+                            backend={PDFJSBackend}
+                            src={this.state.selectedBook}
+                            // src={sampleEncrypted}
+                            // password={"password"}
+                          />
+                        </Container>
+                      ) : (
+                        <Container style={{ height: "60rem" }}>
+                          {/* TODO: Check if user is approved for token before displaying book */}
+                          <PDFViewer
+                            backend={PDFJSBackend}
+                            src={this.state.selectedBook}
+                            // src={sampleEncrypted}
+                            // password={"password"}
+                          />
+                        </Container>
+                      )}
+                    </div>
+                  ) : null}
                 </div>
-              ) : null}
+              ) : (
+                <p>You shelf is empty</p>
+              )}
             </div>
           ) : null}
         </Container>
@@ -227,6 +243,9 @@ const mapPropsToState = state => ({
   returning: state.library.returning
 });
 
-export default connect(mapPropsToState, { getOwn, returnBook, returnErrors })(
-  UserDashboard
-);
+export default connect(mapPropsToState, {
+  getOwn,
+  returnBook,
+  returnErrors,
+  logout
+})(UserDashboard);

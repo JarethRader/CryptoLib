@@ -2,11 +2,18 @@ import React, { Component } from "react";
 import { Button } from "reactstrap";
 import { Link } from "react-router-dom";
 import "./route.css";
+import { Helmet } from "react-helmet";
 
 class Home extends Component {
   render() {
     return (
       <div className="pageBody">
+        <Helmet>
+          <meta charSet="utf-8" />
+          <meta name="Home" content="Home page for cryptolib" />
+          <title>CryptoLib - Home</title>
+          <link rel="canonical" href="https://cryptolib.co" />
+        </Helmet>
         <div className="intro">
           <h1 className="orbitronFont">CryptoLib. A lib, but it's crypto. </h1>
           <h3>You want books? Cuz thats all we have...</h3>
@@ -40,6 +47,7 @@ class Home extends Component {
             browser will need the capability of connecting to the blockchain.
             Unless you're using the Brave browser,{" "}
             <a
+              style={{ color: "#0000FF" }}
               href="https://metamask.io/"
               target="_blank"
               rel="noopener noreferrer"

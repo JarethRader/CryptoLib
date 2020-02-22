@@ -15,7 +15,7 @@ import {
   Container
 } from "reactstrap";
 import { Link } from "react-router-dom";
-import Cryptolib_Icon from "../features/resources/Cryptolib_Icon.png";
+import Cryptolib_Icon from "../features/resources/Cryptolib_Icon.webp";
 
 class NavBar extends Component {
   state = {
@@ -32,7 +32,7 @@ class NavBar extends Component {
         <Navbar expand="sm" className="navBar" fixed="top">
           <Container>
             <NavbarBrand
-              style={{ color: "white" }}
+              style={{ color: "black" }}
               href="/"
               className="orbitronFont"
             >

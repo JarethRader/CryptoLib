@@ -23,7 +23,9 @@ export class ErrorModal extends Component {
             Something Went Wrong
           </ModalHeader>
           <ModalBody>
-            <Container>{this.props.errorMsg}</Container>
+            <Container style={{ textAlign: "center" }}>
+              {this.props.errorMsg}
+            </Container>
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={this.props.hideErrorModal}>

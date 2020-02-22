@@ -39,7 +39,7 @@ export const mintNewBook = (userAddress, title, author, hash) => dispatch => {
       });
     })
     .catch(err => {
-      dispatch(returnErrors(err.data, err.status));
+      dispatch(returnErrors(err.response.data.msg, err.response.status));
       dispatch({
         type: MINT_NEW_FAIL
       });
@@ -89,16 +89,21 @@ export const checkout = (bookID, userAddress) => (dispatch, getState) => {
         })
         .catch(err => {
           if (err.response) {
-            throw err.response;
+            throw err.response.data;
           } else {
-            throw err.request;
+            throw err.request.data;
           }
         });
     } else {
-      throw new Error({ message: "Not logged in", status: 400 });
+      throw new Error("Not logged in");
     }
   } catch (err) {
-    dispatch(returnErrors(err.message, err.status));
+    dispatch(
+      returnErrors(
+        err.message ? err.message : err.msg,
+        err.status ? err.status : 400
+      )
+    );
     dispatch({
       type: CHECKOUT_FAIL
     });
@@ -122,7 +127,7 @@ export const returnBook = bookID => dispatch => {
       });
     })
     .catch(err => {
-      dispatch(returnErrors(err.response.msg, err.response.status));
+      dispatch(returnErrors(err.response.data.msg, err.response.status));
       dispatch({
         type: RETURN_FAIL
       });
@@ -146,7 +151,7 @@ export const getOwn = address => dispatch => {
       });
     })
     .catch(err => {
-      dispatch(returnErrors(err.msg, err.status));
+      dispatch(returnErrors(err.response.data.msg, err.response.status));
       dispatch({
         type: GET_OWN_FAIL
       });

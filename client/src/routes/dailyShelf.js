@@ -6,6 +6,7 @@ import { Container, Row, Col, Button } from "reactstrap";
 import getBook from "../features/utils/getBook";
 import BeatLoader from "react-spinners/BeatLoader";
 import { override } from "../features/utils/override";
+import { Helmet } from "react-helmet";
 
 export class DailyShelf extends Component {
   state = {
@@ -27,7 +28,7 @@ export class DailyShelf extends Component {
           return;
         })
         .catch(err => {
-          // console.log(err);
+          console.log(err);
         });
     }
   }
@@ -77,6 +78,15 @@ export class DailyShelf extends Component {
     const isMobile = this.state.width <= 500;
     return (
       <div className="dailyShelf">
+        <Helmet>
+          <meta charSet="utf-8" />
+          <meta
+            name="Daily Shelf"
+            content="Daily shelf selection for Cryptolib"
+          />
+          <title>CryptoLib - Daily Shelf</title>
+          <link rel="canonical" href="https://cryptolib.co/dailyShelf" />
+        </Helmet>
         <Container>
           <h1>Today's Shelf</h1>
           {this.state.shelfPopulated ? (

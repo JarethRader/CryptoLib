@@ -22,14 +22,14 @@
 .navbar-toggler {
   color: rgba(255, 255, 255, 1);
   border-color: rgb(255, 255, 255);
-  background-image: url("./features/resources/open-menu.png");
+  background-image: url("./features/resources/open-menu.webp");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 2rem;
 }
 
 .navBtn {
-  color: white;
+  color: black;
   font-size: 14pt;
 }
 
@@ -106,5 +106,15 @@
   padding-left: 1em;
   padding-right: 1em;
   font-size: 14pt;
+  cursor: pointer;
+}
+
+.logoutBtn {
+  list-style-type: none;
+  color: lightslategray;
+}
+
+.logoutBtn:hover {
+  color: black;
   cursor: pointer;
 }

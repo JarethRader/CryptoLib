@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./route.css";
+import { Helmet } from "react-helmet";
 import {
   Button,
   ButtonGroup,
@@ -171,6 +172,12 @@ export class Catalog extends Component {
     ));
     return (
       <div className="pageBody">
+        <Helmet>
+          <meta charSet="utf-8" />
+          <meta name="Catalog" content="Catalog page for cryptolib" />
+          <title>CryptoLib - Catalog</title>
+          <link rel="canonical" href="https://cryptolib.co/catalog" />
+        </Helmet>
         <div className="catalogHeader">
           <InputGroup className="searchBar">
             <Button

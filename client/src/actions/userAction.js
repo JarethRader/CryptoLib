@@ -46,8 +46,6 @@ export const loadUser = () => (dispatch, getState) => {
         });
       })
       .catch(err => {
-        console.log(err.data);
-        dispatch(returnErrors(err.response.msg, err.response.status));
         dispatch({
           type: AUTH_ERROR
         });
@@ -63,30 +61,36 @@ export const register = ({
   email,
   address
 }) => dispatch => {
-  if (!email || !password) {
-    throw Error("Please enter all fields");
-  }
-  if (!address) {
-    throw Error("No web3 provider detected");
-  }
-  if (!username) {
-    username = "";
-  }
+  try {
+    if (!email || !password) {
+      throw new Error("Please enter all fields");
+    }
+    if (!address) {
+      throw new Error("No web3 provider detected");
+    }
+    if (!username) {
+      username = "";
+    }
 
-  // Request body
-  const body = JSON.stringify({ username, email, password, address });
-  axios
-    .post("/user/signup", body, config)
-    .then(res => {
-      dispatch({
-        type: REGISTER_SUCCESS,
-        payload: res.data
+    // Request body
+    const body = JSON.stringify({ username, email, password, address });
+    axios
+      .post("/user/signup", body, config)
+      .then(res => {
+        dispatch({
+          type: REGISTER_SUCCESS,
+          payload: res.data
+        });
+      })
+      .catch(err => {
+        throw err;
       });
-    })
-    .catch(err => {
-      dispatch(returnErrors(err.response.msg, err.response.status));
-      dispatch({ type: REGISTER_FAIL });
-    });
+  } catch (err) {
+    console.log(err.response);
+    console.log(err.message);
+    // dispatch(returnErrors(msg, err.response.status));
+    dispatch({ type: REGISTER_FAIL });
+  }
 };
 
 export const login = ({ password, address }) => dispatch => {
@@ -109,7 +113,7 @@ export const login = ({ password, address }) => dispatch => {
       });
     })
     .catch(err => {
-      dispatch(returnErrors(err.response.msg, err.response.status));
+      dispatch(returnErrors(err.response.data.msg, err.response.status));
       dispatch({ type: LOGIN_FAIL });
     });
 };

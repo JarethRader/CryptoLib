@@ -368,13 +368,12 @@ router.get("/lastIndex", async (req, res) => {
     res.status(500);
   }
 });
-
 router.get("/dailyShelf", (req, res) => {
   DailyShelf.findById("5e38bf40ca45d527d6f574cf")
     .then(shelf => {
       return res.status(200).json({ shelf: shelf });
     })
-    .catch(err => {
+    .catch(err => { 
       return res
         .status(500)
         .json({ msg: "Failed to get daily shelf", err: err });

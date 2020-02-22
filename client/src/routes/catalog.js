@@ -137,6 +137,7 @@ export class Catalog extends Component {
 
   handleQuery = async e => {
     e.preventDefault();
+
     if (this.state.query === null || this.state.query === "") {
       return;
     }
@@ -144,6 +145,7 @@ export class Catalog extends Component {
       `/library/search?search=${this.state.query}`
     );
     this.setState({ shelfList: queryShelf.data }, async () => {
+
       this.props.clearShelf();
       await this.loadCatalog()
         .then(async () => {
@@ -151,7 +153,7 @@ export class Catalog extends Component {
           await this.props.libraryLoaded();
         })
         .catch(err => {
-          this.props.returnErrors(err.message, 500);
+
         });
     });
   };

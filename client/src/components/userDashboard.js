@@ -55,6 +55,7 @@ export class UserDashboard extends Component {
   };
 
   toggleNav = () => {
+    console.log("Toggling nav");
     this.setState({ isOpen: !this.state.isOpen });
   };
 

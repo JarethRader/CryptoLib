@@ -45,20 +45,19 @@ Task.updateDailyShelf();
 if (process.env.NODE_ENV == "production") {
   // Set a static folder
 
+  app.use(express.static("client/build"));
 
-app.use(express.static("client/build"));
+  app.get("*", () => (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
 
-app.get("*", () => (req, res) => {
-  res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
-});
-
-app.use((req, res, next) => {
-  if (req.header("x-forwarded-proto") !== "https") {
-    res.redirect(`https://${req.header("host")}${req.url}`);
-  } else {
-    next();
-  }
-});
+  app.use((req, res, next) => {
+    if (req.header("x-forwarded-proto") !== "https") {
+      res.redirect(`https://${req.header("host")}${req.url}`);
+    } else {
+      next();
+    }
+  });
 }
 
 app.listen(port, () => {

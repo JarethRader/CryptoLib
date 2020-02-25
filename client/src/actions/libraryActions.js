@@ -77,7 +77,6 @@ export const checkout = (bookID, userAddress) => (dispatch, getState) => {
     bookID,
     userAddress
   };
-
   try {
     tokenConfig(getState, config)
       .then(reqHeaders => {

@@ -144,7 +144,6 @@ export class Catalog extends Component {
 
   handleQuery = async e => {
     e.preventDefault();
-
     if (this.state.query === null || this.state.query === "") {
       return;
     }

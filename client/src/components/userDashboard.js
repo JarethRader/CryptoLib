@@ -55,7 +55,6 @@ export class UserDashboard extends Component {
   };
 
   toggleNav = () => {
-    console.log("Toggling nav");
     this.setState({ isOpen: !this.state.isOpen });
   };
 
@@ -73,6 +72,10 @@ export class UserDashboard extends Component {
       default:
         return;
     }
+  };
+
+  resetOwnShelf = async () => {
+    this.setState({ ownBooks: [] });
   };
 
   getOwnShelf = async () => {
@@ -119,6 +122,8 @@ export class UserDashboard extends Component {
         setSelected={this.setSelected}
         returnBook={this.props.returnBook}
         returning={this.props.returning}
+        resetOwnShelf={this.resetOwnShelf}
+        getOwnShelf={this.getOwnShelf}
       />
     ));
     const isMobile = this.state.width <= 500;
@@ -126,7 +131,13 @@ export class UserDashboard extends Component {
       <div>
         <Navbar className="userDashboard" light expand="md">
           <NavbarBrand className="orbitronFont">
-            <b>{this.props.user.username}</b>
+            <b>
+              {this.props.user.username ? (
+                <div>{this.props.user.username}</div>
+              ) : (
+                <div>user</div>
+              )}
+            </b>
           </NavbarBrand>
           <NavbarToggler onClick={this.toggleNav} />
           <Collapse isOpen={this.state.isOpen} navbar>
@@ -198,6 +209,8 @@ class ShelfRow extends UserDashboard {
   handleReturn = async e => {
     e.preventDefault();
     await this.props.returnBook(this.props.book.id);
+    await this.props.resetOwnShelf();
+    await this.props.getOwnShelf();
   };
 
   render() {

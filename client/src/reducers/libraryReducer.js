@@ -56,7 +56,9 @@ export default function(state = initialState, action) {
     case RETURN_SUCCESS:
       return {
         ...state,
-        ownShelf: state.ownShelf.filter(bookID => bookID !== action.returned),
+        ownShelf: state.ownShelf.filter(
+          bookID => bookID !== action.bookReturned
+        ),
         transactionHash: action.payload,
         returning: {
           returnLoading: false,
@@ -64,14 +66,22 @@ export default function(state = initialState, action) {
         }
       };
     case MINT_NEW_SUCCESS:
+      return {
+        ...state,
+        transactionHash: action.payload
+      };
     case CHECKOUT_SUCCESS:
+      console.log(action);
       return {
         ...state,
         transactionHash: action.payload,
         checkingOut: {
           checkoutLoading: false,
           bookID: null
-        }
+        },
+        library: (state.library.find(
+          book => book.id === action.bookCheckedOut
+        ).available = false)
       };
     case CLEAR_SHELF:
       return {

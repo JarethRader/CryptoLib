@@ -36,23 +36,35 @@ export const getMetamaskAddress = account => dispatch => {
 export const loadUser = () => (dispatch, getState) => {
   //user loading
   dispatch(setUserLoading());
-  if (getState().user.token !== null) {
-    axios
-      .get("/user/auth", tokenConfig(getState, config))
-      .then(res => {
-        dispatch({
-          type: USER_LOADED,
-          payload: res.data
-        });
-      })
-      .catch(err => {
-        dispatch({
-          type: AUTH_ERROR
-        });
-      });
-  } else {
-    dispatch({ type: AUTH_ERROR });
-  }
+  tokenConfig(getState, config)
+    .then(reqHeaders => {
+      if (reqHeaders.headers) {
+        axios({
+          url: "/user/auth",
+          method: "get",
+          baseURL: "http://localhost:8000",
+          headers: reqHeaders.headers
+        })
+          .then(res => {
+            dispatch({
+              type: USER_LOADED,
+              payload: res.data
+            });
+          })
+          .catch(err => {
+            console.log(err);
+            dispatch({
+              type: AUTH_ERROR
+            });
+          });
+      } else {
+        dispatch({ type: AUTH_ERROR });
+      }
+    })
+    .catch(err => {
+      dispatch(returnErrors("Unauthorized user", 401));
+      dispatch({ type: AUTH_ERROR });
+    });
 };
 
 export const register = ({
@@ -73,9 +85,20 @@ export const register = ({
     }
 
     // Request body
-    const body = JSON.stringify({ username, email, password, address });
-    axios
-      .post("/user/signup", body, config)
+    const body = {
+      username,
+      email,
+      password,
+      address
+    };
+
+    axios({
+      url: "/user/signup",
+      method: "post",
+      baseURL: "http://localhost:8000",
+      data: body,
+      headers: config
+    })
       .then(res => {
         dispatch({
           type: REGISTER_SUCCESS,
@@ -86,9 +109,15 @@ export const register = ({
         throw err;
       });
   } catch (err) {
-    console.log(err.response);
-    console.log(err.message);
-    // dispatch(returnErrors(msg, err.response.status));
+    if (err) {
+      if (err.response.data) {
+        dispatch(returnErrors(err.response.data.message, err.response.status));
+      } else if (err.repsone.message) {
+        dispatch(returnErrors(err.response.message, err.response.status));
+      } else {
+        dispatch(returnErrors("Something happened", err.response.status));
+      }
+    }
     dispatch({ type: REGISTER_FAIL });
   }
 };
@@ -100,12 +129,20 @@ export const login = ({ password, address }) => dispatch => {
     throw Error("Now address detected. Please connect MetaMask");
   }
 
-  const body = JSON.stringify({ password, address });
+  const body = {
+    password: password,
+    address: address
+  };
 
   dispatch(setUserLoading());
 
-  axios
-    .post("/user/login", body, config)
+  axios({
+    url: "/user/login",
+    method: "post",
+    baseURL: "http://localhost:8000",
+    data: body,
+    headers: config
+  })
     .then(res => {
       dispatch({
         type: LOGIN_SUCCESS,
@@ -113,7 +150,17 @@ export const login = ({ password, address }) => dispatch => {
       });
     })
     .catch(err => {
-      dispatch(returnErrors(err.response.data.msg, err.response.status));
+      if (err) {
+        if (err.response.data) {
+          dispatch(
+            returnErrors(err.response.data.message, err.response.status)
+          );
+        } else if (err.repsone.message) {
+          dispatch(returnErrors(err.response.message, err.response.status));
+        } else {
+          dispatch(returnErrors("Something happened", err.response.status));
+        }
+      }
       dispatch({ type: LOGIN_FAIL });
     });
 };

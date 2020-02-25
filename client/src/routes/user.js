@@ -12,8 +12,7 @@ export class User extends Component {
     super(props);
 
     this.state = {
-      showLoginModal: false,
-      userExists: null
+      showLoginModal: false
     };
   }
 

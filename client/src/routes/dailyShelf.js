@@ -43,8 +43,7 @@ export class DailyShelf extends Component {
         let bookList = [];
         await axios({
           url: "/library/dailyShelf",
-          method: "get",
-          baseURL: "http://localhost:8000"
+          method: "get"
         })
           .then(async shelf => {
             for (let i = 0; i < shelf.data.shelf.shelfList.length; i++) {

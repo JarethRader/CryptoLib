@@ -85,7 +85,6 @@ export const checkout = (bookID, userAddress) => (dispatch, getState) => {
           axios({
             url: "/library/checkout",
             method: "post",
-            baseURL: "http://localhost:8000",
             data: body,
             headers: reqHeaders.headers
           })
@@ -133,7 +132,6 @@ export const returnBook = bookID => dispatch => {
   axios({
     url: "/library/return",
     method: "post",
-    baseURL: "http://localhost:8000",
     data: body
   })
     .then(res => {
@@ -166,7 +164,6 @@ export const getOwn = address => dispatch => {
   axios({
     url: "/library/getOwn",
     method: "post",
-    baseURL: "http://localhost:8000",
     data: body
   })
     .then(res => {

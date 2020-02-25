@@ -42,7 +42,6 @@ export const loadUser = () => (dispatch, getState) => {
         axios({
           url: "/user/auth",
           method: "get",
-          baseURL: "http://localhost:8000",
           headers: reqHeaders.headers
         })
           .then(res => {
@@ -95,7 +94,6 @@ export const register = ({
     axios({
       url: "/user/signup",
       method: "post",
-      baseURL: "http://localhost:8000",
       data: body,
       headers: config
     })
@@ -139,7 +137,6 @@ export const login = ({ password, address }) => dispatch => {
   axios({
     url: "/user/login",
     method: "post",
-    baseURL: "http://localhost:8000",
     data: body,
     headers: config
   })

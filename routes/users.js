@@ -24,10 +24,10 @@ router.post("/signup", (req, res) => {
   const email = req.body.email.toLowerCase();
 
   if (!email || !password) {
-    return res.status(400).json({ msg: "Please enter all fields" });
+    return res.status(400).json({ message: "Please enter all fields" });
   }
   if (!address) {
-    return res.status(400).json({ msg: "No web3 provider detected" });
+    return res.status(400).json({ message: "No web3 provider detected" });
   }
   if (!username) {
     username = "";
@@ -35,11 +35,13 @@ router.post("/signup", (req, res) => {
 
   User.findOne({ address }).then(user => {
     if (user)
-      return res.status(400).json({ msg: "Address is already registered" });
+      return res.status(400).json({ message: "Address is already registered" });
 
     User.findOne({ email }).then(user => {
       if (user)
-        return res.status(400).json({ msg: "Email is already registered " });
+        return res
+          .status(400)
+          .json({ message: "Email is already registered " });
     });
 
     const newUser = new User({
@@ -68,9 +70,7 @@ router.post("/signup", (req, res) => {
                   token,
                   user: {
                     id: user.id,
-                    address: newUser.address,
-                    username: newUser.username,
-                    email: newUser.email
+                    username: newUser.username
                   }
                 });
               }
@@ -79,7 +79,7 @@ router.post("/signup", (req, res) => {
         });
       });
     } catch (err) {
-      res.status(500).json({ msg: "Failed to create new user", err: err });
+      res.status(500).json({ message: "Failed to create new user", err: err });
     }
   });
 });
@@ -89,18 +89,19 @@ router.post("/signup", (req, res) => {
 //@access public
 router.post("/login", (req, res) => {
   if (!req.body.password) {
-    return res.status(400).json({ msg: "Please enter password" });
+    return res.status(400).json({ message: "Please enter password" });
   }
   if (!req.body.address) {
-    return res.status(400).json({ msg: "Web3 provider not detected" });
+    return res.status(400).json({ message: "Web3 provider not detected" });
   }
   User.findOne({ address: req.body.address.toLowerCase() }).then(user => {
     if (!user || user === null) {
-      res.status(400).json({ msg: "Invalid password" });
+      res.status(400).json({ message: "Invalid password" });
     }
     //Compare hash with
     bcrypt.compare(req.body.password, user.password).then(isMatch => {
-      if (!isMatch) return res.status(400).json({ msg: "Invalid password" });
+      if (!isMatch)
+        return res.status(400).json({ message: "Invalid password" });
       jwt.sign(
         { id: user.id },
         process.env.JWT_SECRET,
@@ -113,9 +114,7 @@ router.post("/login", (req, res) => {
             token,
             user: {
               id: user.id,
-              address: user.address,
-              username: user.username,
-              email: user.email
+              username: user.username
             }
           });
         }
@@ -133,32 +132,13 @@ router.get("/auth", auth, (req, res) => {
       res.status(200).json({
         user: {
           id: user.id,
-          address: user.address,
-          username: user.username,
-          email: user.email
+          username: user.username
         }
       });
     })
     .catch(err => {
-      return res.status(400).json({ msg: "User not found" });
+      return res.status(400).json({ message: "User not found" });
     });
 });
-
-//@route GET /user
-//@desc check if user exists
-//@access public
-// router.get("/", (req, res) => {
-//   User.find({ address: req.query.address })
-//     .then(user => {
-//       if (user[0].address === req.query.address) {
-//         res.status(200).json({ success: true });
-//       } else {
-//         throw new Error({ msg: "User doesn not exist", success: false });
-//       }
-//     })
-//     .catch(err => {
-//       res.status(400).json({ success: false, err: err });
-//     });
-// });
 
 module.exports = router;

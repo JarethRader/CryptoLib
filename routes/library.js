@@ -56,94 +56,17 @@ router.post("/mint", exec, async (req, res) => {
           res.status(200).json({ transactionReceipt: receipt });
         })
         .catch(err => {
-          res.status(500).json({ msg: "Failed to send transaction", err: err });
+          res
+            .status(500)
+            .json({ message: "Failed to send transaction", err: err });
         });
     })
     .catch(err => {
-      res.status(500).json({ msg: "Failed to create transaction", error: err });
+      res
+        .status(500)
+        .json({ message: "Failed to create transaction", error: err });
     });
 });
-
-// @route GET /library
-// @desc Get book by ID
-// @access public
-// router.get("/", async (req, res) => {
-//   const { id } = req.query;
-//   try {
-//     await web3.eth
-//       .call({
-//         to: libraryContract.address,
-//         data: await library.methods.getBook(id).encodeABI()
-//       })
-//       .then(async book => {
-//         if (book !== null) {
-//           book = web3.utils.toAscii(book);
-//           book = book.replace(/\0[^0-9a-zA-Z]+/g, "");
-//           hash = book.substring(book.indexOf("Qm"), book.length);
-//           title = book.substring(0, book.match(/([a-z][A-Z][.a-z])/).index + 1);
-//           author = book.substring(
-//             book.match(/([a-z][A-Z][.a-z])/).index + 1,
-//             book.indexOf("Qm")
-//           );
-//         } else {
-//           res.status(500).json({ msg: "No book found" });
-//         }
-//         await web3.eth
-//           .call({
-//             to: libraryContract.address,
-//             data: await library.methods.cooAddress().encodeABI()
-//           })
-//           .then(async coo => {
-//             await web3.eth
-//               .call({
-//                 to: libraryContract.address,
-//                 data: await library.methods.ownerOf(id).encodeABI()
-//               })
-//               .then(owner => {
-//                 if (coo === owner) {
-//                   res.status(200).json({
-//                     id,
-//                     title,
-//                     author,
-//                     hash,
-//                     available: true,
-//                     found: true
-//                   });
-//                 } else {
-//                   res.status(200).json({
-//                     id,
-//                     title,
-//                     author,
-//                     hash,
-//                     available: false,
-//                     found: true
-//                   });
-//                 }
-//               })
-//               .catch(err => {
-//                 res
-//                   .status(500)
-//                   .json({ msg: "Failed to get owner of book token", err });
-//               });
-//           })
-//           .catch(err => {
-//             res.status(500).json({
-//               msg: "Failed to get COO address from Smart Contract",
-//               err: err
-//             });
-//           });
-//       })
-//       .catch(err => {
-//         res
-//           .status(204)
-//           .json({ msg: "Failed to find book", err: err, found: false });
-//       });
-//   } catch (err) {
-//     res
-//       .status(500)
-//       .json({ msg: `Failed to get book with id ${id} `, err: err });
-//   }
-// });
 
 // @route GET /library
 // @desc Get book by ID
@@ -160,7 +83,7 @@ router.get("/", (req, res) => {
       });
     })
     .catch(err => {
-      res.status(504).json({ msg: "Book not found" });
+      res.status(504).json({ message: "Book not found" });
     });
 });
 
@@ -171,7 +94,7 @@ router.post("/checkout", auth, async (req, res) => {
   const { bookID, userAddress } = req.body;
 
   if (!bookID || !userAddress) {
-    return res.status(400).json({ msg: "Invalid Input" });
+    return res.status(400).json({ message: "Invalid Input" });
   }
   try {
     await web3.eth
@@ -183,7 +106,7 @@ router.post("/checkout", auth, async (req, res) => {
         if (web3.utils.hexToNumber(balance) === 2) {
           return res
             .status(400)
-            .json({ msg: "Too many books checked out already" });
+            .json({ message: "Too many books checked out already" });
         } else {
           //change transfer method to checkout method, which will transfer and approve in one function
           const data = await library.methods
@@ -194,31 +117,44 @@ router.post("/checkout", auth, async (req, res) => {
             .estimateGas({ from: process.env.CEO_ADDRESS, gas: 5000000 })
             .then(async gasAmount => {
               await sendTransaction(gasAmount, data)
-                .then(receipt => {
-                  res.status(200).json({ transactionReceipt: receipt });
+                .then(async receipt => {
+                  await Book.findOneAndUpdate(
+                    { bookID },
+                    { available: false },
+                    { useFindAndModify: false }
+                  )
+                    .then(() => {
+                      res.status(200).json({ transactionReceipt: receipt });
+                    })
+                    .catch(err => {
+                      res
+                        .status(500)
+                        .json({ message: "Could not connect to server" });
+                    });
                 })
                 .catch(err => {
-                  res
-                    .status(500)
-                    .json({ msg: "Failed to send transaction", err: err });
+                  res.status(500).json({
+                    message: "Failed to send transaction",
+                    err: err
+                  });
                 });
             })
             .catch(err => {
               res
                 .status(500)
-                .json({ msg: "Failed to create transaction", error: err });
+                .json({ message: "Failed to create transaction", error: err });
             });
         }
       })
       .catch(err => {
         res
           .status(500)
-          .json({ msg: "Failed to get token balance of user", err: err });
+          .json({ message: "Failed to get token balance of user", err: err });
       });
   } catch (err) {
     res
       .status(500)
-      .json({ msg: `Failed to checkout book of id ${bookID}`, err: err });
+      .json({ message: `Failed to checkout book of id ${bookID}`, err: err });
   }
 });
 
@@ -247,14 +183,14 @@ router.post("/getOwn", async (req, res) => {
       })
       .catch(err => {
         throw new Error({
-          msg: "Failed to get tokens owned by user",
+          message: "Failed to get tokens owned by user",
           err: err
         });
       });
   } catch (err) {
     res
       .status(500)
-      .json({ msg: "Failed to get tokens owned by user", err: err });
+      .json({ message: "Failed to get tokens owned by user", err: err });
   }
 });
 
@@ -296,32 +232,45 @@ router.post("/return", async (req, res) => {
               .estimateGas({ from: process.env.CEO_ADDRESS, gas: 5000000 })
               .then(async gasAmount => {
                 await sendTransaction(gasAmount, data)
-                  .then(receipt => {
-                    res.status(200).json({ transactionReceipt: receipt });
+                  .then(async receipt => {
+                    await Book.findOneAndUpdate(
+                      { bookID },
+                      { available: true },
+                      { useFindAndModify: false }
+                    )
+                      .then(() => {
+                        res.status(200).json({ transactionReceipt: receipt });
+                      })
+                      .catch(err => {
+                        res
+                          .status(500)
+                          .json({ message: "Could not connect to server" });
+                      });
                   })
                   .catch(err => {
-                    res
-                      .status(500)
-                      .json({ msg: "Failed to send transaction", err: err });
+                    res.status(500).json({
+                      message: "Failed to send transaction",
+                      err: err
+                    });
                   });
               })
               .catch(err => {
                 res
                   .status(500)
-                  .json({ msg: "Failed to create transaction", err: err });
+                  .json({ message: "Failed to create transaction", err: err });
               });
           });
       })
       .catch(err => {
         res.status(500).json({
-          msg: "Failed to get COO address from smart contract",
+          message: "Failed to get COO address from smart contract",
           err: err
         });
       });
   } catch (err) {
     res
       .status(500)
-      .json({ msg: `Failed to return book of id ${bookID}`, err: err });
+      .json({ message: `Failed to return book of id ${bookID}`, err: err });
   }
 });
 
@@ -329,7 +278,7 @@ router.post("/return", async (req, res) => {
 router.get("/search", async (req, res) => {
   const { search, field } = req.query;
   if (!search) {
-    return res.status(400).json({ msg: "Query is empty" });
+    return res.status(400).json({ message: "Query is empty" });
   }
   let query = new RegExp(search, "i");
 
@@ -342,7 +291,7 @@ router.get("/search", async (req, res) => {
       });
     })
     .catch(err => {
-      return res.status(400).json({ msg: "Invalid query" });
+      return res.status(400).json({ message: "Invalid query" });
     });
 
   await Book.find({ author: query }, "bookID")
@@ -354,7 +303,7 @@ router.get("/search", async (req, res) => {
       });
     })
     .catch(err => {
-      return res.status(400).json({ msg: "Invalid query" });
+      return res.status(400).json({ message: "Invalid query" });
     });
 
   return res.status(200).json(idList);
@@ -368,15 +317,16 @@ router.get("/lastIndex", async (req, res) => {
     res.status(500);
   }
 });
+
 router.get("/dailyShelf", (req, res) => {
   DailyShelf.findById("5e38bf40ca45d527d6f574cf")
     .then(shelf => {
       return res.status(200).json({ shelf: shelf });
     })
-    .catch(err => { 
+    .catch(err => {
       return res
         .status(500)
-        .json({ msg: "Failed to get daily shelf", err: err });
+        .json({ message: "Failed to get daily shelf", err: err });
     });
 });
 

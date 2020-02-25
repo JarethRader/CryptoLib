@@ -75,7 +75,14 @@ export class Catalog extends Component {
   };
 
   getLibraryLength = async () => {
-    let len = (await axios.get("/library/lastIndex")).data.data - 1;
+    let len =
+      (
+        await axios({
+          url: "/library/lastIndex",
+          method: "get",
+          baseURL: "http://localhost:8000"
+        })
+      ).data.data - 1;
     this.setState({ libraryLength: len });
   };
 
@@ -141,20 +148,19 @@ export class Catalog extends Component {
     if (this.state.query === null || this.state.query === "") {
       return;
     }
-    let queryShelf = await axios.get(
-      `/library/search?search=${this.state.query}`
-    );
+    let queryShelf = await axios({
+      url: `/library/search?search=${this.state.query}`,
+      method: "get",
+      baseURL: "http://localhost:8000"
+    });
     this.setState({ shelfList: queryShelf.data }, async () => {
-
       this.props.clearShelf();
       await this.loadCatalog()
         .then(async () => {
           this.setState({ catalogData: this.props.library });
           await this.props.libraryLoaded();
         })
-        .catch(err => {
-
-        });
+        .catch(err => {});
     });
   };
 

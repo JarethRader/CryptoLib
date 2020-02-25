@@ -77,30 +77,43 @@ export const checkout = (bookID, userAddress) => (dispatch, getState) => {
     bookID,
     userAddress
   };
+
   try {
-    if (getState().user.token !== null) {
-      axios
-        .post("library/checkout", body, tokenConfig(getState, config))
-        .then(res => {
-          dispatch({
-            type: CHECKOUT_SUCCESS,
-            payload: res.data
-          });
-        })
-        .catch(err => {
-          if (err.response) {
-            throw err.response.data;
-          } else {
-            throw err.request.data;
-          }
-        });
-    } else {
-      throw new Error("Not logged in");
-    }
+    tokenConfig(getState, config)
+      .then(reqHeaders => {
+        if (reqHeaders) {
+          axios({
+            url: "/library/checkout",
+            method: "post",
+            baseURL: "http://localhost:8000",
+            data: body,
+            headers: reqHeaders.headers
+          })
+            .then(res => {
+              dispatch({
+                type: CHECKOUT_SUCCESS,
+                payload: res.data,
+                bookCheckedOut: bookID
+              });
+            })
+            .catch(err => {
+              if (err.response) {
+                throw err.response.data;
+              } else {
+                throw err.request.data;
+              }
+            });
+        } else {
+          throw new Error({ message: "Not logged in" });
+        }
+      })
+      .catch(err => {
+        throw new Error({ message: "Unauthorized user", status: 401 });
+      });
   } catch (err) {
     dispatch(
       returnErrors(
-        err.message ? err.message : err.msg,
+        err.response.data ? err.response.data.message : err.response.message,
         err.status ? err.status : 400
       )
     );
@@ -117,17 +130,26 @@ export const returnBook = bookID => dispatch => {
     bookID
   };
 
-  axios
-    .post("/library/return", body)
+  axios({
+    url: "/library/return",
+    method: "post",
+    baseURL: "http://localhost:8000",
+    data: body
+  })
     .then(res => {
       dispatch({
         type: RETURN_SUCCESS,
         payload: res.data,
-        returned: bookID
+        bookReturned: bookID
       });
     })
     .catch(err => {
-      dispatch(returnErrors(err.response.data.msg, err.response.status));
+      dispatch(
+        returnErrors(
+          err.response.data ? err.response.data.message : err.response.message,
+          err.response.status ? err.response.status : 400
+        )
+      );
       dispatch({
         type: RETURN_FAIL
       });
@@ -141,8 +163,12 @@ export const getOwn = address => dispatch => {
     address
   };
 
-  axios
-    .post("/library/getOwn", body)
+  axios({
+    url: "/library/getOwn",
+    method: "post",
+    baseURL: "http://localhost:8000",
+    data: body
+  })
     .then(res => {
       let books = res.data.booksOfOwner;
       dispatch({
@@ -151,7 +177,11 @@ export const getOwn = address => dispatch => {
       });
     })
     .catch(err => {
-      dispatch(returnErrors(err.response.data.msg, err.response.status));
+      if (err.response.data) {
+        dispatch(returnErrors(err.response.data.message, err.response.status));
+      } else {
+        dispatch(returnErrors(err.response.message, err.response.status));
+      }
       dispatch({
         type: GET_OWN_FAIL
       });

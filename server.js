@@ -5,9 +5,6 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const sslRedirect = require("heroku-ssl-redirect");
 
-// const handler = require("serve-handler");
-// const http = require("http");
-
 const Task = require("./tasks/updateDailyShelf");
 
 const dotenv = require("dotenv");
@@ -45,8 +42,9 @@ app.use("/user", require("./routes/users"));
 
 Task.updateDailyShelf();
 
-// if (process.env.NODE_ENV == "production") {
-// Set a static folder
+if (process.env.NODE_ENV == "production") {
+  // Set a static folder
+
 
 app.use(express.static("client/build"));
 
@@ -61,7 +59,7 @@ app.use((req, res, next) => {
     next();
   }
 });
-// }
+}
 
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);

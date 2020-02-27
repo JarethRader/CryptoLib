@@ -9,12 +9,8 @@ const getBook = async id => {
   };
   return new Promise(async (resolve, reject) => {
     try {
-      await axios({
-        url: `/library?id=${id}`,
-        method: "get",
-        baseURL: "http://localhost:8000",
-        headers: config
-      })
+      await axios
+        .get(`/library?id=${id}`, config)
         .then(res => {
           resolve(res.data);
         })

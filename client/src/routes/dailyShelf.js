@@ -41,10 +41,8 @@ export class DailyShelf extends Component {
     return new Promise(async (resolve, reject) => {
       try {
         let bookList = [];
-        await axios({
-          url: "/library/dailyShelf",
-          method: "get"
-        })
+        await axios
+          .get("/library/dailyShelf")
           .then(async shelf => {
             for (let i = 0; i < shelf.data.shelf.shelfList.length; i++) {
               await getBook(shelf.data.shelf.shelfList[i]).then(book => {

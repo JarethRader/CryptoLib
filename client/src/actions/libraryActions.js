@@ -16,7 +16,6 @@ import {
   RETURN_FAIL
 } from "./types";
 import axios from "axios";
-import { tokenConfig } from "./actionUtils/tokenConfig";
 import { returnErrors } from "./errorActions";
 import config from "./actionUtils/libraryConfig";
 
@@ -78,35 +77,21 @@ export const checkout = (bookID, userAddress) => (dispatch, getState) => {
     userAddress
   };
   try {
-    tokenConfig(getState, config)
-      .then(reqHeaders => {
-        if (reqHeaders) {
-          axios({
-            url: "/library/checkout",
-            method: "post",
-            data: body,
-            headers: reqHeaders.headers
-          })
-            .then(res => {
-              dispatch({
-                type: CHECKOUT_SUCCESS,
-                payload: res.data,
-                bookCheckedOut: bookID
-              });
-            })
-            .catch(err => {
-              if (err.response) {
-                throw err.response.data;
-              } else {
-                throw err.request.data;
-              }
-            });
-        } else {
-          throw new Error({ message: "Not logged in" });
-        }
+    axios
+      .post("/library/checkout", body, config)
+      .then(res => {
+        dispatch({
+          type: CHECKOUT_SUCCESS,
+          payload: res.data,
+          bookCheckedOut: bookID
+        });
       })
       .catch(err => {
-        throw new Error({ message: "Unauthorized user", status: 401 });
+        if (err.response) {
+          throw err.response.data;
+        } else {
+          throw err.request.data;
+        }
       });
   } catch (err) {
     dispatch(
@@ -128,11 +113,8 @@ export const returnBook = bookID => dispatch => {
     bookID
   };
 
-  axios({
-    url: "/library/return",
-    method: "post",
-    data: body
-  })
+  axios
+    .post("/library/return", body)
     .then(res => {
       dispatch({
         type: RETURN_SUCCESS,
@@ -160,11 +142,8 @@ export const getOwn = address => dispatch => {
     address
   };
 
-  axios({
-    url: "/library/getOwn",
-    method: "post",
-    data: body
-  })
+  axios
+    .post("/library/getOwn", body)
     .then(res => {
       let books = res.data.booksOfOwner;
       dispatch({

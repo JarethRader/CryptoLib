@@ -48,6 +48,11 @@ export class UserDashboard extends Component {
         this.props.returnErrors(err.message, 500);
       }
     }
+
+    if (this.props.transactionHash) {
+      await this.resetOwnShelf();
+      await this.getOwnShelf();
+    }
   };
 
   handleWindowSizeChange = () => {
@@ -122,8 +127,6 @@ export class UserDashboard extends Component {
         setSelected={this.setSelected}
         returnBook={this.props.returnBook}
         returning={this.props.returning}
-        resetOwnShelf={this.resetOwnShelf}
-        getOwnShelf={this.getOwnShelf}
       />
     ));
     const isMobile = this.state.width <= 500;
@@ -209,8 +212,6 @@ class ShelfRow extends UserDashboard {
   handleReturn = async e => {
     e.preventDefault();
     await this.props.returnBook(this.props.book.id);
-    await this.props.resetOwnShelf();
-    await this.props.getOwnShelf();
   };
 
   render() {
@@ -254,7 +255,8 @@ const mapPropsToState = state => ({
   user: state.user.user,
   userAddress: state.user.userAddress,
   ownShelf: state.library.ownShelf,
-  returning: state.library.returning
+  returning: state.library.returning,
+  transactionHash: state.library.transactionHash
 });
 
 export default connect(mapPropsToState, {

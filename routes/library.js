@@ -90,7 +90,7 @@ router.get("/", (req, res) => {
 //@route POST /library/checkout
 //@desc checkout a book
 //@access public - change to private later
-router.post("/checkout", auth, async (req, res) => {
+router.post("/checkout", async (req, res) => {
   const { bookID, userAddress } = req.body;
 
   if (!bookID || !userAddress) {

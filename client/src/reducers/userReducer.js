@@ -36,7 +36,6 @@ export default function(state = initialState, action) {
         token: action.payload.token,
         user: action.payload.user,
         isAuthenticated: true,
-        // userExists: true,
         isLoading: false
       };
     case LOGIN_FAIL:
@@ -46,8 +45,8 @@ export default function(state = initialState, action) {
       localStorage.removeItem("token");
       return {
         ...state,
-        // userExists: false,
         token: null,
+        user: {},
         isAuthenticated: false,
         isLoading: false
       };

@@ -75,14 +75,7 @@ export class Catalog extends Component {
   };
 
   getLibraryLength = async () => {
-    let len =
-      (
-        await axios({
-          url: "/library/lastIndex",
-          method: "get",
-          baseURL: "http://localhost:8000"
-        })
-      ).data.data - 1;
+    let len = (await axios.get("/library/lastIndex", "get")).data.data - 1;
     this.setState({ libraryLength: len });
   };
 
@@ -150,8 +143,7 @@ export class Catalog extends Component {
     }
     let queryShelf = await axios({
       url: `/library/search?search=${this.state.query}`,
-      method: "get",
-      baseURL: "http://localhost:8000"
+      method: "get"
     });
     this.setState({ shelfList: queryShelf.data }, async () => {
       this.props.clearShelf();

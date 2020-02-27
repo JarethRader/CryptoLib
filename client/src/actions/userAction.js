@@ -38,27 +38,21 @@ export const loadUser = () => (dispatch, getState) => {
   dispatch(setUserLoading());
   tokenConfig(getState, config)
     .then(reqHeaders => {
-      if (reqHeaders.headers) {
-        axios({
-          url: "/user/auth",
-          method: "get",
+      axios
+        .get("/user/auth", {
           headers: reqHeaders.headers
         })
-          .then(res => {
-            dispatch({
-              type: USER_LOADED,
-              payload: res.data
-            });
-          })
-          .catch(err => {
-            console.log(err);
-            dispatch({
-              type: AUTH_ERROR
-            });
+        .then(res => {
+          dispatch({
+            type: USER_LOADED,
+            payload: res.data
           });
-      } else {
-        dispatch({ type: AUTH_ERROR });
-      }
+        })
+        .catch(err => {
+          dispatch({
+            type: AUTH_ERROR
+          });
+        });
     })
     .catch(err => {
       dispatch(returnErrors("Unauthorized user", 401));
@@ -91,12 +85,8 @@ export const register = ({
       address
     };
 
-    axios({
-      url: "/user/signup",
-      method: "post",
-      data: body,
-      headers: config
-    })
+    axios
+      .post("/user/signup", body, config)
       .then(res => {
         dispatch({
           type: REGISTER_SUCCESS,
@@ -134,12 +124,8 @@ export const login = ({ password, address }) => dispatch => {
 
   dispatch(setUserLoading());
 
-  axios({
-    url: "/user/login",
-    method: "post",
-    data: body,
-    headers: config
-  })
+  axios
+    .post("/user/login", body, config)
     .then(res => {
       dispatch({
         type: LOGIN_SUCCESS,

@@ -36,7 +36,6 @@ export const getMetamaskAddress = account => dispatch => {
 export const loadUser = () => (dispatch, getState) => {
   //user loading
   dispatch(setUserLoading());
-
   tokenConfig(getState, config)
     .then(reqHeaders => {
       axios

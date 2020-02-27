@@ -5,9 +5,6 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const sslRedirect = require("heroku-ssl-redirect");
 
-// const handler = require("serve-handler");
-// const http = require("http");
-
 const Task = require("./tasks/updateDailyShelf");
 
 const dotenv = require("dotenv");

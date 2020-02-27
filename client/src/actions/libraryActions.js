@@ -76,7 +76,6 @@ export const checkout = (bookID, userAddress) => (dispatch, getState) => {
     bookID,
     userAddress
   };
-
   try {
     axios
       .post("/library/checkout", body, config)

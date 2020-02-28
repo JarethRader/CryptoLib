@@ -18,8 +18,6 @@ import { getOwn, returnBook } from "../actions/libraryActions";
 import { logout } from "../actions/userAction";
 import { returnErrors } from "../actions/errorActions";
 import getBook from "../features/utils/getBook";
-import PDFViewer from "../features/PDFViewer";
-import PDFJSBackend from "../features/pdfBackend/pdfjs";
 import BeatLoader from "react-spinners/BeatLoader";
 import { shelf } from "../features/utils/override";
 
@@ -171,22 +169,12 @@ export class UserDashboard extends Component {
                       {isMobile === true ? (
                         <Container style={{ height: "45rem" }}>
                           {/* TODO: Check if user is approved for token before displaying book */}
-                          <PDFViewer
-                            backend={PDFJSBackend}
-                            src={this.state.selectedBook}
-                            // src={sampleEncrypted}
-                            // password={"password"}
-                          />
+                          {/* PDF reader goes here */}
                         </Container>
                       ) : (
                         <Container style={{ height: "60rem" }}>
                           {/* TODO: Check if user is approved for token before displaying book */}
-                          <PDFViewer
-                            backend={PDFJSBackend}
-                            src={this.state.selectedBook}
-                            // src={sampleEncrypted}
-                            // password={"password"}
-                          />
+                          {/* PDF reader goes here */}
                         </Container>
                       )}
                     </div>

@@ -26,7 +26,11 @@ class App extends Component {
       // Time to reload your interface with accounts[0]!
       store.dispatch(getMetamaskAddress(accounts[0]));
     });
-    store.dispatch(loadUser());
+    try {
+      store.dispatch(loadUser());
+    } catch (err) {
+      //User is probably no logged in
+    }
   }
 
   render() {

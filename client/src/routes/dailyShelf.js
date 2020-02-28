@@ -1,12 +1,11 @@
 import React, { Component } from "react";
 import axios from "axios";
-import PDFViewer from "../features/PDFViewer";
-import PDFJSBackend from "../features/pdfBackend/pdfjs";
 import { Container, Row, Col, Button } from "reactstrap";
 import getBook from "../features/utils/getBook";
 import BeatLoader from "react-spinners/BeatLoader";
 import { override } from "../features/utils/override";
 import { Helmet } from "react-helmet";
+import { PDFReader, MobilePDFReader } from "reactjs-pdf-reader";
 
 export class DailyShelf extends Component {
   state = {
@@ -64,9 +63,13 @@ export class DailyShelf extends Component {
     this.setState({ selectedID: book.id });
     let bookHash = book.hash;
     let address =
-      "https://ipfs.infura.io/ipfs/" + bookHash + "#toolbar=0&navpanes=0";
+      "http://ipfs.infura.io/ipfs/" + bookHash + "#toolbar=0&navpanes=0";
     this.setState({ selectedBook: address }, () => {
-      this.setState({ showSelected: true });
+      if (this.state.selectedBook) {
+        this.setState({ showSelected: true });
+      } else {
+        this.setState({ selectedBook: null });
+      }
     });
   };
 
@@ -110,18 +113,12 @@ export class DailyShelf extends Component {
           {this.state.showSelected ? (
             <div>
               {isMobile === true ? (
-                <Container style={{ height: "45rem" }}>
-                  <PDFViewer
-                    backend={PDFJSBackend}
-                    src={this.state.selectedBook}
-                  />
+                <Container style={{ height: "45rem", overflow: "scroll" }}>
+                  <MobilePDFReader url={this.state.selectedBook} />
                 </Container>
               ) : (
-                <Container style={{ height: "60rem" }}>
-                  <PDFViewer
-                    backend={PDFJSBackend}
-                    src={this.state.selectedBook}
-                  />
+                <Container style={{ height: "60rem", overflow: "scroll" }}>
+                  <PDFReader url={this.state.selectedBook} />
                 </Container>
               )}
             </div>

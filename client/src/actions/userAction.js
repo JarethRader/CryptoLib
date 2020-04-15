@@ -8,19 +8,19 @@ import {
   LOGOUT_SUCCESS,
   REGISTER_SUCCESS,
   REGISTER_FAIL,
-  AUTH_ERROR
+  AUTH_ERROR,
 } from "./types";
 import { tokenConfig } from "./actionUtils/tokenConfig";
 import { returnErrors } from "./errorActions";
 import axios from "axios";
 import config from "./actionUtils/userConfig";
 
-export const getMetamaskAddress = account => dispatch => {
+export const getMetamaskAddress = (account) => (dispatch) => {
   dispatch(setUserLoading());
   if (account) {
     dispatch({
       type: GET_ADDRESS_SUCCESS,
-      payload: account
+      payload: account,
     });
   } else {
     dispatch(
@@ -37,35 +37,32 @@ export const loadUser = () => (dispatch, getState) => {
   //user loading
   dispatch(setUserLoading());
   tokenConfig(getState, config)
-    .then(reqHeaders => {
+    .then((reqHeaders) => {
       axios
         .get("/user/auth", {
-          headers: reqHeaders.headers
+          headers: reqHeaders.headers,
         })
-        .then(res => {
+        .then((res) => {
           dispatch({
             type: USER_LOADED,
-            payload: res.data
+            payload: res.data,
           });
         })
-        .catch(err => {
+        .catch((err) => {
           dispatch({
-            type: AUTH_ERROR
+            type: AUTH_ERROR,
           });
         });
     })
-    .catch(err => {
+    .catch((err) => {
       dispatch(returnErrors("Unauthorized user", 401));
       dispatch({ type: AUTH_ERROR });
     });
 };
 
-export const register = ({
-  username,
-  password,
-  email,
-  address
-}) => dispatch => {
+export const register = ({ username, password, email, address }) => (
+  dispatch
+) => {
   try {
     if (!email || !password) {
       throw new Error("Please enter all fields");
@@ -82,18 +79,18 @@ export const register = ({
       username,
       email,
       password,
-      address
+      address,
     };
 
     axios
       .post("/user/signup", body, config)
-      .then(res => {
+      .then((res) => {
         dispatch({
           type: REGISTER_SUCCESS,
-          payload: res.data
+          payload: res.data,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         throw err;
       });
   } catch (err) {
@@ -110,7 +107,7 @@ export const register = ({
   }
 };
 
-export const login = ({ password, address }) => dispatch => {
+export const login = ({ password, address }) => (dispatch) => {
   if (!password) {
     throw Error("Please enter password");
   } else if (!address) {
@@ -119,20 +116,20 @@ export const login = ({ password, address }) => dispatch => {
 
   const body = {
     password: password,
-    address: address
+    address: address,
   };
 
   dispatch(setUserLoading());
 
   axios
     .post("/user/login", body, config)
-    .then(res => {
+    .then((res) => {
       dispatch({
         type: LOGIN_SUCCESS,
-        payload: res.data
+        payload: res.data,
       });
     })
-    .catch(err => {
+    .catch((err) => {
       if (err) {
         if (err.response.data) {
           dispatch(
@@ -150,12 +147,12 @@ export const login = ({ password, address }) => dispatch => {
 
 export const logout = () => {
   return {
-    type: LOGOUT_SUCCESS
+    type: LOGOUT_SUCCESS,
   };
 };
 
 export const setUserLoading = () => {
   return {
-    type: USER_LOADING
+    type: USER_LOADING,
   };
 };

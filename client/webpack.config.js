@@ -1,6 +1,3 @@
-import CopyWebpackPlugin from "copy-webpack-plugin";
-require("newrelic");
-
 module.exports = {
   entry: "./src/index.js",
   output: {
@@ -11,14 +8,6 @@ module.exports = {
   devServer: {
     historyApiFallback: true
   },
-  plugins: [
-    new CopyWebpackPlugin([
-      {
-        from: "node_modules/pdfjs-dist/cmaps/",
-        to: "cmaps/"
-      }
-    ])
-  ],
   module: {
     rules: [
       {

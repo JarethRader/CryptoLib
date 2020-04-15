@@ -11,17 +11,16 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
-  NavLink
+  NavLink,
 } from "reactstrap";
 import { connect } from "react-redux";
 import { getOwn, returnBook } from "../actions/libraryActions";
 import { logout } from "../actions/userAction";
 import { returnErrors } from "../actions/errorActions";
 import getBook from "../features/utils/getBook";
-import PDFViewer from "../features/PDFViewer";
-import PDFJSBackend from "../features/pdfBackend/pdfjs";
 import BeatLoader from "react-spinners/BeatLoader";
 import { shelf } from "../features/utils/override";
+import { PDFReader, MobilePDFReader } from "reactjs-pdf-reader";
 
 const initialState = {
   isOpen: false,
@@ -30,7 +29,7 @@ const initialState = {
   selectedBook: null,
   selectedID: null,
   showSelected: false,
-  width: window.innerWidth
+  width: window.innerWidth,
 };
 
 export class UserDashboard extends Component {
@@ -63,7 +62,7 @@ export class UserDashboard extends Component {
     this.setState({ isOpen: !this.state.isOpen });
   };
 
-  handleDashClick = id => {
+  handleDashClick = (id) => {
     switch (id) {
       case 1:
         this.setState({ ownBooks: [] });
@@ -86,21 +85,21 @@ export class UserDashboard extends Component {
   getOwnShelf = async () => {
     try {
       await getBook(this.props.ownShelf[0])
-        .then(async book => {
+        .then(async (book) => {
           this.setState({ ownBooks: [book, ...this.state.ownBooks] });
           let i = 1;
           while (this.props.ownShelf[i]) {
             await getBook(this.props.ownShelf[i])
-              .then(nextBook => {
+              .then((nextBook) => {
                 this.setState({ ownBooks: [nextBook, ...this.state.ownBooks] });
               })
-              .catch(err => {
+              .catch((err) => {
                 throw err;
               });
             i++;
           }
         })
-        .catch(err => {
+        .catch((err) => {
           throw err;
         });
     } catch (err) {
@@ -108,7 +107,7 @@ export class UserDashboard extends Component {
     }
   };
 
-  setSelected = book => {
+  setSelected = (book) => {
     this.setState({ selectedID: book.id });
     let bookHash = book.hash;
     let address =
@@ -131,7 +130,7 @@ export class UserDashboard extends Component {
     ));
     const isMobile = this.state.width <= 500;
     return (
-      <div>
+      <div style={{ backgroundColor: "rgba(0,0,0,0)" }}>
         <Navbar className="userDashboard" light expand="md">
           <NavbarBrand className="orbitronFont">
             <b>
@@ -169,23 +168,21 @@ export class UserDashboard extends Component {
                   {this.state.showSelected ? (
                     <div>
                       {isMobile === true ? (
-                        <Container style={{ height: "45rem" }}>
-                          {/* TODO: Check if user is approved for token before displaying book */}
-                          <PDFViewer
-                            backend={PDFJSBackend}
-                            src={this.state.selectedBook}
-                            // src={sampleEncrypted}
-                            // password={"password"}
+                        <Container
+                          style={{ height: "45rem", overflow: "scroll" }}
+                        >
+                          <MobilePDFReader
+                            url={this.state.selectedBook}
+                            showAllPage={true}
                           />
                         </Container>
                       ) : (
-                        <Container style={{ height: "60rem" }}>
-                          {/* TODO: Check if user is approved for token before displaying book */}
-                          <PDFViewer
-                            backend={PDFJSBackend}
-                            src={this.state.selectedBook}
-                            // src={sampleEncrypted}
-                            // password={"password"}
+                        <Container
+                          style={{ height: "60rem", overflow: "scroll" }}
+                        >
+                          <PDFReader
+                            url={this.state.selectedBook}
+                            showAllPage={true}
                           />
                         </Container>
                       )}
@@ -204,12 +201,12 @@ export class UserDashboard extends Component {
 }
 
 class ShelfRow extends UserDashboard {
-  handleSelect = async e => {
+  handleSelect = async (e) => {
     e.preventDefault();
     this.props.setSelected(this.props.book);
   };
 
-  handleReturn = async e => {
+  handleReturn = async (e) => {
     e.preventDefault();
     await this.props.returnBook(this.props.book.id);
   };
@@ -224,7 +221,10 @@ class ShelfRow extends UserDashboard {
           {selectedID === book.id ? (
             <b>selected</b>
           ) : (
-            <Button className="checkoutBtn" onClick={e => this.handleSelect(e)}>
+            <Button
+              className="checkoutBtn"
+              onClick={(e) => this.handleSelect(e)}
+            >
               Select Book
             </Button>
           )}
@@ -240,7 +240,10 @@ class ShelfRow extends UserDashboard {
               loading={this.props.returning}
             />
           ) : (
-            <Button className="checkoutBtn" onClick={e => this.handleReturn(e)}>
+            <Button
+              className="checkoutBtn"
+              onClick={(e) => this.handleReturn(e)}
+            >
               Return
             </Button>
           )}
@@ -250,18 +253,18 @@ class ShelfRow extends UserDashboard {
   }
 }
 
-const mapPropsToState = state => ({
+const mapPropsToState = (state) => ({
   isAuthenticated: state.user.isAuthenticated,
   user: state.user.user,
   userAddress: state.user.userAddress,
   ownShelf: state.library.ownShelf,
   returning: state.library.returning,
-  transactionHash: state.library.transactionHash
+  transactionHash: state.library.transactionHash,
 });
 
 export default connect(mapPropsToState, {
   getOwn,
   returnBook,
   returnErrors,
-  logout
+  logout,
 })(UserDashboard);

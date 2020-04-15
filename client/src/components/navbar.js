@@ -12,14 +12,14 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Container
+  Container,
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import Cryptolib_Icon from "../features/resources/Cryptolib_Icon.webp";
 
 class NavBar extends Component {
   state = {
-    isOpen: false
+    isOpen: false,
   };
 
   toggle = () => {
@@ -32,7 +32,7 @@ class NavBar extends Component {
         <Navbar expand="sm" className="navBar" fixed="top">
           <Container>
             <NavbarBrand
-              style={{ color: "black" }}
+              style={{ color: "white" }}
               href="/"
               className="orbitronFont"
             >
@@ -43,7 +43,7 @@ class NavBar extends Component {
                   width: "2rem",
                   marginRight: "1rem",
                   backgroundColor: "white",
-                  borderRadius: "0.2rem"
+                  borderRadius: "0.2rem",
                 }}
               />
               CryptoLib

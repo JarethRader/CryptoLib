@@ -12,14 +12,14 @@ export class User extends Component {
     super(props);
 
     this.state = {
-      showLoginModal: false
+      showLoginModal: false,
     };
   }
 
   async componentDidMount() {
     if (window.web3) {
       if (!this.props.userAddress) {
-        await loadUserAddress().then(async account => {
+        await loadUserAddress().then(async (account) => {
           await this.props.getMetamaskAddress(account);
           await this.props.loadUser();
         });
@@ -34,54 +34,61 @@ export class User extends Component {
   render() {
     const { isAuthenticated, userAddress } = this.props;
     return (
-      <div className="pageBody user">
-        {window.web3 ? (
-          <div>
-            {userAddress ? (
-              <div>
-                {isAuthenticated ? (
-                  <div>
-                    <UserDashboard />
-                  </div>
-                ) : (
-                  <div>
-                    <h1>Start reading!</h1>
-                    <Button onClick={this.toggleLoginModal}>Sign In</Button>
-                    <LoginModal
-                      toggleModal={this.toggleLoginModal}
-                      showModal={this.state.showLoginModal}
-                    />
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div>
-                <h1>Metamask is locked</h1>
-                <h3>Simply open Metamask and follow the instructions</h3>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div>
-            <h1>No web3 provider detected</h1>
-            <h3>Please Install Metamask</h3>
-          </div>
-        )}
+      <div
+        style={{
+          backgroundImage:
+            "linear-gradient( 180deg,rgb(230, 230, 230) 0%,#0a960c 30%,#000000 100%)",
+        }}
+      >
+        <div className="pageBody user">
+          {window.web3 ? (
+            <div>
+              {userAddress ? (
+                <div>
+                  {isAuthenticated ? (
+                    <div>
+                      <UserDashboard />
+                    </div>
+                  ) : (
+                    <div>
+                      <h1>Start reading!</h1>
+                      <Button onClick={this.toggleLoginModal}>Sign In</Button>
+                      <LoginModal
+                        toggleModal={this.toggleLoginModal}
+                        showModal={this.state.showLoginModal}
+                      />
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <h1>Metamask is locked</h1>
+                  <h3>Simply open Metamask and follow the instructions</h3>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div>
+              <h1>No web3 provider detected</h1>
+              <h3>Please Install Metamask</h3>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   isAuthenticated: state.user.isAuthenticated,
   user: state.user.user,
   userAddress: state.user.userAddress,
   ownShelf: state.library.ownShelf,
-  token: state.user.token
+  token: state.user.token,
 });
 
 export default connect(mapStateToProps, {
   getMetamaskAddress,
   loadUser,
-  getOwn
+  getOwn,
 })(User);

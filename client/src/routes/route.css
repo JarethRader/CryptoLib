@@ -107,9 +107,9 @@
 }
 
 .dailyShelf {
-  margin-top: 7.5rem;
-  margin-bottom: 5%;
   text-align: center;
+  background-color: rgb(230, 230, 230);
+  min-height: 100vh;
 }
 
 .metamaskLink {

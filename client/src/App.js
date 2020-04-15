@@ -22,7 +22,7 @@ class App extends Component {
     super(props);
 
     window.ethereum.autoRefreshOnNetworkChange = false;
-    window.ethereum.on("accountsChanged", function(accounts) {
+    window.ethereum.on("accountsChanged", function (accounts) {
       // Time to reload your interface with accounts[0]!
       store.dispatch(getMetamaskAddress(accounts[0]));
     });
@@ -48,16 +48,16 @@ class App extends Component {
             <div className="body">
               <ErrorModal />
               <Switch>
-                <Route path="/user">
+                <Route exact path="/user">
                   <User />
                 </Route>
-                <Route path="/catalog">
+                <Route exact path="/catalog">
                   <Catalog />
                 </Route>
-                <Route path="/dailyShelf">
+                <Route exact path="/dailyShelf">
                   <DailyShelf />
                 </Route>
-                <Route path="/about">
+                <Route exact path="/about">
                   <About />
                 </Route>
                 <Route path="/">

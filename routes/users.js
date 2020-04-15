@@ -1,10 +1,10 @@
 //Express dependencies
 const express = require("express");
 const router = express.Router();
-const dotenv = require("dotenv");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const auth = require("../middleware/auth");
+const dotenv = require("dotenv");
 
 //get User model
 const User = require("../models/User");
@@ -33,10 +33,10 @@ router.post("/signup", (req, res) => {
     username = "";
   }
 
-  User.findOne({ address }).then(user => {
+  User.findOne({ address }).then((user) => {
     if (user)
       return res.status(400).json({ message: "Address is already registered" });
-    User.findOne({ email }).then(user => {
+    User.findOne({ email }).then((user) => {
       if (user)
         return res
           .status(400)
@@ -47,7 +47,7 @@ router.post("/signup", (req, res) => {
       username,
       address,
       email,
-      password
+      password,
     });
 
     // Create salt and hash
@@ -56,7 +56,7 @@ router.post("/signup", (req, res) => {
         bcrypt.hash(newUser.password, salt, (err, hash) => {
           if (err) throw err;
           newUser.password = hash;
-          newUser.save().then(user => {
+          newUser.save().then((user) => {
             jwt.sign(
               { id: user.id },
               process.env.JWT_SECRET,
@@ -69,8 +69,8 @@ router.post("/signup", (req, res) => {
                   token,
                   user: {
                     id: user.id,
-                    username: newUser.username
-                  }
+                    username: newUser.username,
+                  },
                 });
               }
             );
@@ -93,12 +93,12 @@ router.post("/login", (req, res) => {
   if (!req.body.address) {
     return res.status(400).json({ message: "Web3 provider not detected" });
   }
-  User.findOne({ address: req.body.address.toLowerCase() }).then(user => {
+  User.findOne({ address: req.body.address.toLowerCase() }).then((user) => {
     if (!user || user === null) {
       res.status(400).json({ message: "Invalid password" });
     }
     //Compare hash with
-    bcrypt.compare(req.body.password, user.password).then(isMatch => {
+    bcrypt.compare(req.body.password, user.password).then((isMatch) => {
       if (!isMatch)
         return res.status(400).json({ message: "Invalid password" });
       jwt.sign(
@@ -113,8 +113,8 @@ router.post("/login", (req, res) => {
             token,
             user: {
               id: user.id,
-              username: user.username
-            }
+              username: user.username,
+            },
           });
         }
       );
@@ -127,15 +127,15 @@ router.post("/login", (req, res) => {
 //@access private
 router.get("/auth", auth, (req, res) => {
   User.findById(req.user.id)
-    .then(user => {
+    .then((user) => {
       res.status(200).json({
         user: {
           id: user.id,
-          username: user.username
-        }
+          username: user.username,
+        },
       });
     })
-    .catch(err => {
+    .catch((err) => {
       return res.status(400).json({ message: "User not found" });
     });
 });

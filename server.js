@@ -17,17 +17,17 @@ const app = express();
 const db = process.env.MONGO_URI;
 
 //define mongoos port
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 5000;
 
 // connect to Mongo
 mongoose
   .connect(db, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useCreateIndex: true
+    useCreateIndex: true,
   })
   .then(() => console.log("MongoDB connected..."))
-  .catch(err => console.log(err));
+  .catch((err) => console.log(err));
 
 //body-parser middleware
 app.use(express.urlencoded({ extended: true }));

@@ -62,10 +62,10 @@ export class DailyShelf extends Component {
   setSelected = (book) => {
     this.setState({ selectedID: book.id });
     let bookHash = book.hash;
-    let address =
-      "http://ipfs.infura.io/ipfs/" + bookHash + "#toolbar=0&navpanes=0";
+    let address = "https://ipfs.infura.io/ipfs/" + bookHash;
     this.setState({ selectedBook: address }, () => {
       if (this.state.selectedBook) {
+        console.log(this.state.selectedBook);
         this.setState({ showSelected: true });
       } else {
         this.setState({ selectedBook: null });
@@ -94,8 +94,16 @@ export class DailyShelf extends Component {
           <title>CryptoLib - Daily Shelf</title>
           <link rel="canonical" href="https://cryptolib.co/dailyShelf" />
         </Helmet>
-        <Container>
-          <h1>Today's Shelf</h1>
+        <div className="py-5 pt-5 pb-5">
+          <div
+            className="py-5 pt-5 pb-5 mx-0"
+            style={{
+              backgroundImage:
+                "linear-gradient( 0deg,rgb(230, 230, 230) 0%,#0a960c 30%,#000000 100%)",
+            }}
+          >
+            <h1 className="strokeme">Today's Shelf</h1>
+          </div>
           {this.state.shelfPopulated ? (
             <div>{rows}</div>
           ) : (
@@ -107,18 +115,21 @@ export class DailyShelf extends Component {
               loading={!this.state.shelfPopulated}
             />
           )}
-        </Container>
-        <hr className="my-2" />
+        </div>
         <div>
           {this.state.showSelected ? (
-            <div>
+            <div style={{ maxWidth: "90%" }}>
+              <hr className="my-2" />
               {isMobile === true ? (
                 <Container style={{ height: "45rem", overflow: "scroll" }}>
-                  <MobilePDFReader url={this.state.selectedBook} />
+                  <MobilePDFReader
+                    url={this.state.selectedBook}
+                    showAllPage={true}
+                  />
                 </Container>
               ) : (
                 <Container style={{ height: "60rem", overflow: "scroll" }}>
-                  <PDFReader url={this.state.selectedBook} />
+                  <PDFReader url={this.state.selectedBook} showAllPage={true} />
                 </Container>
               )}
             </div>

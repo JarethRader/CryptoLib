@@ -13,7 +13,7 @@
 }
 
 .navBar {
-  background-color: #0a960c;
+  background-color: black;
   -webkit-box-shadow: 0 8px 6px -6px rgb(73, 69, 69);
   -moz-box-shadow: 0 8px 6px -6px rgb(73, 69, 69);
   box-shadow: 0 8px 6px -6px rgb(73, 69, 69);
@@ -29,7 +29,7 @@
 }
 
 .navBtn {
-  color: black;
+  color: white;
   font-size: 14pt;
 }
 
@@ -42,7 +42,7 @@
 
 .navBtn:hover {
   color: white;
-  text-shadow: 3px 3px rgb(73, 69, 69);
+  text-decoration: underline;
 }
 
 .navDropdown {

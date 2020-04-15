@@ -14,19 +14,19 @@ export class DailyShelf extends Component {
     selectedBook: null,
     selectedID: null,
     showSelected: false,
-    width: window.innerWidth
+    width: window.innerWidth,
   };
 
   async componentDidMount() {
     if (this.state.shelf.length === 0) {
       await this.getDailyShelf()
-        .then(list => {
+        .then((list) => {
           this.setState({ shelf: list }, () => {
             this.setState({ shelfPopulated: true });
           });
           return;
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     }
@@ -42,15 +42,15 @@ export class DailyShelf extends Component {
         let bookList = [];
         await axios
           .get("/library/dailyShelf")
-          .then(async shelf => {
+          .then(async (shelf) => {
             for (let i = 0; i < shelf.data.shelf.shelfList.length; i++) {
-              await getBook(shelf.data.shelf.shelfList[i]).then(book => {
+              await getBook(shelf.data.shelf.shelfList[i]).then((book) => {
                 bookList.push(book);
               });
             }
             resolve(bookList);
           })
-          .catch(err => {
+          .catch((err) => {
             throw err;
           });
       } catch (err) {
@@ -59,7 +59,7 @@ export class DailyShelf extends Component {
     });
   };
 
-  setSelected = book => {
+  setSelected = (book) => {
     this.setState({ selectedID: book.id });
     let bookHash = book.hash;
     let address =
@@ -130,7 +130,7 @@ export class DailyShelf extends Component {
 }
 
 class ShelfRow extends DailyShelf {
-  handleSelect = async e => {
+  handleSelect = async (e) => {
     e.preventDefault();
     this.props.setSelected(this.props.book);
   };
@@ -145,7 +145,10 @@ class ShelfRow extends DailyShelf {
           {selectedID === book.id ? (
             <b>Selected</b>
           ) : (
-            <Button className="checkoutBtn" onClick={e => this.handleSelect(e)}>
+            <Button
+              className="checkoutBtn"
+              onClick={(e) => this.handleSelect(e)}
+            >
               Select Book
             </Button>
           )}

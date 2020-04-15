@@ -8,14 +8,14 @@ import {
   Col,
   InputGroup,
   InputGroupAddon,
-  Input
+  Input,
 } from "reactstrap";
 import { connect } from "react-redux";
 import {
   shelveBook,
   libraryLoaded,
   clearShelf,
-  checkout
+  checkout,
 } from "../actions/libraryActions";
 import { returnErrors } from "../actions/errorActions";
 import getBook from "../features/utils/getBook";
@@ -33,7 +33,7 @@ export class Catalog extends Component {
       endIndex: 20,
       shelfList: [],
       libraryLength: 0,
-      query: null
+      query: null,
     };
   }
 
@@ -65,11 +65,11 @@ export class Catalog extends Component {
               throw err;
             }
           })
-          .catch(err => {
+          .catch((err) => {
             throw err;
           });
       })
-      .catch(err => {
+      .catch((err) => {
         // this.props.returnErrors(err.message, 500);
       });
   };
@@ -99,7 +99,7 @@ export class Catalog extends Component {
     return new Promise(async (resolve, reject) => {
       for (let i = 0; i <= this.state.shelfList.length - 1; i++) {
         try {
-          await getBook(this.state.shelfList[i]).then(async book => {
+          await getBook(this.state.shelfList[i]).then(async (book) => {
             await this.props.shelveBook(book);
           });
         } catch (err) {
@@ -130,19 +130,19 @@ export class Catalog extends Component {
     await this.updateCatalog();
   };
 
-  onChange = e => {
+  onChange = (e) => {
     e.preventDefault();
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  handleQuery = async e => {
+  handleQuery = async (e) => {
     e.preventDefault();
     if (this.state.query === null || this.state.query === "") {
       return;
     }
     let queryShelf = await axios({
       url: `/library/search?search=${this.state.query}`,
-      method: "get"
+      method: "get",
     });
     this.setState({ shelfList: queryShelf.data }, async () => {
       this.props.clearShelf();
@@ -151,7 +151,7 @@ export class Catalog extends Component {
           this.setState({ catalogData: this.props.library });
           await this.props.libraryLoaded();
         })
-        .catch(err => {});
+        .catch((err) => {});
     });
   };
 
@@ -177,14 +177,20 @@ export class Catalog extends Component {
           <title>CryptoLib - Catalog</title>
           <link rel="canonical" href="https://cryptolib.co/catalog" />
         </Helmet>
-        <div className="catalogHeader">
+        <div
+          className="catalogHeader"
+          style={{
+            backgroundImage:
+              "linear-gradient( 0deg,rgb(230, 230, 230) 0%,#0a960c 30%,#000000 100%)",
+          }}
+        >
           <InputGroup className="searchBar">
             <Button
               color="secondary"
               style={{
                 marginRight: "5%",
                 paddingLeft: "5%",
-                paddingRight: "5%"
+                paddingRight: "5%",
               }}
               onClick={this.updateCatalog}
             >
@@ -194,10 +200,10 @@ export class Catalog extends Component {
               style={{ borderRadius: "5px" }}
               type="search"
               name="query"
-              onChange={e => this.onChange(e)}
+              onChange={(e) => this.onChange(e)}
             />
             <InputGroupAddon addonType="append">
-              <Button color="secondary" onClick={e => this.handleQuery(e)}>
+              <Button color="secondary" onClick={(e) => this.handleQuery(e)}>
                 Search
               </Button>
             </InputGroupAddon>
@@ -227,7 +233,14 @@ export class Catalog extends Component {
           )}
         </div>
         <hr className="my-1" />
-        <div className="mb-2 mt-2">
+        <div
+          className="pb-2 pt-2"
+          style={{
+            backgroundImage:
+              "linear-gradient( 180deg,rgb(230, 230, 230) 0%,#0a960c 30%,#000000 100%)",
+            minHeight: "50vh",
+          }}
+        >
           <ButtonGroup className="catalogNavBtns">
             {this.state.startIndex === 0 ? null : (
               <Button
@@ -256,10 +269,10 @@ export class Catalog extends Component {
 
 class CatalogRow extends Catalog {
   state = {
-    checkedOut: false
+    checkedOut: false,
   };
 
-  handleOnClick = async e => {
+  handleOnClick = async (e) => {
     // TODO: add payment from user to contract owner before initiating book transfer
     // -> https://davekiss.com/ethereum-web3-node-tutorial/
     await this.props.checkout(this.props.bookId, this.props.userAddress);
@@ -299,7 +312,7 @@ class CatalogRow extends Catalog {
               <Button
                 color="secondary"
                 className="checkoutBtn"
-                onClick={e => this.handleOnClick(e)}
+                onClick={(e) => this.handleOnClick(e)}
               >
                 Checkout
               </Button>
@@ -311,13 +324,13 @@ class CatalogRow extends Catalog {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   userAddress: state.user.userAddress,
   book: state.library.shelvingBook,
   library: state.library.library,
   loaded: state.library.loadingDone,
   isLoading: state.library.libraryLoading,
-  checkingOut: state.library.checkingOut
+  checkingOut: state.library.checkingOut,
 });
 
 export default connect(mapStateToProps, {
@@ -325,5 +338,5 @@ export default connect(mapStateToProps, {
   libraryLoaded,
   clearShelf,
   checkout,
-  returnErrors
+  returnErrors,
 })(Catalog);

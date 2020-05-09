@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import "../App.css";
+import React, { Component } from 'react';
+import '../App.css';
 import {
   Collapse,
   Navbar,
@@ -7,15 +7,15 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
-  NavLink,
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
   Container,
-} from "reactstrap";
-import { Link } from "react-router-dom";
-import Cryptolib_Icon from "../features/resources/Cryptolib_Icon.webp";
+  NavLink,
+} from 'reactstrap';
+import { Link } from 'react-router-dom';
+import Cryptolib_Icon from '../features/resources/Cryptolib_Icon.webp';
 
 class NavBar extends Component {
   state = {
@@ -29,58 +29,63 @@ class NavBar extends Component {
   render() {
     return (
       <div>
-        <Navbar expand="sm" className="navBar" fixed="top">
+        <Navbar expand='sm' className='navBar' fixed='top'>
           <Container>
             <NavbarBrand
-              style={{ color: "white" }}
-              href="/"
-              className="orbitronFont"
-            >
+              style={{ color: 'white' }}
+              to='/'
+              className='orbitronFont'>
               <img
                 src={Cryptolib_Icon}
-                alt="#"
+                alt='#'
                 style={{
-                  width: "2rem",
-                  marginRight: "1rem",
-                  backgroundColor: "white",
-                  borderRadius: "0.2rem",
+                  width: '2rem',
+                  marginRight: '1rem',
+                  backgroundColor: 'white',
+                  borderRadius: '0.2rem',
                 }}
               />
               CryptoLib
             </NavbarBrand>
             <NavbarToggler onClick={this.toggle} />
             <Collapse isOpen={this.state.isOpen} navbar>
-              <Nav className="ml-auto" navbar>
+              <Nav className='ml-auto' navbar>
                 <NavItem>
-                  <NavLink href="/" className="navBtn orbitronFont">
-                    Home
+                  <NavLink>
+                    <Link to='/' className='navBtn orbitronFont'>
+                      Home
+                    </Link>
                   </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink href="/about" className="navBtn orbitronFont">
-                    About
+                  <NavLink>
+                    <Link to='/about' className='navBtn orbitronFont'>
+                      About
+                    </Link>
                   </NavLink>
                 </NavItem>
                 <UncontrolledDropdown nav inNavbar>
-                  <DropdownToggle nav caret className="navBtn orbitronFont">
+                  <DropdownToggle nav caret className='navBtn orbitronFont'>
                     Catalog
                   </DropdownToggle>
                   <DropdownMenu>
                     <DropdownItem>
-                      <Link to="/catalog" className="dropBtn orbitronFont">
+                      <Link to='/catalog' className='dropBtn orbitronFont'>
                         Catalog
                       </Link>
                     </DropdownItem>
                     <DropdownItem>
-                      <Link to="/dailyShelf" className="dropBtn orbitronFont">
+                      <Link to='/dailyShelf' className='dropBtn orbitronFont'>
                         Daily Shelf
                       </Link>
                     </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
                 <NavItem>
-                  <NavLink href="/user" className="navBtn orbitronFont">
-                    User
+                  <NavLink>
+                    <Link to='/user' className='navBtn orbitronFont'>
+                      User
+                    </Link>
                   </NavLink>
                 </NavItem>
               </Nav>

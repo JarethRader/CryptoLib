@@ -55,7 +55,7 @@ class Home extends Component {
             <p>
               CryptoLib is hosted on the Ethereum Blockchain, which means your
               browser will need the capability of connecting to the blockchain.
-              Unless you're using the Brave browser,{' '}
+              Unless you're using the Brave browser,
               <a
                 className='metamaskLink'
                 href='https://metamask.io/'
